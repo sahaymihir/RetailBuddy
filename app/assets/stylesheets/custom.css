@@ -1,0 +1,55 @@
+.input-group label {
+  display: block;
+  margin-bottom: 4px; /* Adjust as needed */
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.2; /* Tight line height so the label's bottom aligns with the top of the input */
+  text-align: left;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Adjust spacing between toggle and user menu */
+}
+
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+}
+
+.ts-wrapper.input-field {
+  all: unset;
+  all: revert;
+  font-size: 16px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 8px !important;
+  padding: 12px 15px 12px 45px !important;
+  background-color: white !important;
+  box-shadow: none !important;
+}
+
+.ts-wrapper.input-field .ts-control {
+  all: unset;
+  all: revert;
+  font-size: 16px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
