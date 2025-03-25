@@ -53,3 +53,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# Use Oracle Database as the database for Active Record
+gem 'activerecord-oracle_enhanced-adapter'
