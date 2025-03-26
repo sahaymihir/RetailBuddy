@@ -1,0 +1,224 @@
+<%# app/views/pages/success.html.erb %>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy Dashboard</title>
+    <%# Link stylesheets - ensure these paths are correct for your asset pipeline %>
+    <%= stylesheet_link_tag "https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css", media: "all" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= favicon_link_tag "retail_icon.png?v=#{Rails.application.config.assets.version}", type: 'image/png' %>
+    <%# External Fonts/Icons %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <%# Main container for the dashboard layout %>
+    <div id="dashboard-container" data-turbo-cache="false">
+
+        <%# Sticky Header %>
+        <header class="header">
+            <div class="logo-container">
+                <%# Link logo to success path %>
+                <%= link_to success_path_url, class: "logo" do %>
+                <i class="fas fa-store-alt"></i>
+                <span>RetailBuddy</span>
+                <% end %>
+            </div>
+
+            <div class="header-controls">
+                <%# Display user menu only if a user is logged in %>
+                <% if current_user %>
+                <%# REMOVED: data-controller="dropdown" %>
+                <div class="user-menu">
+                    <%# Welcome text acts as the dropdown button %>
+                    <button id="userButton" class="welcome-user">
+                        Welcome, <%= current_user.name %>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <%# Dropdown content %>
+                    <div id="userDropdown" class="user-dropdown">
+                        <%= button_to logout_path, method: :delete, class: "dropdown-item-form" do %>
+                        <span class="dropdown-item"> <%# Wrap content for consistent styling %>
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </span>
+                        <% end %>
+                        <%# Add other dropdown items here if needed %>
+                    </div>
+                </div>
+                <% end %>
+            </div> <%# End header-controls %>
+        </header> <%# End header %>
+
+        <%# Main content area below the header %>
+        <main class="dashboard-content">
+
+            <%# === Top Info Section === %>
+            <section class="top-info-section">
+                <%# --- MODIFIED SALES SNAPSHOT CARD --- %>
+                <div class="info-card sales-snapshot">
+                    <h3><i class="fas fa-rupee-sign me-2"></i> Sales Snapshot</h3> <%# Optional: Added INR icon %>
+                    <%# Display Total Sales fetched from controller, formatted in INR %>
+                    <p class="fs-5 fw-medium mb-2"> <%# Example styling: larger font %>
+                        Total Revenue: <%= number_to_currency(@total_sales_revenue, unit: "₹", precision: 2) %>
+                    </p>
+                    <%# Display Total Transactions fetched from controller %>
+                    <p class="text-secondary mb-2"> <%# Example styling: secondary text color, margin bottom %>
+                        Total Transactions: <%= @total_transactions %>
+                    </p>
+                    <%# Removed old placeholder <p> tags %>
+                    <%# Keep the link %>
+                    <%= link_to "View Detailed Sales Reports", reports_path, class: "mt-auto pt-2" %>
+                </div>
+                <div class="info-card low-stock-alerts"> <%# Modified Low Stock Card %>
+                    <h3 class="<%= @low_stock_items.blank? ? '' : 'text-warning' %>"> <%# Conditional class %>
+                        <% if @low_stock_items.present? %>
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <% else %>
+                        <i class="fas fa-check-circle me-2 text-success"></i> <%# Optional: Show check if stock is okay %>
+                        <% end %>
+                        Low Stock Alerts
+                    </h3>
+                    <% if @low_stock_items.present? %>
+                    <p class="text-secondary mb-2">The following items are at or below reorder level:</p>
+                    <ul class="list-unstyled mb-2"> <%# Use list-unstyled for less default styling %>
+                        <%# Iterate over only the first 2 items using .take(2) %>
+                        <% @low_stock_items.take(2).each do |item| %>
+                        <li class="d-flex justify-content-between align-items-center py-1 border-bottom border-secondary">
+                            <%# Link product name to its edit page %>
+                            <%= link_to item.product_name, edit_product_path(item), class: "text-warning fw-medium", style: "text-decoration: none;" %>
+                            <span class="badge bg-warning text-dark small"> <%# Use small badge %>
+                                Stock: <%= item.stock_quantity || 0 %> / Reorder: <%= item.inventory&.reorder_level || 'N/A' %>
+                            </span>
+                        </li>
+                        <% end %>
+                    </ul>
+                    <%# Add a note if there are more low stock items not shown (checks if controller fetched more than 2) %>
+                    <% if @low_stock_items.size > 2 %>
+                    <p class="text-secondary small fst-italic mt-1">(Showing first 2 of <%= @low_stock_items.size %> low stock items)</p>
+                    <% end %>
+                    <% else %>
+                    <p class="text-secondary">All item stock levels are currently above their reorder points.</p>
+                    <% end %>
+                    <%= link_to "View Full Inventory", inventory_path, class: "mt-auto pt-2" %> <%# Moved link lower %>
+                </div>
+            </section>
+
+            <%# === Middle Action Buttons Section (MODIFIED) === %>
+            <section class="action-buttons">
+                <%# Removed 'Start New Sale' button %>
+                <%# Added Invoice History button %>
+                <%= link_to invoices_path, class: "action-btn" do %>
+                <i class="fas fa-history me-1"></i> Recent Invoice
+                <% end %>
+                <%= link_to new_product_path, class: "action-btn" do %>
+                <i class="fas fa-plus-circle me-1"></i> Add Product
+                <% end %>
+                <%= link_to reports_path, class: "action-btn" do %> <%# Mapped to reports index %>
+                <i class="fas fa-chart-bar me-1"></i> View Reports
+                <% end %>
+                <%= link_to new_customer_path, class: "action-btn" do %>
+                <i class="fas fa-user-plus me-1"></i> Add Customer
+                <% end %>
+            </section>
+
+            <%# === Bottom Tile Grid Section (VERIFIED LINKS) === %>
+            <section class="tile-grid-section">
+                <h2>Core Modules</h2>
+                <div class="tile-grid">
+                    <%# Tile for Billing %>
+                    <%= link_to new_billing_path, class: "tile" do %>
+                    <div class="tile-icon"><i class="fas fa-cash-register"></i></div>
+                    <h3>Billing</h3>
+                    <p>Start a new transaction and generate invoices.</p>
+                    <% end %>
+                    <a href="<%= inventory_path %>" class="tile">
+                        <div class="tile-icon"><i class="fas fa-boxes-stacked"></i></div>
+                        <h3>Inventory Management</h3>
+                        <p>Track stock levels, manage products, and handle suppliers.</p>
+                    </a>
+                    <a href="<%= reports_path %>" class="tile">
+                        <div class="tile-icon"><i class="fas fa-chart-pie"></i></div>
+                        <h3>Reports & Analytics</h3>
+                        <p>Get insights with detailed reports and visual analytics.</p>
+                    </a>
+                    <a href="<%= customers_path %>" class="tile">
+                        <div class="tile-icon"><i class="fas fa-users"></i></div>
+                        <h3>Customers</h3>
+                        <p>Manage customer data, loyalty programs, and communications.</p>
+                    </a>
+                    <a href="<%= help_path %>" class="tile">
+                        <div class="tile-icon"><i class="fas fa-headset"></i></div>
+                        <h3>Help and Support</h3>
+                        <p>Access tutorials, FAQs, and contact support for assistance.</p>
+                    </a>
+                    <% if current_user && current_user.role == "Admin" %>
+                    <a href="<%= admin_users_path %>" class="tile">
+                        <div class="tile-icon"><i class="fas fa-user-shield"></i></div>
+                        <h3>Admin Panel</h3>
+                        <p>Configure system settings and manage user access.</p>
+                    </a>
+                    <% end %>
+                </div>
+            </section>
+        </main> <%# End dashboard-content %>
+
+    </div> <%# End dashboard-container %>
+
+    <%# ADDED: Inline script for dropdown functionality %>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const userButton = document.getElementById("userButton");
+            const userDropdown = document.getElementById("userDropdown");
+
+            if (userButton && userDropdown) {
+                // Function to update chevron
+                const updateChevron = () => {
+                    const chevron = userButton.querySelector(".fa-chevron-down, .fa-chevron-up");
+                    if (chevron) {
+                        chevron.className = userDropdown.classList.contains("show") ?
+                            "fas fa-chevron-up" :
+                            "fas fa-chevron-down";
+                    }
+                };
+
+                // Toggle dropdown on button click
+                userButton.addEventListener("click", function(e) {
+                    e.preventDefault(); // Prevent potential form submission issues if button is inside form
+                    e.stopPropagation(); // Prevent click from immediately closing dropdown via document listener
+                    userDropdown.classList.toggle("show");
+                    updateChevron();
+                });
+
+                // Close dropdown if clicking outside
+                document.addEventListener("click", function(e) {
+                    // Check if the click is outside the button AND outside the dropdown menu
+                    if (!userButton.contains(e.target) && !userDropdown.contains(e.target)) {
+                        if (userDropdown.classList.contains("show")) {
+                            userDropdown.classList.remove("show");
+                            updateChevron();
+                        }
+                    }
+                });
+
+                // Prevent clicks inside the dropdown from closing it (optional, usually desired)
+                userDropdown.addEventListener("click", function(e) {
+                    // If the click is on the logout button/form, let it proceed
+                    if (e.target.closest('.dropdown-item-form')) {
+                        return; // Don't stop propagation for logout button
+                    }
+                    e.stopPropagation(); // Stop clicks inside dropdown from reaching document listener
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
