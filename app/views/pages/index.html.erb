@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Login</title>
+    <%= stylesheet_link_tag "app", media: "all", "data-turbo-track": "reload" %>
+</head>
+<body>
+    
+    <!-- Admin Login Button (Top Right) -->
+    <div class="top-right">
+        <a href="<%= url_for(controller: 'pages', action: 'admin_login') %>">
+            <button class="admin-btn">Admin Login</button>
+        </a>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-container">
+        <h2>Employee Login</h2>
+
+        <form action="#" method="post">
+            <input type="text" placeholder="User ID" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+</body>
+</html>
