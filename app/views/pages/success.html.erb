@@ -1,19 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Login Successful</title>
-    <%= stylesheet_link_tag 'application', media: 'all' %>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retail Buddy - Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #9CECFB, #65C7F7, #0052D4);
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1440px; /* Adjust as needed for your desktop layout */
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #007bff;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .card i {
+      font-size: 3rem; /* Keep icons large */
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
-    <h2>Login Successful</h2>
-    <p>Welcome, User ID: <%= session[:user_id] %>!</p>
+  <div class="container">
+    <header>
+      <h1>Retail Buddy - Dashboard</h1>
+      <button style="background: white; color: #007bff; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer;">
+        Log Out
+      </button>
+    </header>
 
-    <% if session[:role] == "Admin" %>
-      <p>You are logged in as an Admin.</p>
-    <% else %>
-      <p>You are logged in as an Employee.</p>
-    <% end %>
+    <div class="grid">
+      <div class="card" id="inventory-management">
+        <i class="fas fa-boxes"></i>
+        <h3>Inventory Management</h3>
+        <p>Monitor stock levels, manage suppliers, and track inventory updates efficiently.</p>
+      </div>
+      <div class="card" id="sales-management">
+        <i class="fas fa-chart-line"></i>
+        <h3>Sales Management</h3>
+        <p>Track and analyze sales, apply discounts, and create invoices seamlessly.</p>
+      </div>
+      <div class="card" id="reporting-analytics">
+        <i class="fas fa-chart-pie"></i>
+        <h3>Reporting and Analytics</h3>
+        <p>Generate reports, monitor KPIs, and gain actionable insights for the business.</p>
+      </div>
+      <div class="card" id="user-administration">
+        <i class="fas fa-users-cog"></i>
+        <h3>User Administration</h3>
+        <p>Manage user roles, permissions, and maintain secure access to the system.</p>
+      </div>
+    </div>
 
-    <a href="<%= root_path %>">Go Home</a>
+    <footer>
+      <p>© 2023 Retail Buddy. All rights reserved.</p>
+    </footer>
+  </div>
 </body>
 </html>
