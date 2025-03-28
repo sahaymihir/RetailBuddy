@@ -1,0 +1,14 @@
+default: &default
+  adapter: oracle_enhanced
+  pool: 5
+  timeout: 5000
+  username: <%= ENV['ORACLE_DB_USERNAME'] %>
+  password: <%= ENV['ORACLE_DB_PASSWORD'] %>
+  database:  <%= ENV['ORACLE_DB_CONNECTION'] %>
+  tns_admin:  <%= ENV['ORACLE_TNS_ADMIN'] %>
+
+development:
+  <<: *default
+
+production:
+  <<: *default
