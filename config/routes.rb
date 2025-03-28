@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  # Define the root route
   root "pages#index"
-  get "admin_login", to: "pages#admin_login"
+
+  # Define the success page route
+  get "success", to: "pages#success", as: :success_path
+
+  # Login routes
+  post "login", to: "sessions#create"
+  delete "logout", to: "sessions#destroy"
 end

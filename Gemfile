@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.2"
+gem 'rails', '~> 7.1.0'
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -55,4 +55,8 @@ group :test do
 end
 
 # Use Oracle Database as the database for Active Record
-gem 'activerecord-oracle_enhanced-adapter'
+gem "activerecord-oracle_enhanced-adapter", "~> 7.1.0"
+gem "ruby-oci8"
+
+# Use Enviornmental Variables for credentials
+gem "dotenv-rails", groups: [ :development, :test ]

@@ -4,27 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Login</title>
-    <%= stylesheet_link_tag "app", media: "all", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag 'application', media: 'all' %>
 </head>
 <body>
-    
-    <!-- Admin Login Button (Top Right) -->
-    <div class="top-right">
-        <a href="<%= url_for(controller: 'pages', action: 'admin_login') %>">
-            <button class="admin-btn">Admin Login</button>
-        </a>
-    </div>
+    <div class="container">
+        <h2>Login</h2>
 
-    <!-- Login Form -->
-    <div class="login-container">
-        <h2>Employee Login</h2>
+        <% if flash[:notice] %>
+          <p style="color: green;"><%= flash[:notice] %></p>
+        <% elsif flash[:alert] %>
+          <p style="color: red;"><%= flash[:alert] %></p>
+        <% end %>
 
-        <form action="#" method="post">
-            <input type="text" placeholder="User ID" required>
-            <input type="password" placeholder="Password" required>
-            <button type="submit">Login</button>
+        <!-- Login Form -->
+        <form action="/login" method="post">
+            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+            <input type="text" name="user_id" placeholder="User ID" required>
+            <input type="password" name="password" placeholder="Password" required>
+
+            <!-- Login Buttons -->
+            <button type="submit">Employee Login</button>
+            <button type="submit" name="admin" value="true" class="admin-btn">Admin Login</button>
         </form>
     </div>
-
 </body>
 </html>
