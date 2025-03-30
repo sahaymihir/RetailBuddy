@@ -1,0 +1,10 @@
+.input-group label {
+  display: block;
+  margin-bottom: 4px; /* Adjust as needed */
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.2; /* Tight line height so the label's bottom aligns with the top of the input */
+  text-align: left;
+}
+

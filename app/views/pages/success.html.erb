@@ -3,108 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retail Buddy - Dashboard</title>
+  <title>RetailBuddy - Dashboard</title>
+  
+  <!-- Favicon -->
+  <%= favicon_link_tag 'retail_icon.png', type: 'image/png' %>
+  
+  <!-- CSS: Application and Dashboard CSS -->
+  <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "dashboard", media: "all", "data-turbo-track": "reload" %>
+  
+  <!-- Font Awesome & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(to right, #9CECFB, #65C7F7, #0052D4);
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 1440px; /* Adjust as needed for your desktop layout */
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #007bff;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
-
-    .grid {
-      display: grid;
-      grid-gap: 20px;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      margin-bottom: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      text-align: center;
-    }
-
-    .card i {
-      font-size: 3rem; /* Keep icons large */
-      color: #007bff;
-      margin-bottom: 10px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 10px;
-      background-color: #007bff;
-      color: white;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Retail Buddy - Dashboard</h1>
-      <button style="background: white; color: #007bff; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer;">
-        Log Out
-      </button>
-    </header>
-
-    <div class="grid">
-      <div class="card" id="inventory-management">
-        <i class="fas fa-boxes"></i>
-        <h3>Inventory Management</h3>
-        <p>Monitor stock levels, manage suppliers, and track inventory updates efficiently.</p>
-      </div>
-      <div class="card" id="sales-management">
-        <i class="fas fa-chart-line"></i>
-        <h3>Sales Management</h3>
-        <p>Track and analyze sales, apply discounts, and create invoices seamlessly.</p>
-      </div>
-      <div class="card" id="reporting-analytics">
-        <i class="fas fa-chart-pie"></i>
-        <h3>Reporting and Analytics</h3>
-        <p>Generate reports, monitor KPIs, and gain actionable insights for the business.</p>
-      </div>
-      <div class="card" id="user-administration">
-        <i class="fas fa-users-cog"></i>
-        <h3>User Administration</h3>
-        <p>Manage user roles, permissions, and maintain secure access to the system.</p>
-      </div>
+  <div id="dashboard-container">
+    <div class="background-shapes">
+      <div class="shape"></div>
+      <div class="shape"></div>
+      <div class="shape"></div>
+      <div class="shape"></div>
     </div>
-
-    <footer>
-      <p>© 2023 Retail Buddy. All rights reserved.</p>
-    </footer>
+    
+    <header class="header">
+      <div class="logo-container">
+        <div class="logo">
+          <i class="fas fa-shopping-bag"></i>
+          <span>RetailBuddy</span>
+        </div>
+      </div>
+      
+      <div class="header-controls">
+        <button class="theme-toggle" id="themeToggle">
+          <i class="fas fa-sun"></i>
+        </button>
+        
+        <div class="user-menu">
+          <button class="user-button" id="userButton">
+            <i class="fas fa-user-circle"></i>
+            <span>Welcome, User</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <main class="dashboard-content">
+      <section class="welcome-banner">
+        <h1>Welcome to Retail Buddy</h1>
+        <p>Your complete retail management solution. Choose from the options below to get started.</p>
+      </section>
+      
+      <section class="tile-grid">
+        <div class="tile fade-in-up">
+          <i class="fas fa-file-invoice-dollar tile-icon"></i>
+          <h3>Billing</h3>
+          <p>Manage invoices, process payments, and track your sales</p>
+        </div>
+        
+        <div class="tile fade-in-up">
+          <i class="fas fa-boxes tile-icon"></i>
+          <h3>Inventory Management</h3>
+          <p>Track stock levels, manage products, and handle suppliers</p>
+        </div>
+        
+        <div class="tile fade-in-up">
+          <i class="fas fa-chart-line tile-icon"></i>
+          <h3>Reports & Analytics</h3>
+          <p>Get insights with detailed reports and visual analytics</p>
+        </div>
+        
+        <div class="tile fade-in-up">
+          <i class="fas fa-users tile-icon"></i>
+          <h3>Customers</h3>
+          <p>Manage customer data, loyalty programs, and engagement</p>
+        </div>
+        
+        <div class="tile fade-in-up">
+          <i class="fas fa-headset tile-icon"></i>
+          <h3>Help and Support</h3>
+          <p>Access tutorials, FAQs, and customer support</p>
+        </div>
+        
+        <div class="tile fade-in-up" id="adminTile">
+          <i class="fas fa-user-shield tile-icon"></i>
+          <h3>Admin Panel</h3>
+          <p>Configure system settings and manage user permissions</p>
+        </div>
+      </section>
+    </main>
   </div>
+  
+  <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
+  <!-- Custom dashboard JS -->
+  <script src="<%= asset_path 'dashboard.js' %>"></script>
 </body>
 </html>

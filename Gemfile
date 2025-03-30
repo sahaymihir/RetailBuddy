@@ -60,3 +60,6 @@ gem "ruby-oci8"
 
 # Use Enviornmental Variables for credentials
 gem "dotenv-rails", groups: [ :development, :test ]
+
+#Tailwind CSS
+gem "tailwindcss-rails", "~> 3.3.1"
