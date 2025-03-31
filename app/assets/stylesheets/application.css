@@ -1,3 +1,6 @@
+@import "dashboard";
+@import "custom";
+
 :root {
   --primary-color: #6c63ff;
   --secondary-color: #4d44d9;
@@ -284,37 +287,6 @@ h1 {
   overflow: hidden;
 }
 
-.admin-login-button {
-  background: linear-gradient(135deg, var(--accent-color), #e74c3c);
-  flex: 0 0 auto;
-  padding: 15px 20px;
-  font-size: 14px;
-}
-
-.login-button::before, .admin-login-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: all 0.4s;
-}
-
-.login-button:hover, .admin-login-button:hover {
-  box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
-  transform: translateY(-2px);
-}
-
-.login-button:hover::before, .admin-login-button:hover::before {
-  left: 100%;
-}
-
-.login-button:active, .admin-login-button:active {
-  transform: translateY(0);
-}
-
 .theme-toggle {
   position: absolute;
   top: 20px;
@@ -364,4 +336,3 @@ h1 {
   }
 }
 
-@import "dashboard";

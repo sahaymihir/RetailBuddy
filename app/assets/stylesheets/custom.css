@@ -8,3 +8,27 @@
   text-align: left;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Adjust spacing between toggle and user menu */
+}
+
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+}
+

@@ -24,4 +24,10 @@ class SessionsController < ApplicationController
       redirect_back(fallback_location: root_path) # Redirect back with error message
     end
   end
+
+  def destroy
+    reset_session # Clears all session data
+    flash[:notice] = 'Successfully logged out'
+    redirect_to root_path, status: :see_other # Redirect to login page (root_path)
+  end
 end
