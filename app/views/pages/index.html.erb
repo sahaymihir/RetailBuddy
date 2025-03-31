@@ -52,6 +52,11 @@
             <p class="notice"><%= flash[:notice] %></p>
           <% end %>
         </div>
+          <% flash.each do |type, message| %>
+          <div class="alert alert-<%= type == 'notice' ? 'success' : 'danger' %>">
+          <%= message %>
+          </div>
+        <% end %>
         
         <!-- Login form using form_with -->
         <%= form_with url: login_path, method: :post, local: true, html: { class: "login-form" } do |f| %>
@@ -69,12 +74,7 @@
               <%= f.password_field :password, id: "password", placeholder: "Enter your password", autocomplete: "current-password", required: true %>
             </div>
           </div>
-          <!-- Admin Login button sends the admin parameter -->
-          <div class="login-options">
-            <button type="submit" class="admin-login-button" name="admin" value="true">
-              Admin Login
-            </button>
-          </div>
+          <!-- Login Buton -->
           <div class="button-container">
             <button type="submit" class="login-button">
               Login to Dashboard
