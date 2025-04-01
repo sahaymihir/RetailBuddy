@@ -7,7 +7,7 @@
   
   <!-- Favicon -->
   <%= favicon_link_tag "retail_icon.png?v=#{Rails.application.config.assets.version}", type: 'image/png' %>
-  
+  <%= javascript_importmap_tags %>
   <!-- Rails asset pipeline for CSS -->
   <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "custom", media: "all", "data-turbo-track": "reload" %>
