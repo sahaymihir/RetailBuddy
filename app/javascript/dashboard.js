@@ -1,22 +1,16 @@
 import "@hotwired/turbo-rails"
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Dark mode toggle functionality
+// Function to initialize all dashboard functionality
+function initializeDashboard() {
+  // Dark mode toggle
   const themeToggle = document.getElementById("themeToggle");
-  const body = document.body;
-
   if (themeToggle) {
-    themeToggle.addEventListener("click", function () {
-      // Toggle the light-mode class on the body
-      body.classList.toggle("light-mode");
-
-      // Update the icon based on the current mode
-      const icon = themeToggle.querySelector("i");
-      if (body.classList.contains("light-mode")) {
-        icon.className = "fas fa-moon"; // Change to moon icon for light mode
-      } else {
-        icon.className = "fas fa-sun"; // Change to sun icon for dark mode
-      }
+    themeToggle.addEventListener("click", function() {
+      document.body.classList.toggle("light-mode");
+      const icon = this.querySelector("i");
+      icon.className = document.body.classList.contains("light-mode") 
+        ? "fas fa-moon" 
+        : "fas fa-sun";
     });
   }
 
@@ -25,28 +19,36 @@ document.addEventListener("DOMContentLoaded", function () {
   const userDropdown = document.getElementById("userDropdown");
 
   if (userButton && userDropdown) {
-    userButton.addEventListener("click", function (e) {
-      e.stopPropagation(); // Prevent click event from propagating to the document
+    userButton.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
       userDropdown.classList.toggle("show");
-
-      // Update chevron icon based on dropdown state
-      const chevron =
-        userButton.querySelector("i.fas.fa-chevron-down") ||
-        userButton.querySelector("i.fas.fa-chevron-up");
-      if (userDropdown.classList.contains("show")) {
-        if (chevron) chevron.className = "fas fa-chevron-up";
-      } else {
-        if (chevron) chevron.className = "fas fa-chevron-down";
+      
+      // Toggle chevron icon
+      const chevron = this.querySelector(".fa-chevron-down, .fa-chevron-up");
+      if (chevron) {
+        chevron.className = userDropdown.classList.contains("show")
+          ? "fas fa-chevron-up"
+          : "fas fa-chevron-down";
       }
     });
 
     // Close dropdown when clicking outside
-    document.addEventListener("click", function () {
+    document.addEventListener("click", function() {
       if (userDropdown.classList.contains("show")) {
         userDropdown.classList.remove("show");
-        const chevron = userButton.querySelector("i.fas.fa-chevron-up");
+        const chevron = userButton.querySelector(".fa-chevron-up");
         if (chevron) chevron.className = "fas fa-chevron-down";
       }
     });
+
+    // Prevent dropdown from closing when clicking inside it
+    userDropdown.addEventListener("click", function(e) {
+      e.stopPropagation();
+    });
   }
-});
+}
+
+// Initialize on both regular load and Turbo visits
+document.addEventListener("DOMContentLoaded", initializeDashboard);
+document.addEventListener("turbo:load", initializeDashboard);
