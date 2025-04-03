@@ -1,0 +1,240 @@
+/* app/assets/stylesheets/customers.css */
+
+/* Inherit variables from application/dashboard.css or define here */
+:root { /* Make sure CSS variables are available or defined here */
+    --bg-color: #1e1e2e;        /* Example: Adjust to your actual variables */
+    --text-color: #f8f9fa;
+    --text-secondary: #bdc1c6;
+    --card-bg: #282a36;
+    --border-color: #44475a;
+    --input-bg: #44475a;
+    --primary-color: #6c63ff;
+    --secondary-color: #4d44d9;
+    --accent-color: #50fa7b;
+    --error-color: #f44336;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --border-radius-sm: 8px;
+    --border-radius-md: 12px;
+  }
+  
+  .customers-page-container {
+      padding: 1.5rem 2rem;
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      color: var(--text-color); /* Added default text color */
+  }
+  
+  .customers-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+  }
+  
+  .customers-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-color);
+  }
+  
+  /* Styling for Action Buttons in Header */
+  .customers-actions .action-btn {
+     margin-left: 0.5rem;
+     /* Add base button styles if not inherited - padding, border, etc. */
+     padding: 0.6rem 1rem;
+     border-radius: var(--border-radius-sm);
+     border: 1px solid var(--border-color);
+     background-color: var(--button-bg); /* Assuming a default button bg */
+     color: var(--text-secondary);
+     text-decoration: none !important; /* Remove underline */
+     cursor: pointer;
+     transition: background-color 0.2s ease, color 0.2s ease; /* Basic transition */
+  }
+  .customers-actions .action-btn:hover {
+      background-color: var(--button-hover-bg);
+      color: var(--text-color);
+      text-decoration: none !important;
+  }
+  
+  .customers-actions .action-btn.primary {
+     background-color: var(--primary-color);
+     border-color: var(--primary-color);
+     color: white;
+  }
+  .customers-actions .action-btn.primary:hover {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+  }
+  
+  /* --- Customer search/filter controls --- */
+  .customer-controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: stretch; /* Align items to stretch vertically */
+  }
+  
+  .customer-controls .input-group {
+      flex-grow: 1;
+      position: relative; /* Needed only if using icon inside */
+  }
+  
+  /* Adjusted input field styling */
+  .customer-controls .input-field {
+      position: relative; /* Keep relative for icon positioning */
+      display: flex; /* Use flex for full height */
+      height: 100%;
+  }
+  
+  .customer-controls .input-field input[type="text"] {
+     padding: 12px 15px 12px 45px; /* Padding for icon */
+     background-color: var(--input-bg);
+     color: var(--text-color);
+     border: 1px solid var(--border-color);
+     border-radius: var(--border-radius-sm);
+     line-height: normal;
+     width: 100%;
+     display: block;
+     box-sizing: border-box;
+     height: 100%; /* Make input fill wrapper height */
+  }
+  .customer-controls .input-field input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+  }
+  
+  .customer-controls .input-field i.fas.fa-search {
+     position: absolute;
+     left: 15px;
+     top: 50%;
+     transform: translateY(-50%);
+     color: var(--text-secondary);
+     pointer-events: none;
+  }
+  
+  /* Style the search button */
+  .customer-controls .action-btn {
+      padding: 12px 15px; /* Match vertical padding of input */
+      line-height: normal;
+      white-space: nowrap;
+      box-sizing: border-box;
+      height: 100%; /* Match height */
+      /* Add base button styles if not inherited */
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--border-color);
+      background-color: var(--button-bg);
+      color: var(--text-secondary);
+      cursor: pointer;
+      text-decoration: none !important;
+      transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .customer-controls .action-btn:hover {
+      background-color: var(--button-hover-bg);
+      color: var(--text-color);
+  }
+  /* --- End Controls --- */
+  
+  
+  /* --- Customer Table Styling --- */
+  .customers-table-container {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    overflow-x: auto;
+    margin-top: 1.5rem; /* Space below controls */
+  }
+  
+  .customers-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Use fixed layout for better column control */
+  }
+  
+  .customers-table th,
+  .customers-table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    vertical-align: middle; /* Align vertically */
+    white-space: normal; /* Allow wrapping */
+    word-wrap: break-word; /* Break long words */
+  }
+  
+  .customers-table th {
+    color: var(--text-secondary);
+    font-weight: 500;
+    background-color: var(--card-bg);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    white-space: nowrap; /* Keep headers on one line */
+  }
+  
+  /* Define column widths */
+  .customers-table th:nth-child(1), .customers-table td:nth-child(1) { width: 18%; } /* Name */
+  .customers-table th:nth-child(2), .customers-table td:nth-child(2) { width: 22%; } /* Email */
+  .customers-table th:nth-child(3), .customers-table td:nth-child(3) { width: 15%; } /* Phone */
+  .customers-table th:nth-child(4), .customers-table td:nth-child(4) { width: 30%; } /* Address */
+  .customers-table th:nth-child(5), .customers-table td:nth-child(5) { width: 15%; text-align: center; } /* Actions */
+  
+  .customers-table td {
+    color: var(--text-color);
+  }
+  
+  /* No special rule needed for td.customer-address if default white-space is normal */
+  /* .customers-table td.customer-address { */
+      /* white-space: normal; */ /* Already default */
+  /* } */
+  
+  .customers-table .table-actions {
+      text-align: center; /* Center icons */
+      white-space: nowrap; /* Prevent icons wrapping */
+      vertical-align: middle; /* Ensure icons align with text */
+  }
+  
+  .customers-table .table-actions a,
+  .customers-table .table-actions button {
+      background: none;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      margin: 0 0.2rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+      text-decoration: none !important; /* Remove underline */
+  }
+  .customers-table .table-actions a:hover,
+  .customers-table .table-actions button:hover {
+      color: var(--primary-color);
+      text-decoration: none !important;
+  }
+  
+  .customers-table .table-actions .delete-btn {
+      color: var(--error-color);
+      appearance: none; /* Reset default button styles */
+      font-size: 16px; /* Match link icon size */
+      padding: 0.25rem 0.5rem; /* Match link padding */
+      margin: 0 0.2rem; /* Match link margin */
+      line-height: 1; /* Match link line-height */
+      display: inline-block; /* Match link display */
+      vertical-align: middle; /* Match link alignment */
+  }
+  .customers-table .table-actions .delete-btn:hover {
+      color: color-mix(in srgb, var(--error-color) 85%, black);
+  }
+  
+  .no-customers-message {
+     text-align: center;
+     color: var(--text-secondary);
+     font-style: italic;
+     padding: 3rem 1rem;
+  }
