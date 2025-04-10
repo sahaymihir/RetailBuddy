@@ -1,0 +1,126 @@
+<%# app/views/inventory/index.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Inventory Management</title>
+
+    <%# Link necessary stylesheets directly %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "inventory", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= javascript_importmap_tags %>
+
+    <%# External Fonts/Icons %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="inventory-page-container">
+
+        <div class="inventory-header">
+            <%# Wrap the H1 in a link_to the success_path (dashboard) %>
+            <%# Try prefixing with main_app. %>
+            <%= link_to main_app.success_path_path, class: "inventory-title-link" do %>
+            <h1 class="inventory-title">Inventory Management</h1>
+            <% end %>
+
+            <div class="inventory-actions">
+                <%= link_to "Manage Categories", categories_path, class: "action-btn" %>
+                <%= link_to "Add New Product", new_product_path, class: "action-btn primary" %>
+            </div>
+        </div>
+
+        <%# Filter Controls Section - WRAPPED IN A FORM %>
+        <%= form_with(url: inventory_path, method: :get, local: true, data: { turbo_frame: "_top" }) do |form| %>
+        <div class="inventory-controls">
+            <%# Search Input %>
+            <div class="input-field">
+                <i class="fas fa-search"></i>
+                <%= form.text_field :search_query, placeholder: "Search Product Name or SKU...", class: "w-full", value: params[:search_query] %>
+            </div>
+
+            <%# Category Select Dropdown - Corrected syntax and selected value handling %>
+            <%= form.select :category_id,
+                  options_from_collection_for_select(
+                    defined?(@categories) ? @categories : [], # Use @categories if defined, else empty array
+                    :id,
+                    :category_name,
+                    selected: params[:category_id] # Sets the currently selected option based on params
+                  ),
+                  { include_blank: 'All Categories' }, # Options hash
+                  { } # HTML attributes hash (can add class here if needed, e.g., { class: 'my-select-class' })
+            %>
+
+            <%# Submit Button %>
+            <%= form.button "Filter", class: "action-btn", type: "submit" %>
+
+        </div>
+        <% end %>
+        <%# --- END FORM --- %>
+
+        <div class="inventory-table-container">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock Qty</th>
+                        <th>Reorder Level</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if defined?(@products) && @products.present? %>
+                    <% @products.each do |product| %>
+                    <tr>
+                        <td><%= product.product_name || "N/A" %></td>
+                        <td><%= product.category&.category_name || "N/A" %></td>
+                        <td><%= number_to_currency(product.price || 0, unit: "₹", precision: 2) %></td>
+                        <% stock = product.stock_quantity || 0 %>
+                        <% reorder = product.inventory&.reorder_level %>
+                        <% reorder_level_defined = !reorder.nil? %>
+                        <td class="<%= (reorder_level_defined && stock <= reorder) ? 'stock-low' : 'stock-ok' %>">
+                            <%= stock %>
+                        </td>
+                        <td><%= reorder || "N/A" %></td>
+                        <td><%= product.inventory&.warehouse_location || "N/A" %></td>
+                        <td class="table-actions">
+                            <%# Assumes you have edit_product_path and product_path from resources :products in routes.rb %>
+                            <%= link_to '<i class="fas fa-edit"></i>'.html_safe, edit_product_path(product) %>
+                            <%= button_to '<i class="fas fa-trash"></i>'.html_safe,
+                                  product_path(product),
+                                  method: :delete,
+                                  class: 'delete-btn',
+                                  form: { data: { turbo_confirm: 'Are you sure you want to delete this product?' } }
+                    %>
+                        </td>
+                    </tr>
+                    <% end %>
+                    <% else %>
+                    <tr>
+                        <%# Updated colspan to match number of columns (now 7) %>
+                        <td colspan="7" class="no-products-message">No products found matching your criteria.</td>
+                    </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        </div>
+
+    </div> <%# End inventory-page-container %>
+
+</body>
+
+</html>
