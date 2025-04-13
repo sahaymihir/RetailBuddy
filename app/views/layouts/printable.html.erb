@@ -1,0 +1,69 @@
+<%# app/views/layouts/printable.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Invoice</title> <%# Or dynamically set title if desired %>
+
+  <%# Include necessary stylesheets - potentially application.css or a dedicated print.css %>
+  <%# Using application.css might bring in too much, consider a minimal print-specific CSS file %>
+  <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
+  <%# Example: Link to a specific print stylesheet if you create one %>
+  <%#= stylesheet_link_tag "print", media: "print", "data-turbo-track": "reload" %>
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <style>
+    /* Basic print-specific styles can go here */
+    @media print {
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Example font */
+        font-size: 10pt; /* Adjust base font size for print */
+        color: #000; /* Ensure black text */
+      }
+      .container, .invoice-container { /* Assuming you use these classes in show.html.erb */
+        width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        border: none; /* Remove borders for print */
+        box-shadow: none; /* Remove shadows for print */
+      }
+      /* Hide elements not meant for printing (like buttons if any were rendered) */
+      .no-print {
+        display: none !important;
+      }
+      /* Add more print-specific table/layout styles as needed */
+      table { width: 100%; border-collapse: collapse; }
+      th, td { border: 1px solid #ccc; padding: 5px; text-align: left; }
+      th { background-color: #f2f2f2; }
+    }
+    /* Basic screen styles for the container */
+    body {
+        background-color: #eee; /* Grey background for contrast */
+    }
+    .invoice-container-wrapper {
+        max-width: 800px; /* Limit width on screen */
+        margin: 20px auto;
+        padding: 30px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <%# The content from the specific view (e.g., invoices/show.html.erb) will be inserted here %>
+  <div class="invoice-container-wrapper"> <%# Wrapper for screen view styling %>
+    <%= yield %>
+  </div>
+
+  <%# Automatically trigger the print dialog when the page loads %>
+  <script>
+    window.print();
+  </script>
+</body>
+</html>
