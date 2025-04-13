@@ -1,0 +1,88 @@
+<%# app/views/admin/users/index.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - User Management</title>
+    <%# Link necessary stylesheets directly %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_importmap_tags %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-page-container">
+      <div class="admin-header">
+        <h1 class="admin-title">User Management</h1>
+        <div class="admin-actions">
+           <%= link_to "Add New User", new_admin_user_path, class: "action-btn primary" %>
+           <%= link_to "Back to Dashboard", success_path_url, class: "action-btn" %>
+        </div>
+      </div>
+
+      <div class="admin-table-container">
+        <table class="admin-users-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @users.blank? %>
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 2rem;">No users found.</td>
+              </tr>
+            <% else %>
+              <% @users.each do |user| %>
+                <tr>
+                  <td><%= user.userid %></td>
+                  <td><%= user.name %></td>
+                  <td><%= user.email %></td>
+                  <td><%= user.role %></td>
+                  <td class="table-actions">
+                    <%# Link to edit user (password change) %>
+                    <%= link_to '<i class="fas fa-key"></i>'.html_safe, edit_admin_user_path(user), title: "Change Password" %>
+                    <%# Delete user button %>
+                    <%= button_to '<i class="fas fa-trash"></i>'.html_safe, admin_user_path(user), method: :delete, class: 'delete-btn', title: "Delete User", form: { data: { turbo_confirm: "Are you sure you want to delete user #{user.name}?" } } %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+            <%# --- SAMPLE DATA --- %>
+            <tr>
+                <td>1</td>
+                <td>Admin User</td>
+                <td>admin@retail.com</td>
+                <td>Admin</td>
+                 <td class="table-actions">
+                     <a href="#"><i class="fas fa-key"></i></a>
+                     <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                 </td>
+            </tr>
+             <tr>
+                <td>6</td>
+                <td>Mihir Sahay</td>
+                <td>employee@retail.com</td>
+                <td>Employee</td>
+                 <td class="table-actions">
+                     <a href="#"><i class="fas fa-key"></i></a>
+                     <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                 </td>
+            </tr>
+             <%# --- END SAMPLE --- %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</body>
+</html>

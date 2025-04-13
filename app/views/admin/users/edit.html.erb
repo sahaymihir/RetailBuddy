@@ -1,0 +1,65 @@
+<%# app/views/admin/users/edit.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Change Password</title>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_importmap_tags %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+   <div class="admin-page-container">
+      <h1 class="admin-title" style="text-align: center; margin-bottom: 1.5rem;">Change Password for User</h1>
+
+      <%# Assume @user is loaded by the controller's set_user before_action %>
+      <%# Check if @user is present before rendering the form %>
+      <% if @user %>
+        <%# Use form_with for better integration (replace placeholder form tag) %>
+        <%= form_with(model: [:admin, @user], url: admin_user_path(@user), method: :patch, class: "admin-form") do |form| %>
+
+          <%# Display user info (read-only) - Using @user %>
+          <div class="input-group">
+              <label>User ID</label>
+              <div class="user-info-read-only"><%= @user.userid.to_i %></div> <%# Corrected: Use @user, ensure integer display %>
+          </div>
+          <div class="input-group">
+              <label>Name</label>
+              <div class="user-info-read-only"><%= @user.name %></div> <%# Corrected: Use @user %>
+          </div>
+          <div class="input-group">
+              <label>Email</label>
+              <div class="user-info-read-only"><%= @user.email %></div> <%# Corrected: Use @user %>
+          </div>
+
+          <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+
+          <%# Password fields - Using form builder %>
+          <div class="input-group">
+              <%= form.label :password, "New Password" %>
+              <%= form.password_field :password, placeholder: "Enter new password (leave blank to keep current)", autocomplete: "new-password" %>
+          </div>
+          <div class="input-group">
+              <%= form.label :password_confirmation, "Confirm New Password" %>
+              <%= form.password_field :password_confirmation, placeholder: "Confirm new password", autocomplete: "new-password" %>
+          </div>
+
+          <div class="form-actions">
+              <%= link_to "Cancel", admin_users_path, class: "action-btn secondary" %>
+              <%= form.submit "Update Password", class: "action-btn primary" %>
+          </div>
+        <% end %> <%# End of form_with %>
+      <% else %>
+        <p style="text-align: center; color: var(--error-color);">User could not be loaded.</p>
+        <%= link_to "Back to User List", admin_users_path, class: "action-btn secondary", style: "display: block; width: fit-content; margin: 1rem auto;" %>
+      <% end %>
+   </div>
+</body>
+</html>

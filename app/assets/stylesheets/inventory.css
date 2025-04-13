@@ -1,0 +1,185 @@
+/* app/assets/stylesheets/inventory.css */
+
+/* Use variables from application.css or dashboard.css */
+.inventory-page-container {
+    padding: 1.5rem 2rem; /* Match dashboard content padding */
+    background-color: var(--bg-color);
+    min-height: 100vh;
+}
+
+.inventory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.inventory-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.inventory-actions .action-btn {
+   /* Reuse dashboard button styles */
+   margin-left: 0.5rem; /* Add spacing between buttons */
+}
+.inventory-actions .action-btn.primary { /* Example for a primary action */
+   background-color: var(--primary-color);
+   border-color: var(--primary-color);
+   color: white;
+}
+.inventory-actions .action-btn.primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+
+/* --- Styles for Controls Alignment --- */
+.inventory-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center; /* Vertically center the items */
+}
+
+.inventory-controls .input-field {
+    flex-grow: 1; /* Make search input container grow */
+    position: relative; /* Needed for icon positioning */
+}
+
+/* Style the search input itself */
+.inventory-controls .input-field input {
+   padding: 12px 15px 12px 45px; /* Consistent vertical padding + space for icon */
+   background-color: var(--input-bg);
+   color: var(--text-color);
+   border: 1px solid var(--border-color);
+   border-radius: var(--border-radius-sm);
+   line-height: normal; /* Ensure consistent line height */
+   width: 100%; /* Take full width of its container */
+   display: block;
+}
+.inventory-controls .input-field input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+/* Position the search icon */
+.inventory-controls .input-field i.fas.fa-search {
+   position: absolute;
+   left: 15px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: var(--text-secondary);
+   pointer-events: none; /* Prevent icon from blocking input clicks */
+}
+
+/* Style the select dropdown */
+.inventory-controls select {
+    background-color: var(--input-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 12px 15px; /* Consistent vertical padding */
+    min-width: 150px;
+    cursor: pointer;
+    line-height: normal; /* Ensure consistent line height */
+    /* Adjust height slightly - often needed for select/input alignment */
+    /* You might need to tweak this value based on your font/borders */
+    height: calc(1.5em + 24px + 2px);
+}
+.inventory-controls select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+/* Style the filter button */
+.inventory-controls .action-btn {
+    padding: 12px 15px; /* Consistent vertical padding */
+    line-height: normal; /* Ensure consistent line height */
+    /* Inherit other styles like background, color, border from .action-btn */
+    white-space: nowrap; /* Prevent button text wrapping */
+}
+/* --- End Styles for Controls Alignment --- */
+
+
+.inventory-table-container {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  overflow-x: auto; /* Allow horizontal scroll on small screens */
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px; /* Ensure table has min-width for horizontal scroll */
+}
+
+.inventory-table th,
+.inventory-table td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+  vertical-align: middle;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.inventory-table th {
+  color: var(--text-secondary);
+  font-weight: 500;
+  background-color: var(--card-bg); /* Match card background */
+  position: sticky; /* Make header sticky */
+  top: 0; /* Stick to the top of the container */
+  z-index: 1;
+}
+
+.inventory-table td {
+  color: var(--text-color);
+}
+
+.inventory-table .stock-low {
+    color: var(--error-color); /* Highlight low stock */
+    font-weight: 600;
+}
+.inventory-table .stock-ok {
+    color: var(--accent-color); /* Use accent for OK stock */
+}
+
+
+/* Style action buttons within the table */
+.inventory-table .table-actions a,
+.inventory-table .table-actions button {
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1;
+}
+.inventory-table .table-actions a:hover,
+.inventory-table .table-actions button:hover {
+    color: var(--primary-color);
+}
+.inventory-table .table-actions .delete-btn {
+    color: var(--error-color);
+}
+.inventory-table .table-actions .delete-btn:hover {
+    color: color-mix(in srgb, var(--error-color) 85%, black);
+}
+
+.no-products-message {
+   text-align: center;
+   color: var(--text-secondary);
+   font-style: italic;
+   padding: 3rem 1rem;
+}

@@ -1,0 +1,165 @@
+/* app/assets/stylesheets/customers.css */
+
+/* Inherit variables */
+
+.customers-page-container {
+    padding: 1.5rem 2rem;
+    background-color: var(--bg-color);
+    min-height: 100vh;
+}
+
+.customers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.customers-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.customers-actions .action-btn {
+   margin-left: 0.5rem;
+}
+.customers-actions .action-btn.primary {
+   background-color: var(--primary-color);
+   border-color: var(--primary-color);
+   color: white;
+}
+.customers-actions .action-btn.primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+/* --- Customer search/filter controls --- */
+.customer-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: baseline; /* Keep baseline alignment */
+}
+
+/* Style the input wrapper */
+.customer-controls .input-field {
+    flex-grow: 1;      /* Make input container grow */
+    position: relative;
+}
+
+/* Style the search input itself */
+.customer-controls .input-field input {
+   padding: 12px 15px 12px 45px;
+   background-color: var(--input-bg);
+   color: var(--text-color);
+   border: 1px solid var(--border-color);
+   border-radius: var(--border-radius-sm);
+   line-height: normal;
+   width: 100%;        /* <<< Ensure input fills its container */
+   display: block;
+   box-sizing: border-box;
+}
+.customer-controls .input-field input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+/* Position the search icon */
+.customer-controls .input-field i.fas.fa-search {
+   position: absolute;
+   left: 15px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: var(--text-secondary);
+   pointer-events: none;
+}
+
+/* Style the search button */
+.customer-controls .action-btn {
+    padding: 14px 15px; /* Keep slightly larger padding from previous step */
+    line-height: normal;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+/* --- End Controls --- */
+
+
+/* Customer table styling ... (rest of the CSS is the same) */
+.customers-table-container {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  overflow-x: auto;
+}
+
+.customers-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.customers-table th,
+.customers-table td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.customers-table th {
+  color: var(--text-secondary);
+  font-weight: 500;
+  background-color: var(--card-bg);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.customers-table td {
+  color: var(--text-color);
+}
+
+.customers-table td.customer-address {
+    white-space: normal;
+    min-width: 200px;
+    vertical-align: top;
+}
+
+.customers-table .table-actions a,
+.customers-table .table-actions button {
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
+}
+.customers-table .table-actions a:hover,
+.customers-table .table-actions button:hover {
+    color: var(--primary-color);
+}
+.customers-table .table-actions .delete-btn {
+    color: var(--error-color);
+}
+.customers-table .table-actions .delete-btn:hover {
+    color: color-mix(in srgb, var(--error-color) 85%, black);
+}
+
+.no-customers-message {
+   text-align: center;
+   color: var(--text-secondary);
+   font-style: italic;
+   padding: 3rem 1rem;
+}

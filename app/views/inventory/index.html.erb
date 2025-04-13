@@ -1,0 +1,129 @@
+<%# app/views/inventory/index.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Inventory Management</title>
+
+    <%# Link necessary stylesheets directly %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "inventory", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= javascript_importmap_tags %>
+
+    <%# External Fonts/Icons %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <%# Header section removed as per previous request %>
+
+    <div class="inventory-page-container">
+
+      <div class="inventory-header">
+        <h1 class="inventory-title">Inventory Management</h1>
+        <div class="inventory-actions">
+           <button class="action-btn">Manage Categories</button> <%# Placeholder %>
+           <button class="action-btn primary">Add New Product</button> <%# Placeholder %>
+        </div>
+      </div>
+
+      <%# Updated Controls Section - Structure simplified for alignment %>
+      <div class="inventory-controls">
+          <%# Search Input %>
+          <div class="input-field"> <%# Keep wrapper for icon positioning %>
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search Product Name or SKU..." class="w-full">
+          </div>
+
+          <%# Category Select - using user's specific options %>
+          <select name="category">
+            <option value="">Select a Category</option>
+            <option value="1">Sample Category 1</option>
+            <option value="2">Sample Category 2</option>
+            <option value="3">Sample Category 3</option>
+           <%# If @categories is defined and loaded in controller, use this loop instead %>
+           <%# if defined?(@categories) && @categories.present? %>
+           <%#   @categories.each do |category| %>
+           <%#   end %>
+           <%# end %>
+          </select>
+
+      </div>
+
+      <div class="inventory-table-container">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock Qty</th>
+              <th>Reorder Level</th>
+              <th>Location</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%# Check if @products is defined and not empty %>
+            <% if defined?(@products) && @products.present? %>
+              <%# Loop through your @products here %>
+              <% @products.each do |product| %>
+                <%# Example Row Structure (replace with real data access) %>
+                <tr>
+                  <td><%= product.try(:product_name) || "N/A" %></td>
+                  <td><%= product.try(:category).try(:category_name) || "N/A" %></td>
+                  <td>₹<%= number_to_currency(product.try(:price) || 0, unit: "") %></td>
+                  <%# Example stock level styling %>
+                  <% stock = product.try(:stock_quantity) || 0 %>
+                  <% reorder = product.try(:inventory).try(:reorder_level) || 0 %>
+                  <td class="<%= stock <= reorder ? 'stock-low' : 'stock-ok' %>">
+                     <%= stock %>
+                  </td>
+                  <td><%= reorder %></td>
+                  <td><%= product.try(:inventory).try(:warehouse_location) || "N/A" %></td>
+                  <td class="table-actions">
+                    <%# Links for Edit/Delete (create these routes/actions later) %>
+                    <%#= link_to '<i class="fas fa-edit"></i>'.html_safe, edit_product_path(product) %>
+                    <%#= button_to '<i class="fas fa-trash"></i>'.html_safe, product_path(product), method: :delete, class: 'delete-btn', form: { data: { turbo_confirm: 'Are you sure?' } } %>
+                     <a href="#"><i class="fas fa-edit"></i></a> <%# Placeholder %>
+                     <button class="delete-btn"><i class="fas fa-trash"></i></button> <%# Placeholder %>
+                  </td>
+                </tr>
+               <% end %>
+            <% else %>
+              <%# Message shown if @products is empty or undefined %>
+              <tr>
+                <td colspan="7" class="no-products-message">No products found. Add a new product to get started.</td>
+              </tr>
+            <% end %>
+            <%# --- SAMPLE DATA ROW (REMOVE LATER) --- %>
+            <tr>
+                <td>Sample Product B</td>
+                <td>Sample Category 2</td>
+                <td>₹25.50</td>
+                <td class="stock-ok">50</td>
+                <td>20</td>
+                <td>Shelf B12</td>
+                <td class="table-actions">
+                    <a href="#"><i class="fas fa-edit"></i></a>
+                    <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+             <%# --- END SAMPLE DATA ROW --- %>
+          </tbody>
+        </table>
+      </div>
+
+    </div> <%# End inventory-page-container %>
+
+</body>
+</html>

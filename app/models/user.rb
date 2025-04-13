@@ -10,4 +10,8 @@ class User < ApplicationRecord
   def authenticate(input_password)
     self.password == input_password # Plain-text password validation (consider encryption later)
   end
+
+  def to_param
+    userid.to_i.to_s # Convert the decimal userid to integer, then back to string
+  end
 end

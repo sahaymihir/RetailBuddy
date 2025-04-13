@@ -1,0 +1,86 @@
+<%# app/views/help/index.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Help & Support</title>
+
+    <%# Link necessary stylesheets directly %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "help", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= javascript_importmap_tags %>
+
+    <%# External Fonts/Icons %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <%# Top navigation header removed as requested %>
+
+    <div class="help-page-container">
+
+      <div class="help-header">
+        <h1 class="help-title">Help & Support</h1>
+      </div>
+
+      <%# Contact Information Section %>
+      <section class="help-section contact-info">
+        <h2><i class="fas fa-headset"></i> Contact Us</h2>
+        <p>
+          <i class="fas fa-envelope"></i>
+          <strong>Email Support:</strong>
+          <a href="mailto:support@retailbuddy.example.com">support@retailbuddy.example.com</a> <%# Replace with actual email %>
+        </p>
+        <p>
+           <i class="fas fa-phone-alt"></i>
+           <strong>Hotline Number:</strong>
+           <span>+91 XXXXXXXXXX</span> <%# Replace with actual phone number %>
+        </p>
+         <p>
+           <i class="fas fa-clock"></i>
+           <strong>Support Hours:</strong>
+           <span>Monday - Friday, 9:00 AM - 6:00 PM IST</span> <%# Adjust hours as needed %>
+        </p>
+      </section>
+
+      <%# FAQ Section %>
+      <section class="help-section faq-section">
+        <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-question">How do I add a new product?</div>
+            <div class="faq-answer">Navigate to Inventory Management, click 'Add New Product', fill in the details, and save.</div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question">How do I process a refund?</div>
+            <div class="faq-answer">Refund functionality details would go here. (Functionality not yet implemented)</div>
+          </div>
+           <div class="faq-item">
+            <div class="faq-question">How do I generate a sales report?</div>
+            <div class="faq-answer">Go to the Reports & Analytics page, select 'Sales Reports', choose your desired date range and specific report type, and click 'Generate'. (Functionality not yet implemented)</div>
+          </div>
+          <%# Add more FAQs %>
+        </div>
+      </section>
+
+      <%# Documentation Section (Renamed) %>
+       <section class="help-section tutorials-section"> <%# Keep class name or rename if desired %>
+        <h2><i class="fas fa-book-open"></i> Documentation</h2> <%# Renamed Heading %>
+         <div class="tutorial-links"> <%# Keep class name or rename if desired %>
+           <a href="#"><i class="fas fa-file-alt"></i> Full User Manual (PDF)</a> <%# Placeholder %>
+         </div>
+      </section>
+
+    </div> <%# End help-page-container %>
+
+</body>
+</html>

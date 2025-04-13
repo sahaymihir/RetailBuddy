@@ -1,0 +1,128 @@
+/* app/assets/stylesheets/reports.css */
+
+.reports-page-container {
+    padding: 1.5rem 2rem; /* Match dashboard/inventory padding */
+    background-color: var(--bg-color);
+    min-height: 100vh;
+}
+
+.reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.reports-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Style the report category sections/cards */
+.report-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.report-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: all var(--transition-speed) ease;
+}
+
+.report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px var(--shadow-color);
+    border-color: var(--primary-color);
+}
+
+
+.report-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.report-card-icon {
+    font-size: 24px; /* Adjust icon size */
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.report-card-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.report-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem; /* Space before links/buttons */
+    flex-grow: 1; /* Allow paragraph to push links down */
+}
+
+.report-links a,
+.report-links button { /* Style links/buttons within cards */
+    display: block; /* Make links take full width */
+    text-decoration: none;
+    color: var(--link-color);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    margin-bottom: 0.3rem;
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+.report-links a:hover,
+.report-links button:hover {
+    color: var(--primary-color);
+    /* Optional: background-color: var(--button-hover-bg); */
+    /* Optional: padding-left: 0.5rem; */
+}
+
+.report-links a i,
+.report-links button i {
+    margin-right: 0.5rem;
+    width: 15px; /* Align icons */
+    text-align: center;
+}
+
+/* Placeholder for date range pickers etc. */
+.report-filters {
+    background-color: var(--card-bg);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+.report-filters label {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+}
+.report-filters input[type="date"] {
+    background-color: var(--input-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 8px 10px;
+}

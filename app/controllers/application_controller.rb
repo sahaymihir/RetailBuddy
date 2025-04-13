@@ -15,7 +15,13 @@ class ApplicationController < ActionController::Base
       redirect_to root_path
     end
   end
-
+  
+  def require_login
+    unless current_user
+      flash[:alert] = "You need to login to access this page."
+      redirect_to root_path # Or your login path
+    end
+  end
   # Logout method
   before_action :set_cache_headers
 

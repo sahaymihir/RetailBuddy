@@ -1,0 +1,159 @@
+<%# app/views/billing/new.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Billing</title>
+
+    <%# Link necessary stylesheets directly %>
+    <%# NOTE: Order might matter depending on your CSS rules %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "billing", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= javascript_importmap_tags %>
+
+    <%# External Fonts/Icons %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <%# Header section has been removed %>
+
+    <div class="billing-page-container"> <%# Wrapper for page-specific context %>
+
+      <div class="billing-grid-container"> <%# Main 3-column grid %>
+
+        <%# Column 1: Add Products %>
+        <div class="billing-column add-products-column">
+          <h2 class="billing-title">Add Products</h2>
+          <p class="billing-subtitle">Scan Barcode or Search</p>
+          <div class="input-group mb-4"> <%# Reuse existing input styles %>
+            <div class="input-field">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Enter SKU, Name, or Scan Barcode" class="w-full"> <%# Add appropriate name/id %>
+            </div>
+          </div>
+          <button class="action-btn accent-btn"> <%# Use a button style, maybe add a specific accent color %>
+            <i class="fas fa-plus-circle mr-2"></i>Add Manually
+          </button>
+          <%# Add more product search results display logic here later %>
+        </div>
+
+        <%# Column 2: Current Bill %>
+        <div class="billing-column current-bill-column">
+          <h2 class="billing-title">Current Bill</h2>
+          <div class="customer-search-container mb-4">
+            <label for="customer_search" class="text-secondary mr-2">Customer:</label> <%# Style appropriately %>
+            <div class="input-group flex-grow"> <%# Reuse existing input styles %>
+               <div class="input-field">
+                 <i class="fas fa-user"></i>
+                 <input type="text" id="customer_search" placeholder="Search Customer Name/ID or Leave Blank" class="w-full">
+               </div>
+            </div>
+            <button class="action-btn new-customer-btn"> <%# Style this button %>
+              <i class="fas fa-plus mr-1"></i> New
+            </button>
+          </div>
+
+          <div class="bill-items-table-wrapper"> <%# Wrapper for table scrolling if needed %>
+            <table class="bill-items-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%# Example: Loop through @bill_items %>
+                <%# if @bill_items.empty? %>
+                  <tr class="no-items-row" style="display: none;"> <%# Hide this row if using the div below %>
+                    <td colspan="5" class="no-items-message">
+                      No items added yet.
+                    </td>
+                  </tr>
+                <%# else %>
+                  <%# @bill_items.each do |item| %>
+                    <%# Add table rows here %>
+                  <%# end %>
+                <%# end %>
+                <%# Placeholder row for structure if needed %>
+                <% if false %>
+                 <tr>
+                   <td>Sample Product Name</td>
+                   <td>1</td>
+                   <td>₹10.00</td> <%# Changed to Rupee %>
+                   <td>₹10.00</td> <%# Changed to Rupee %>
+                   <td><button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td> <%# Example delete button %>
+                 </tr>
+                <% end %>
+              </tbody>
+            </table>
+             <%# Show message if table body is empty (use JS or conditional render) %>
+             <div class="no-items-message" style="display: block;"> <%# Style this or control with JS %>
+                No items added yet.
+             </div>
+          </div>
+        </div>
+
+        <%# Column 3: Summary %>
+        <div class="billing-column summary-column">
+          <h2 class="billing-title">Summary</h2>
+          <div class="summary-details">
+            <div class="summary-item">
+              <span>Subtotal:</span>
+              <span>₹0.00</span> <%# Changed to Rupee %>
+            </div>
+            <div class="summary-item">
+              <span>Discount:</span>
+              <span>₹0.00</span> <%# Changed to Rupee %>
+            </div>
+            <div class="summary-item">
+              <span>Tax (GST):</span>
+              <span>₹0.00</span> <%# Changed to Rupee %>
+            </div>
+            <div class="summary-item grand-total mt-3 pt-3 border-t border-[var(--border-color)]"> <%# Add top border %>
+              <span>Grand Total:</span>
+              <span>₹0.00</span> <%# Changed to Rupee %>
+            </div>
+          </div>
+
+          <h3 class="billing-subtitle mt-6 mb-3">Payment Method</h3> <%# Adjust spacing %>
+          <div class="payment-methods mb-6">
+            <button class="payment-btn active"> <%# Cash is default active %>
+              <i class="fas fa-money-bill-wave"></i> Cash
+            </button>
+            <%# Card button removed %>
+             <button class="payment-btn"> <%# UPI Enabled %>
+               <i class="fab fa-google-pay"></i> UPI
+             </button>
+             <%# Add more payment options if needed %>
+          </div>
+
+          <div class="finalize-actions mt-auto"> <%# mt-auto pushes buttons to bottom %>
+            <button class="finalize-btn">
+              <i class="fas fa-check-circle mr-2"></i> Finalize & Print
+            </button>
+            <button class="cancel-btn">
+              <i class="fas fa-times-circle mr-2"></i> Cancel Sale
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <%# Add any necessary page-specific Javascript here if not using importmaps/layout %>
+
+</body>
+</html>

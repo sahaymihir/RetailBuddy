@@ -1,4 +1,3 @@
-import "@hotwired/turbo-rails"
 document.addEventListener("DOMContentLoaded", function() {
     // Dark mode toggle functionality
     const themeToggle = document.getElementById("themeToggle");
