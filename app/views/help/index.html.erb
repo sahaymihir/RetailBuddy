@@ -1,0 +1,508 @@
+<%# app/views/help/index.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Help & Support</title>
+
+    <%# Standard Rails head tags %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%# JavaScript include %>
+    <%= javascript_importmap_tags %>
+    <%= favicon_link_tag "retail_icon.png?v=#{Rails.application.config.assets.version}", type: 'image/png' %>
+    <%# Font Awesome link %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <%# --- BEGIN INLINE STYLES --- %>
+    <style>
+        /* --- Base Variables (Copied from dashboard.css) --- */
+        :root {
+            --primary-color: #6c63ff;
+            --secondary-color: #4d44d9;
+            --accent-color: #50fa7b;
+            --text-color: #f8f9fa;
+            --text-secondary: #bdc1c6;
+            --bg-color: #1e1e2e;
+            --card-bg: #282a36;
+            --card-hover: #3a3c4e;
+            --input-bg: #44475a;
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            /* Subtle shadow */
+            --border-color: #44475a;
+            --border-radius-sm: 6px;
+            --border-radius-md: 10px;
+            --transition-speed: 0.2s;
+            --button-bg: #44475a;
+            --button-hover-bg: #5a5c72;
+            --link-color: #8be9fd;
+            --error-color: #f44336;
+        }
+
+        /* --- Basic Body/Container --- */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .dashboard-content {
+            padding: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+        }
+
+        /* --- Header --- */
+        .help-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            /* Added Flexbox for alignment */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .help-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+            /* Remove default margin */
+        }
+
+        .help-title a,
+        .help-title a:hover {
+            color: inherit;
+            /* Make link inherit color from h1 */
+            text-decoration: none;
+            /* Remove underline */
+        }
+
+        .help-title a:hover {
+            opacity: 0.8;
+            /* Slight fade on hover */
+        }
+
+        /* --- New Style for Header Link --- */
+        .header-action-link {
+            color: var(--link-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--button-bg);
+            border-radius: var(--border-radius-sm);
+            background-color: var(--button-bg);
+            transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+        }
+
+        .header-action-link:hover {
+            background-color: var(--button-hover-bg);
+            border-color: var(--button-hover-bg);
+            color: white;
+            /* Brighter color on hover */
+            text-decoration: none;
+        }
+
+        .header-action-link i.fas {
+            margin-right: 0.4rem;
+            /* Space between icon and text */
+        }
+
+
+        /* --- Section Styling (Using card look) --- */
+        .help-section {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius-md);
+            padding: 1.5rem 2rem;
+            /* More padding */
+            margin-bottom: 2rem;
+            /* More space between sections */
+            box-shadow: 0 3px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .help-section h2 {
+            font-size: 1.1rem;
+            /* Slightly larger section headers */
+            font-weight: 600;
+            color: var(--text-color);
+            margin: -1.5rem -2rem 1.5rem -2rem;
+            /* Make header span edge to edge */
+            padding: 1rem 2rem;
+            /* Padding for header */
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(0, 0, 0, 0.1);
+            /* Slight header background */
+            border-top-left-radius: var(--border-radius-md);
+            /* Match card radius */
+            border-top-right-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .help-section h2 i.fas {
+            color: var(--primary-color);
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* --- Contact Info Styling --- */
+        .contact-info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            /* More space */
+            line-height: 1.7;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            /* More gap */
+        }
+
+        .contact-info p i.fas {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .contact-info p strong {
+            color: var(--text-color);
+            font-weight: 500;
+            min-width: 70px;
+            /* Align labels */
+            display: inline-block;
+        }
+
+        .contact-info a {
+            color: var(--link-color);
+            text-decoration: none;
+            word-break: break-all;
+            /* Break long emails/links */
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+            color: var(--primary-color);
+        }
+
+        /* --- FAQ Styling using <details> & <summary> --- */
+        .faq-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .faq-item details {
+            background-color: transparent;
+            /* Use section background */
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-radius: var(--border-radius-sm);
+            /* Slight rounding */
+            transition: background-color var(--transition-speed) ease;
+        }
+
+        .faq-item details:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .faq-item summary {
+            padding: 0.8rem 0.5rem;
+            /* Padding for question */
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 15px;
+            cursor: pointer;
+            position: relative;
+            /* For custom marker */
+            outline: none;
+            list-style: none;
+            /* Remove default marker */
+            transition: background-color var(--transition-speed) ease;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .faq-item summary:hover {
+            background-color: var(--card-hover);
+        }
+
+        /* Custom marker */
+        .faq-item summary::before {
+            content: '\f078';
+            /* FontAwesome chevron-down */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%) rotate(0deg);
+            transition: transform 0.3s ease;
+            font-size: 0.8em;
+            color: var(--text-secondary);
+        }
+
+        .faq-item details[open] summary::before {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* Hide default marker */
+        .faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .faq-answer {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            padding: 0.5rem 1rem 1rem 1.5rem;
+            /* Padding for answer (more left padding) */
+            border-left: 3px solid var(--primary-color);
+            /* Accent line */
+            margin: 0.5rem 0.5rem 0.5rem 1rem;
+            /* Indent answer block */
+            background-color: rgba(0, 0, 0, 0.1);
+            /* Slight background for answer */
+            border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+        }
+
+        .faq-answer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-answer code {
+            background-color: var(--input-bg);
+            padding: 0.1em 0.4em;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9em;
+            color: var(--accent-color);
+        }
+
+        /* --- Utilities (minimal set needed) --- */
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        .small {
+            font-size: .875em;
+        }
+
+        .fs-6 {
+            font-size: 1rem !important;
+        }
+
+        .fw-semibold {
+            font-weight: 600 !important;
+        }
+
+        .mb-3 {
+            margin-bottom: 1rem !important;
+        }
+
+        .mt-4 {
+            margin-top: 1.5rem !important;
+        }
+
+        .me-2 {
+            margin-right: 0.5rem !important;
+        }
+
+        .ms-2 {
+            margin-left: 0.5rem !important;
+        }
+    </style>
+    <%# --- END INLINE STYLES --- %>
+
+</head>
+
+<body>
+
+    <div class="dashboard-content help-page-container">
+
+        <div class="help-header">
+            <h1 class="help-title">
+                <%= link_to "Help & Support", success_path_path %>
+            </h1>
+        </div>
+
+        <%# Contact Information Section %>
+        <div class="help-section contact-info">
+            <h2><i class="fas fa-envelope"></i> Contact Information</h2>
+            <p><i class="fas fa-envelope-open-text"></i><strong>Email:</strong> <a href="mailto:support@retailbuddy.example.com">support@retailbuddy.example.com</a></p>
+            <p><i class="fas fa-phone-alt"></i><strong>Phone:</strong> +91-XXX-XXXXXXX (Mon-Fri, 9 AM - 6 PM IST) </p> <%# Placeholder number %>
+            <p><i class="fas fa-map-marker-alt"></i><strong>Address:</strong> RetailBuddy HQ, Tech Park, Manipal, Karnataka, India</p> <%# Placeholder address %>
+            <p><i class="fas fa-life-ring"></i><strong>Support Hours:</strong> Monday to Friday, 9:00 AM - 6:00 PM IST</p>
+        </div>
+
+        <%# FAQ Section %>
+        <div class="help-section">
+            <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions (FAQ)</h2>
+            <div class="faq-list">
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How do I log in to RetailBuddy?</summary>
+                        <div class="faq-answer">
+                            <p>Enter your registered email address and the password you set. If you've forgotten your password,Contact Us.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How do I add a new product?</summary>
+                        <div class="faq-answer">
+                            <p>Navigate to the "Inventory" section from the main menu. Click the "Add New Product" button. Fill in the required details like Product Name, Price, Category, and initial Stock Quantity. Click "Save Product".</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How do I add a new category?</summary>
+                        <div class="faq-answer">
+                            <p>Go to the "Inventory" section. Click "Add New Category". Enter the Category Name, an optional Description, and set the applicable Tax Percentage for products in this category. Click "Save Category".</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How do I create a new invoice?</summary>
+                        <div class="faq-answer">
+                            <p>Click on "Billing"" from the menu. Select a customer (or add a new one). Add products/services to the invoice lines by searching for them. Adjust quantities and prices if needed. The subtotal and tax will be calculated automatically. Choose an initial status (like 'Draft' or 'Issued') and save the invoice.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How do I add a new customer?</summary>
+                        <div class="faq-answer">
+                            <p>Go to the "Customers" section and click "Add New Customer". Alternatively, you can often add a new customer directly while creating a new invoice. Fill in their Name, and optionally Email, Phone, and Address. Save the customer.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How is tax calculated on invoices?</summary>
+                        <div class="faq-answer">
+                            <p>Tax is calculated per invoice line based on the Tax Percentage set for the product's category. The total tax for the invoice is the sum of the tax calculated for each line item.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How do I record a payment for an invoice?</summary>
+                        <div class="faq-answer">
+                            <p>Find the specific invoice (you might need to go to the Invoices list). There should be an option or button like "Record Payment" or similar associated with the invoice. Enter the amount paid, payment date, and payment method (e.g., Cash, UPI, Card). Recording full payment will usually update the invoice status to 'Paid'.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>Can I edit an existing invoice?</summary>
+                        <div class="faq-answer">
+                            <p>You can typically edit invoices that are in 'Draft' status. Once an invoice is 'Issued' or 'Paid', editing capabilities might be restricted to prevent changes to finalized records. Check the options available on the invoice details page.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>What do the different invoice statuses mean?</summary>
+                        <div class="faq-answer">
+                            <p><b>Draft:</b> Invoice created but not yet finalized or sent.</p>
+                            <p><b>Issued:</b> Invoice finalized and sent to the customer, awaiting payment.</p>
+                            <p><b>Paid:</b> Full payment has been recorded for the invoice.</p>
+                            <p><b>Cancelled:</b> The invoice has been voided and is no longer active.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How do I check my current inventory levels?</summary>
+                        <div class="faq-answer">
+                            <p>Navigate to the "Inventory" section from the menu. This page typically shows a list of all your products along with their current stock quantities.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>What information is shown in the 'Today's Sales' report?</summary>
+                        <div class="faq-answer">
+                            <p>This report summarizes sales activity for the current day based on <b>paid</b> invoices. It typically shows Total Revenue, Number of Transactions (Paid Invoices), and a breakdown of Payments Received by method for those paid invoices.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How does the 'Sales by Period' report work?</summary>
+                        <div class="faq-answer">
+                            <p>This report allows you to view sales trends over a selected date range (defaulting to the current month). It shows the Total Revenue and Total Transactions for paid invoices within that period, often broken down day-by-day. It also lists the individual paid invoices from that period.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>What do the 'Top Products' and 'Top Customers' reports show?</summary>
+                        <div class="faq-answer">
+                            <p><b>Top Products:</b> Lists your best-selling products within a selected period, based on either total quantity sold or total revenue generated from paid invoices. </p>
+                            <p><b>Top Customers:</b> Lists the customers who have generated the most revenue within a selected period, based on their paid invoices.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>How can I change my password?</summary>
+                        <div class="faq-answer">
+                            <p>Look for a "Profile" or "Account Settings" option, often accessible from a user menu in the header. You should find an option to change your password there. You'll likely need to enter your current password and then your new password twice.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="faq-item">
+                    <details>
+                        <summary>What should I do if I encounter an error?</summary>
+                        <div class="faq-answer">
+                            <p>First, try refreshing the page. If the error persists, note down what you were doing when the error occurred and any specific error message shown. Contact support using the details provided on this page, giving them as much information as possible.</p>
+                        </div>
+                    </details>
+                </div>
+
+            </div> <%# End faq-list %>
+        </div> <%# End help-section (FAQ) %>
+
+        <%# Add other sections if needed %>
+
+    </div> <%# End .dashboard-content %>
+
+</body>
+
+</html>

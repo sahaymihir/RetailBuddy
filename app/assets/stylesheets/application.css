@@ -1,6 +1,3 @@
-@import "dashboard";
-@import "custom";
-
 :root {
   --primary-color: #6c63ff;
   --secondary-color: #4d44d9;
@@ -38,7 +35,6 @@
 html, body {
   height: 100%;
   width: 100%;
-  overflow: hidden;
 }
 
 body {
@@ -56,9 +52,9 @@ body {
   width: 100vw;
   height: 100vh;
   max-width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex;            
+  justify-content: center;  
+  align-items: center;      
   position: relative;
 }
 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Admin User - RetailBuddy</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%# Link required stylesheets %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+  <%= favicon_link_tag "retail_icon.png?v=#{Rails.application.config.assets.version}", type: 'image/png' %>
+  <%= javascript_importmap_tags %>
+</head>
+<body>
+  <%# --- ASSUMPTION: Shared Header --- %>
+  <%# render 'layouts/dashboard_header' %>
+
+  <div class="admin-page-container">
+
+    <%# Page Header: Title and 'Back' Button %>
+    <div class="admin-header">
+       <h1 class="admin-title"><i class="fas fa-user-edit"></i> Editing User: <%= @user.name %></h1>
+       <%# Secondary styled button to go back %>
+       <%= link_to "Back to Users List", admin_users_path, class: "action-btn secondary" %>
+    </div>
+
+    <%# Form Container (styled as a card) %>
+    <div class="admin-form-card"> <%# Use card style for the form %>
+      <h3>Update User Details</h3>
+
+      <%= form_with(model: [:admin, @user], local: true, html: { class: "admin-form" }) do |form| %>
+        <%# Display validation errors if any %>
+        <% if @user.errors.any? %>
+          <div class="form-errors"> <%# Style error messages box %>
+            <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+            <ul>
+              <% @user.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%# Display UserID and Email as read-only information %>
+         <div class="user-info-read-only">
+           <p><strong>User ID:</strong> <%= @user.userid.to_i %></p>
+           <p><strong>Email (auto-generated):</strong> <%= @user.email %></p>
+         </div>
+
+        <%# Input field for Name %>
+        <div class="input-group">
+          <%= form.label :name %>
+          <%= form.text_field :name, required: true, placeholder: "Enter full name" %>
+        </div>
+
+        <%# Dropdown select for Role %>
+        <div class="input-group">
+          <%= form.label :role %>
+          <%# Dynamically get roles from User model validation if possible %>
+          <% role_options = User.validators_on(:role).find { |v| v.is_a?(ActiveModel::Validations::InclusionValidator) }&.options&.fetch(:in, ['Admin', 'Employee']) %>
+          <%= form.select :role, options_for_select(role_options, @user.role), {prompt: "Select role"}, required: true %>
+        </div>
+
+        <%# Input field for Password (optional) %>
+        <div class="input-group">
+          <%= form.label :password, "New Password" %>
+          <%= form.password_field :password, placeholder: "Leave blank to keep current password" %>
+          <small><i>Leave blank if you don't want to change the password.</i></small>
+        </div>
+
+        <%# Password confirmation is often good practice, but removed based on previous context %>
+        <%# Ensure your User model handles password update logic correctly if confirmation isn't present %>
+
+        <%# Form action buttons (Update and Cancel) %>
+        <div class="form-actions">
+          <%= link_to "Cancel", admin_users_path, class: "action-btn secondary" %>
+          <%= form.submit "Update User", class: "action-btn primary" %>
+        </div>
+      <% end %>
+    </div> 
+
+  </div> <%# End admin-page-container %>
+</body>
+</html>

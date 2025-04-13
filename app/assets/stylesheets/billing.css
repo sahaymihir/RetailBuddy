@@ -1,0 +1,604 @@
+/* app/assets/stylesheets/billing.css */
+
+.product-search-container .input-group {
+  position: relative; /* Needed for absolute positioning of the icon */
+}
+
+/* Positioning the icon inside the input group */
+.product-search-container .input-group .input-icon {
+  position: absolute;
+  top: 50%;                /* Align top edge to the middle */
+  left: 15px;               /* Distance from the left edge */
+  transform: translateY(-50%); /* Vertically center the icon precisely */
+  color: var(--text-secondary);
+  z-index: 2;               /* Ensure icon is above the input field's background */
+  pointer-events: none;     /* Prevents the icon from blocking clicks on the input */
+}
+
+/* Adjust input padding to make space for the absolutely positioned icon */
+.product-search-container .input-group .input-field { /* Target the input field */
+  padding-left: 45px !important; /* Increase left padding significantly */
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-right: 15px;
+  width: 100%; /* Make sure input uses full width of the group */
+}
+
+.available-products-list {
+  flex-grow: 1;             /* Allow this div to take up remaining vertical space */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  overflow: hidden;         /* Prevent content from spilling outside */
+  min-height: 150px;        /* Optional: Ensure a minimum visible area */
+}
+
+/* Style for the list itself (UL) - make it scrollable */
+.available-products-list ul.product-items[data-product-search-target="productListContainer"] {
+  flex-grow: 1;         /* Allow UL to take available space */
+  overflow-y: auto;     /* Enable vertical scrolling ONLY for the UL */
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* Style for the initial empty message within the list */
+.available-products-list ul.product-items li.empty-list-message {
+    padding: 1rem;
+    text-align: center;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+/* --- Product List Item Styling --- */
+.product-item {
+  transition: background-color 0.15s ease-in-out; /* Smooth hover transition */
+  border-bottom: 1px solid var(--border-color); /* Separator line */
+  padding: 0.5rem 1rem; /* Example padding */
+}
+.product-item:last-child {
+    border-bottom: none; /* Remove border from last item */
+}
+
+/* Hover effect */
+.product-item:hover {
+  background-color: rgba(var(--bs-secondary-rgb), 0.4); /* Example using Bootstrap var */
+  /* Or define specific light/dark hover colors if you have them */
+  /* background-color: var(--list-item-hover-bg); */
+}
+
+.product-info {
+  flex-grow: 1; /* Allow it to take available space */
+}
+
+.product-name-small {
+  font-size: 0.9rem; /* Make product name smaller */
+  font-weight: 500;
+  line-height: 1.3; /* Adjust line height */
+  display: inline-block;
+  vertical-align: middle; /* Align text with the middle of the button */
+}
+
+.product-add-btn {
+  border-radius: 50% !important; /* Ensure circular shape */
+  width: 1.75rem;  /* Explicit width */
+  height: 1.75rem; /* Explicit height */
+  padding: 0;
+  display: inline-flex; /* Use flexbox for centering */
+  align-items: center;    /* Center icon vertically */
+  justify-content: center; /* Center icon horizontally */
+  vertical-align: middle; /* Keep vertical alignment */
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.product-add-btn .fas {
+  font-size: 0.8rem; /* Adjust icon size */
+  margin: 0;
+  line-height: 1;
+}
+
+.product-add-btn.btn-outline-primary:hover {
+  background-color: var(--bs-primary); /* Fill with primary color on hover */
+  color: white; /* Make icon white on hover */
+}
+
+.product-meta {
+  font-size: 0.8rem; /* Smaller font for price line */
+}
+
+/* Ensure badges have good contrast in dark mode */
+[data-bs-theme="dark"] .badge.text-dark {
+   color: var(--bs-body-color) !important; /* Use body color for text on soft backgrounds */
+}
+/* --- END Product List Item Styling --- */
+
+/* --- Page Layout & Columns --- */
+.billing-page-container {
+  padding: 1.5rem 2rem; /* Match dashboard content padding */
+  background-color: var(--bg-color);
+  min-height: calc(100vh - 60px); /* Adjust 60px based on header height */
+  display: flex;
+  flex-direction: column;
+}
+
+.billing-grid-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr; /* Add Products | Current Bill | Summary */
+  gap: 1.5rem;
+  flex-grow: 1;
+}
+
+.billing-column {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Make columns fill grid cell height */
+}
+
+.current-bill-column, .summary-column {
+    max-height: calc(100vh - 60px - 3rem); /* header height - container padding */
+    overflow-y: auto; /* Add scroll if content exceeds height */
+}
+.add-products-column {
+    max-height: calc(100vh - 60px - 3rem);
+}
+
+/* ----- General Column Elements ----- */
+.billing-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+
+.billing-subtitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.add-products-column .input-group {
+  margin-bottom: 1rem;
+}
+
+.add-products-column .action-btn {
+  background-color: var(--accent-color); /* Use accent color for "Add Manually" */
+  color: var(--bg-color);
+  border: 1px solid var(--accent-color);
+  display: flex;
+  align-items: center;    /* Vertically center text/icon inside button */
+  justify-content: center; /* Horizontally center text/icon inside button */
+  gap: 0.5rem;
+  padding: 0.6rem 1rem; /* Added padding for better size */
+  border-radius: var(--border-radius-sm); /* Consistent border radius */
+  cursor: pointer;        /* Standard pointer for buttons */
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; /* Added transition */
+
+  /* --- Alignment --- */
+  align-self: center; /* Center the button itself horizontally in the column */
+  margin-top: 1rem;     /* Add space above the button */
+  margin-bottom: 1rem;  /* Add space below the button (before product list) */
+  min-width: 150px;     /* Give it a minimum width so it doesn't look too small */
+  /* You could also set a max-width: max-width: 250px; */
+  /* Or make it full-width: width: 100%; align-self: stretch; */
+}
+
+.add-products-column .action-btn:hover {
+  background-color: color-mix(in srgb, var(--accent-color) 90%, black); /* Darken accent */
+  border-color: color-mix(in srgb, var(--accent-color) 90%, black);
+  color: var(--bg-color);
+}
+
+/* ----- Current Bill Column Specific ----- */
+.customer-search-container {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+.customer-search-container label {
+   color: var(--text-secondary);
+   font-size: 14px;
+   white-space: nowrap;
+}
+.customer-search-container .input-group {
+  flex-grow: 1;
+  margin-bottom: 0;
+}
+/* Customer search input uses Tom Select, styled below */
+.customer-search-container .action-btn {
+  padding: 10px 15px; /* Adjust to match Tom Select height */
+  white-space: nowrap;
+  flex-shrink: 0;
+  background-color: var(--button-bg);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+.customer-search-container .action-btn:hover {
+  background-color: var(--button-hover-bg);
+  color: var(--text-color);
+  border-color: var(--card-hover);
+}
+
+.bill-items-table-wrapper {
+  flex-grow: 1;
+  overflow-y: auto;
+  position: relative;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bill-items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bill-items-table th,
+.bill-items-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.bill-items-table th {
+  color: var(--text-secondary);
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  background-color: var(--card-bg);
+  z-index: 1;
+}
+
+.bill-items-table td {
+  color: var(--text-color);
+}
+
+/* Quantity Input in Table */
+.bill-items-table td .quantity-input {
+  max-width: 70px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.85rem;
+  text-align: center;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm, 4px);
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.bill-items-table td .quantity-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 25%, transparent);
+  outline: none;
+}
+/* Remove number input spinners */
+.bill-items-table td .quantity-input::-webkit-outer-spin-button,
+.bill-items-table td .quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none; margin: 0;
+}
+.bill-items-table td .quantity-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Delete Button in Table */
+.bill-items-table td:last-child {
+   text-align: center;
+}
+.bill-items-table .delete-item-btn {
+  background: none;
+  border: none;
+  color: var(--error-color);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 16px;
+  line-height: 1;
+}
+.bill-items-table .delete-item-btn:hover {
+  color: color-mix(in srgb, var(--error-color) 80%, white);
+}
+
+/* "No Items" Message */
+.no-items-message {
+   text-align: center;
+   color: var(--text-secondary);
+   font-style: italic;
+   padding: 3rem 1rem;
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   width: calc(100% - 2rem);
+   display: none; /* Hide initially */
+}
+/* Show message when table body is empty OR via JS class */
+.bill-items-table-wrapper:has(tbody:empty) + .no-items-message,
+.bill-items-table-wrapper.is-empty .no-items-message {
+  display: block;
+}
+
+
+/* ----- Summary Column Specific ----- */
+.summary-details {
+  margin-bottom: 1.5rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 14px;
+}
+.summary-item span:first-child {
+  color: var(--text-secondary);
+}
+.summary-item span:last-child {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.summary-item.grand-total {
+   font-size: 20px;
+   font-weight: 600;
+   color: var(--accent-color);
+   border-top: 1px solid var(--border-color);
+   padding-top: 1rem;
+   margin-top: 1rem;
+}
+.summary-item.grand-total span:first-child {
+   color: var(--text-color);
+   font-size: 16px;
+   font-weight: 600;
+}
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-btn {
+   background-color: var(--button-bg);
+   color: var(--text-secondary);
+   border: 1px solid var(--border-color);
+   border-radius: var(--border-radius-sm);
+   padding: 0.8rem 1rem;
+   font-size: 14px;
+   font-weight: 500;
+   cursor: pointer;
+   text-align: center;
+   transition: all var(--transition-speed) ease;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 0.5rem;
+}
+.payment-btn i {
+   font-size: 16px;
+   margin-right: 4px;
+}
+.payment-btn:hover {
+  background-color: var(--button-hover-bg);
+  color: var(--text-color);
+  border-color: var(--card-hover);
+}
+.payment-btn.active {
+  background-color: var(--primary-color);
+  border-color: var(--secondary-color);
+  color: white;
+}
+.payment-btn.active:hover {
+  background-color: var(--secondary-color);
+}
+.payment-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--input-bg);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+.payment-btn.disabled:hover {
+  background-color: var(--input-bg);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.finalize-actions {
+   margin-top: auto; /* Push to bottom */
+   padding-top: 1.5rem;
+   border-top: 1px solid var(--border-color);
+   display: flex;
+   flex-direction: column;
+   gap: 0.75rem;
+   flex-shrink: 0;
+}
+
+.finalize-btn {
+   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+   color: white;
+   border: none;
+   border-radius: var(--border-radius-sm);
+   padding: 0.9rem 1rem;
+   font-size: 16px;
+   font-weight: 500;
+   cursor: pointer;
+   transition: all 0.3s;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 0.5rem;
+}
+.finalize-btn:hover {
+    opacity: 0.9;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+.cancel-btn {
+   background-color: var(--error-color);
+   color: white;
+   border: none;
+   border-radius: var(--border-radius-sm);
+   padding: 0.9rem 1rem;
+   font-size: 16px;
+   font-weight: 500;
+   cursor: pointer;
+   transition: all 0.3s;
+   text-align: center;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 0.5rem;
+}
+.cancel-btn:hover {
+   background-color: color-mix(in srgb, var(--error-color) 85%, black);
+   box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+/* ----- Responsive Adjustments ----- */
+@media (max-width: 1200px) {
+  .billing-grid-container {
+    grid-template-columns: 1fr 1.5fr 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  .billing-grid-container {
+    grid-template-columns: 1fr; /* Stack columns */
+  }
+   .billing-column {
+     height: auto;
+     max-height: none;
+     overflow-y: visible;
+   }
+   .finalize-actions {
+      margin-top: 1.5rem;
+   }
+}
+
+@media (max-width: 768px) {
+  .billing-page-container { padding: 1rem; }
+  .billing-column { padding: 1rem; }
+  .billing-title { font-size: 16px; margin-bottom: 1rem; }
+  .billing-subtitle { margin-bottom: 0.75rem; }
+  .customer-search-container { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+  .customer-search-container label { margin-bottom: 0.25rem; }
+  .payment-methods { grid-template-columns: 1fr; } /* Stack payment buttons */
+}
+
+/* === Tom Select Styling (Billing Page - Customer Select - Dark Mode Only) === */
+
+
+
+/* --- CORRECTED: Input field *inside* the control --- */
+
+/* === End Tom Select Styling === */
+
+
+/* assets/stylesheets/billing.css or custom.css */
+
+/* Style for the modal overlay */
+.qr-modal {
+  position: fixed; /* Fixed position to overlay the page */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  z-index: 1000; /* Ensure it's above other content */
+  padding: 20px; /* Add some padding */
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition */
+}
+
+/* Style for when the modal is hidden */
+.qr-modal.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Style for the modal content box */
+.qr-modal-content {
+  background-color: #fff; /* White background for the content */
+  color: #333; /* Dark text color */
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 400px; /* Max width for the modal */
+  width: 90%; /* Responsive width */
+  position: relative; /* Needed for absolute positioning of close button */
+}
+
+/* Style for the modal title */
+.qr-modal-title {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #1a202c; /* Darker title */
+}
+
+/* Style for the QR code image */
+.qr-code-image {
+  max-width: 100%;
+  height: auto;
+  width: 250px; /* Fixed width for the QR code */
+  margin-bottom: 20px;
+  border: 1px solid #eee; /* Slight border around QR */
+}
+
+/* Style for the payment instructions text */
+.qr-instructions {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #2d3748; /* Slightly muted text color */
+}
+
+/* Style for the footer note */
+.qr-modal-footer-note {
+    font-size: 0.9rem;
+    color: #718096; /* Gray text */
+    margin-top: 20px;
+}
+
+
+/* Style for the close button ('X') */
+.qr-modal-close-btn {
+  position: absolute; /* Position relative to qr-modal-content */
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2rem; /* Make the 'X' larger */
+  font-weight: bold;
+  color: #aaa; /* Light gray color */
+  cursor: pointer;
+  padding: 0;
+  line-height: 1; /* Ensure consistent line height */
+}
+
+.qr-modal-close-btn:hover {
+  color: #333; /* Darken on hover */
+}
+
+/* Hide the modal visually but keep it accessible for JS */
+.hidden {
+  display: none !important; /* Use !important if needed to override other styles */
+}

@@ -1,0 +1,183 @@
+<%# app/views/reports/todays_sales.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Today's Sales Report</title>
+
+    <%# Link essential stylesheets (theme variables come from here) %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%# You might still need reports.css for page container if not in dashboard.css %>
+    <%= stylesheet_link_tag "reports", "data-turbo-track": "reload" %>
+   
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= javascript_importmap_tags %>
+
+    <%# Font Awesome if used in header/layout %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <%# Define CSS variables inline if not reliably loaded from external CSS %>
+    <%# NOTE: It's much better to have these in your CSS files %>
+    <style>
+      :root {
+        --primary-color: #6c63ff;
+        --secondary-color: #4d44d9;
+        --accent-color: #50fa7b;
+        --text-color: #f8f9fa;
+        --text-secondary: #bdc1c6;
+        --bg-color: #1e1e2e;
+        --card-bg: #282a36;
+        --card-hover: #3a3c4e;
+        --input-bg: #44475a;
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --border-color: #44475a;
+        --border-radius-sm: 6px;
+        --border-radius-md: 10px;
+        --transition-speed: 0.2s;
+        --button-bg: #44475a;
+        --button-hover-bg: #5a5c72;
+        --link-color: #8be9fd;
+        --error-color: #f44336;
+        --success-color: #4caf50;
+      }
+      body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Poppins', sans-serif; line-height: 1.6; }
+      /* Basic row/col simulation if not using framework */
+      .row { display: flex; flex-wrap: wrap; margin-left: -0.5rem; margin-right: -0.5rem; }
+      .col-md-4 { flex: 0 0 auto; width: 33.333%; padding-left: 0.5rem; padding-right: 0.5rem; }
+      .g-3 { gap: 1rem; }
+      /* Basic display classes */
+      .d-flex { display: flex !important; }
+      .justify-content-between { justify-content: space-between !important; }
+      .align-items-center { align-items: center !important; }
+      /* Basic text/font classes */
+      .fs-5 { font-size: 1.1rem !important; }
+      .fs-6 { font-size: 1rem !important; }
+      .display-6 { font-size: 2rem !important; line-height: 1.2; }
+      .fw-bold { font-weight: 700 !important; }
+      .fw-medium { font-weight: 500 !important; }
+      .fw-semibold { font-weight: 600 !important; }
+      .small { font-size: 0.85em !important; }
+      .opacity-75 { opacity: 0.75 !important; }
+      /* Basic spacing */
+      .mb-0 { margin-bottom: 0 !important; }
+      .mb-3 { margin-bottom: 1rem !important; }
+      .mb-4 { margin-bottom: 1.5rem !important; }
+      .mt-4 { margin-top: 1.5rem !important; }
+      .pb-2 { padding-bottom: 0.5rem !important; }
+      .py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+      .me-2 { margin-right: 0.5rem !important; }
+      /* Other utils */
+       .border-bottom { border-bottom: 1px solid var(--border-color) !important; }
+       .border-secondary { border-color: var(--border-color) !important; }
+       .text-secondary { color: var(--text-secondary) !important; }
+       .list-unstyled { list-style: none; padding-left: 0; }
+    </style>
+
+</head>
+<body>
+    <%# Add header partial here if needed %>
+    <%# Example: render partial: 'layouts/header' %>
+
+    <%# Use dashboard-content class for consistency or apply styles directly %>
+    <div style="max-width: 1100px; margin: 0 auto; padding: 1.5rem; color: var(--text-color);">
+
+        <div class="reports-header d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 1px solid var(--border-color);">
+            <h1 class="reports-title fs-5 fw-semibold" style="margin: 0; color: var(--text-color);">Today's Sales Summary</h1>
+            <span class="text-secondary small">Date: <%= @report_date.strftime('%B %d, %Y') %></span>
+        </div>
+
+        <div class="row g-3">
+
+            <%# Summary Cards %>
+            <div class="col-md-4">
+                <div class="info-card" style="background-color: var(--card-bg); border-radius: var(--border-radius-md); padding: 1.2rem 1.5rem; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: column;">
+                    <h3 class="fs-6 fw-medium" style="margin: 0 0 0.8rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(var(--border-color), 0.5); color: var(--text-secondary);">
+                       <i class="fas fa-dollar-sign me-2 opacity-75"></i>Total Revenue
+                    </h3>
+                    <p class="display-6 fw-bold mb-0" style="color: var(--accent-color); margin-top: auto;"><%= number_to_currency(@total_revenue_today, unit: '₹') %></p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="info-card" style="background-color: var(--card-bg); border-radius: var(--border-radius-md); padding: 1.2rem 1.5rem; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: column;">
+                     <h3 class="fs-6 fw-medium" style="margin: 0 0 0.8rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(var(--border-color), 0.5); color: var(--text-secondary);">
+                       <i class="fas fa-file-invoice me-2 opacity-75"></i>Transactions
+                    </h3>
+                     <p class="display-6 fw-bold mb-0" style="margin-top: auto;"><%= @transactions_today %></p>
+                 </div>
+            </div>
+
+            <div class="col-md-4">
+                 <div class="info-card" style="background-color: var(--card-bg); border-radius: var(--border-radius-md); padding: 1.2rem 1.5rem; border: 1px solid var(--border-color); height: 100%; display: flex; flex-direction: column;">
+                    <h3 class="fs-6 fw-medium" style="margin: 0 0 0.8rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(var(--border-color), 0.5); color: var(--text-secondary);">
+                       <i class="fas fa-wallet me-2 opacity-75"></i>Payments by Method
+                    </h3>
+                    <% if @payment_summary.present? %>
+                        <ul class="list-unstyled mb-0 small" style="margin-top: auto;"> <%# Push list down %>
+                            <% @payment_summary.each do |method, amount| %>
+                                <li class="d-flex justify-content-between py-1" style="border-bottom: 1px dashed rgba(var(--border-color), 0.3); padding-bottom: 0.4rem; margin-bottom: 0.4rem;">
+                                    <span style="color: var(--text-secondary);"><%= method %>:</span>
+                                    <span class="fw-medium"><%= number_to_currency(amount, unit: '₹') %></span>
+                                </li>
+                            <% end %>
+                        </ul>
+                    <% else %>
+                        <p class="text-secondary small mb-0" style="margin-top: auto;">No payments recorded today.</p>
+                    <% end %>
+                </div>
+            </div>
+
+        </div> <%# End row %>
+
+        <%# Optional: Table of today's invoices %>
+        <% if @todays_invoices.present? %>
+          <div style="margin-top: 2rem;">
+              <h3 class="fs-6 mb-3" style="font-weight: 600; color: var(--text-color);">Today's Invoices</h3>
+              <div style="overflow-x: auto; background-color: var(--card-bg); border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); padding: 0.5rem;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                      <thead style="border-bottom: 2px solid var(--border-color);">
+                          <tr>
+                              <th style="text-align: left; padding: 0.6rem 0.8rem; color: var(--text-secondary); font-weight: 500;">ID</th>
+                              <th style="text-align: left; padding: 0.6rem 0.8rem; color: var(--text-secondary); font-weight: 500;">Time</th>
+                              <th style="text-align: left; padding: 0.6rem 0.8rem; color: var(--text-secondary); font-weight: 500;">Customer</th>
+                              <th style="text-align: right; padding: 0.6rem 0.8rem; color: var(--text-secondary); font-weight: 500;">Amount</th>
+                              <th style="text-align: center; padding: 0.6rem 0.8rem; color: var(--text-secondary); font-weight: 500;">Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <% @todays_invoices.each do |invoice| %>
+                              <tr style="border-bottom: 1px solid var(--border-color);">
+                                  <td style="padding: 0.6rem 0.8rem;"><%= link_to invoice.id, invoice_path(invoice), style: "color: var(--link-color); text-decoration: none;" %></td>
+                                  <td style="padding: 0.6rem 0.8rem;"><%= invoice.invoice_date.strftime('%I:%M %p') %></td>
+                                  <td style="padding: 0.6rem 0.8rem;"><%= invoice.customer&.name || '--' %></td>
+                                  <td style="text-align: right; padding: 0.6rem 0.8rem;"><%= number_to_currency(invoice.calculated_total_amount, unit: '₹') %></td>
+                                  <td style="text-align: center; padding: 0.6rem 0.8rem;">
+                                      <% status_color = case invoice.status when 'paid' then 'var(--success-color)' when 'issued' then 'var(--primary-color)' when 'cancelled' then 'var(--error-color)' else 'var(--button-bg)' end %>
+                                      <% text_color = ['paid', 'issued', 'cancelled'].include?(invoice.status) ? 'white' : 'var(--text-secondary)' %>
+                                      <span style="display: inline-block; padding: 0.2em 0.6em; font-size: 0.8em; font-weight: 500; line-height: 1; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: var(--border-radius-sm); background-color: <%= status_color %>; color: <%= text_color %>;">
+                                        <%= invoice.status.humanize %>
+                                      </span>
+                                  </td>
+                              </tr>
+                          <% end %>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+        <% end %>
+
+
+        <div style="margin-top: 2rem;">
+             <%= link_to "← Back to Reports Index", reports_path, style: "display: inline-block; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; background-color: transparent;" %>
+        </div>
+
+    </div> <%# End container %>
+
+    <%# Removed the separate <style> block %>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<%# app/views/products/_form.html.erb %>
+<%# This form is shared between new and edit actions %>
+
+<%= form_with(model: product, local: true) do |form| %>
+  <%# Display errors if any %>
+  <% if product.errors.any? %>
+    <div style="color: red;">
+      <h2><%= pluralize(product.errors.count, "error") %> prohibited this product from being saved:</h2>
+      <ul>
+        <% product.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# Use similar styling/classes as your other forms (e.g., admin forms) %>
+  <div class="input-group">
+    <%= form.label :product_name %>
+    <%= form.text_field :product_name %>
+  </div>
+
+  <div class="input-group">
+    <%= form.label :category_id %>
+    <%# Use @categories loaded in the controller %>
+    <%= form.collection_select :category_id, @categories, :id, :category_name, { prompt: 'Select a Category' } %>
+  </div>
+
+  <div class="input-group">
+    <%= form.label :price %>
+    <%= form.number_field :price, step: '0.01' %> <%# Allow decimals %>
+  </div>
+
+  <div class="input-group">
+    <%= form.label :stock_quantity %>
+    <%= form.number_field :stock_quantity %>
+  </div>
+
+  <%# Add fields for inventory here if needed (e.g., reorder_level, warehouse_location) %>
+  <%# Example using fields_for if you set up nested attributes %>
+  <%#= form.fields_for :inventory do |inventory_form| %>
+  <%#  <div class="input-group"> %>
+  <%#    <%= inventory_form.label :reorder_level %>
+  <%#    <%= inventory_form.number_field :reorder_level %>
+  <%#  </div> %>
+  <%# end %>
+
+
+  <div class="form-actions">
+    <%= form.submit class: "action-btn primary" %>
+    <%= link_to "Cancel", inventory_path, class: "action-btn secondary" %>
+  </div>
+<% end %>

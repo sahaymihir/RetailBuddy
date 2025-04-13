@@ -1,0 +1,118 @@
+<%# app/views/invoices/printable_show.html.erb %>
+<%# This content will be rendered within the 'printable' layout %>
+
+<%# Reuse the structure from show.html.erb, potentially removing non-printable elements like buttons %>
+<div style="padding: 1rem; background-color: #ffffff; max-width: 56rem; margin: 0 auto;" id="invoice-<%= @invoice.id %>">
+
+  <header style="text-align: center; margin-bottom: 2rem;">
+      <h1 style="font-size: 1.875rem; font-weight: bold; margin-bottom: 0.25rem;">Your Store Name</h1>
+      <p style="font-size: 0.875rem; color: #4a5568;">123 Main Street, Bengaluru, Karnataka, 560001, India</p>
+      <p style="font-size: 0.875rem; color: #4a5568;">Phone: +91 12345 67890 | GSTIN: YOUR_GSTIN_HERE</p>
+      <hr style="margin-top: 1rem; margin-bottom: 1rem; border-top: 2px solid #cbd5e0;">
+      <h2 style="font-size: 1.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Tax Invoice</h2>
+  </header>
+
+  <section style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start;">
+      <%# Billed To section %>
+      <div style="width: 50%; padding-right: 1rem;">
+        <strong style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 0.25rem;">Billed To:</strong>
+        <div style="font-size: 0.875rem; color: #4a5568;">
+          <% if @invoice.customer %>
+            <%= @invoice.customer.name %><br>
+            <%#= @invoice.customer.address %><br>
+            <%= @invoice.customer.phone %>
+          <% else %>
+            Walk-in Customer
+          <% end %>
+        </div>
+      </div>
+      <%# Invoice Meta section %>
+      <div style="width: 50%; padding-left: 1rem; text-align: right;">
+          <strong style="display: block; color: #4a5568;">Invoice #:</strong> <span style="color: #4a5568;"><%= @invoice.id %></span> <br>
+          <strong style="display: block; color: #4a5568; margin-top: 0.25rem;">Date:</strong> <span style="color: #4a5568;"><%= @invoice.invoice_date.strftime("%d-%b-%Y %I:%M %p") %></span> <br>
+          <strong style="display: block; color: #4a5568; margin-top: 0.25rem;">Status:</strong> <span style="color: #4a5568; text-transform: uppercase; font-weight: 500;" class="<%= @invoice.status %>"><%= @invoice.status.humanize %></span>
+      </div>
+  </section>
+
+  <%# Invoice Items Table - Reuse from show.html.erb %>
+  <section style="margin-bottom: 1.5rem;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+          <thead>
+              <tr style="background-color: #f7fafc; border-bottom: 2px solid #cbd5e0; color: #4a5568; text-transform: uppercase;">
+                  <th style="padding: 0.5rem; text-align: left;">#</th>
+                  <th style="padding: 0.5rem; text-align: left;">Item</th>
+                  <th style="padding: 0.5rem; text-align: right;">Qty</th>
+                  <th style="padding: 0.5rem; text-align: right;">Unit Price</th>
+                  <th style="padding: 0.5rem; text-align: right;">Line Subtotal</th>
+                  <th style="padding: 0.5rem; text-align: right;">Tax Rate</th>
+                  <th style="padding: 0.5rem; text-align: right;">Tax Amt</th>
+                  <th style="padding: 0.5rem; text-align: right;">Line Total</th>
+              </tr>
+          </thead>
+          <tbody style="border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+              <% @invoice.invoice_lines.each_with_index do |line, index| %>
+              <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 0.5rem;"><%= index + 1 %></td>
+                  <td style="padding: 0.5rem;"><%= line.product.name rescue 'N/A' %></td>
+                  <td style="padding: 0.5rem; text-align: right;"><%= line.quantity %></td>
+                  <td style="padding: 0.5rem; text-align: right;"><%= number_to_currency(line.unit_price, unit: "₹", format: "%u %n") %></td>
+                  <td style="padding: 0.5rem; text-align: right;"><%= number_to_currency(line.line_subtotal, unit: "₹", format: "%u %n") %></td>
+                  <td style="padding: 0.5rem; text-align: right;"><%= number_to_percentage(line.product.applicable_tax_rate, precision: 2) rescue 'N/A' %></td>
+                  <td style="padding: 0.5rem; text-align: right;"><%= number_to_currency(line.line_tax, unit: "₹", format: "%u %n") %></td>
+                  <td style="padding: 0.5rem; text-align: right; font-weight: 500;"><%= number_to_currency(line.line_total, unit: "₹", format: "%u %n") %></td>
+              </tr>
+              <% end %>
+          </tbody>
+      </table>
+  </section>
+
+  <%# Invoice Summary - Reuse from show.html.erb %>
+  <section style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start;">
+      <div style="width: 50%; padding-right: 1rem; font-size: 0.875rem; color: #4a5568;">
+          <% if @invoice.payments.any? %>
+              <strong style="font-weight:600;">Payment Method:</strong> <%= @invoice.payments.first.payment_method || 'N/A' %><br>
+          <% else %>
+              <strong style="font-weight:600;">Payment Method:</strong> Not Recorded
+          <% end %>
+      </div>
+      <div style="width: 50%; padding-left: 1rem;">
+          <table style="width: 100%; font-size: 0.875rem; text-align: right;">
+              <tbody>
+                  <tr>
+                      <td style="padding: 0.25rem; color: #4a5568;">Subtotal:</td>
+                      <td style="padding: 0.25rem; font-weight: 500; color: #2d3748;"><%= number_to_currency(@invoice.subtotal, unit: "₹", format: "%u %n") %></td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 0.25rem; color: #4a5568;">Total Tax:</td>
+                      <td style="padding: 0.25rem; font-weight: 500; color: #2d3748;"><%= number_to_currency(@invoice.calculated_total_tax, unit: "₹", format: "%u %n") %></td>
+                  </tr>
+                  <tr style="border-top: 2px solid #cbd5e0;">
+                      <td style="padding-top: 0.5rem; padding-bottom: 0.25rem; font-size: 1rem; font-weight: 600; color: #2d3748;">Grand Total:</td>
+                      <td style="padding-top: 0.5rem; padding-bottom: 0.25rem; font-size: 1rem; font-weight: 600; color: #2d3748;"><%= number_to_currency(@invoice.calculated_total_amount, unit: "₹", format: "%u %n") %></td>
+                  </tr>
+                  <% paid_amount = @invoice.payments.sum(:amount) rescue 0 %>
+                  <% if paid_amount > 0 %>
+                      <tr style="border-top: 1px solid #e2e8f0;">
+                          <td style="padding-top: 0.5rem; padding-bottom: 0.25rem; color: #4a5568;">Amount Paid:</td>
+                          <td style="padding-top: 0.5rem; padding-bottom: 0.25rem; font-weight: 500; color: #38a169;"><%= number_to_currency(paid_amount, unit: "₹", format: "%u %n") %></td>
+                      </tr>
+                      <% balance_due = @invoice.calculated_total_amount - paid_amount %>
+                      <% if balance_due > 0.01 %>
+                          <tr>
+                              <td style="padding-bottom: 0.25rem; color: #e53e3e; font-weight: 600;">Balance Due:</td>
+                              <td style="padding-bottom: 0.25rem; color: #e53e3e; font-weight: 600;"><%= number_to_currency(balance_due, unit: "₹", format: "%u %n") %></td>
+                          </tr>
+                      <% end %>
+                  <% end %>
+              </tbody>
+          </table>
+      </div>
+  </section>
+
+  <%# Footer - Reuse from show.html.erb %>
+   <footer style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #cbd5e0; font-size: 0.75rem; color: #718096;">
+      <p>Thank you for your business!</p>
+      <p>Visit us again at Your Store Name | www.yourwebsite.com</p>
+  </footer>
+
+</div> <%# End of main container %>
