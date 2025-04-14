@@ -9,7 +9,8 @@ class BillingController < ApplicationController
     # Load products, explicitly ordering by the uppercase Oracle column name
     # Assumes product name column in Oracle is PRODUCT_NAME
     @products = Product.includes(:inventory, :category)
-                       .order(Arel.sql("PRODUCT_NAME")) # Use Arel.sql with uppercase column
+                       .order(Arel.sql("PRODUCT_NAME")) # Keep existing order
+                       .limit(5)
 
     # Load customers, explicitly ordering by the uppercase Oracle column name
     # Assumes customer name column in Oracle is NAME

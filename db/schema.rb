@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_13_232256) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_14_094807) do
   create_table "categories", force: :cascade do |t|
     t.string "category_name"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "tax_percentage", precision: 5, scale: 2, default: "0.0"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -66,6 +67,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_13_232256) do
     t.integer "user_id", precision: 38, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "subtotal", precision: 10, scale: 2
     t.index ["customer_id"], name: "index_invoices_on_customer_id"
     t.index ["user_id"], name: "index_invoices_on_user_id"
   end

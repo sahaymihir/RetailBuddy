@@ -1,0 +1,90 @@
+<%# app/views/invoices/show.html.erb %>
+<div class="invoice-container" id="invoice-<%= @invoice.id %>"> <%# Unique ID for the invoice %>
+
+  <header class="invoice-header" style="text-align: center; margin-bottom: 30px;">
+    <%# Replace with your actual store name/logo if desired %>
+    <h1 style="margin: 0; font-size: 24pt;">Your Store Name</h1>
+    <p style="margin: 5px 0;">123 Main Street, Bengaluru, Karnataka, India</p>
+    <p style="margin: 5px 0;">Phone: +91 12345 67890</p>
+    <hr style="margin-top: 15px;">
+    <h2 style="margin-top: 15px; font-size: 18pt; text-transform: uppercase;">Tax Invoice</h2>
+  </header>
+
+  <section class="invoice-meta" style="margin-bottom: 20px; overflow: hidden;"> <%# Use overflow to clear floats %>
+    <div style="float: left; width: 50%;">
+      <strong>Billed To:</strong><br>
+      <% if @invoice.customer %>
+        <%= @invoice.customer.name %><br>
+        <%# Add address or phone if available and needed %>
+        <%#= @invoice.customer.address %><br>
+        <%= @invoice.customer.phone %>
+      <% else %>
+        Walk-in Customer
+      <% end %>
+    </div>
+    <div style="float: right; width: 50%; text-align: right;">
+      <strong>Invoice Number:</strong> <%= @invoice.id %> <%# Or use a generated invoice number field %> <br>
+      <strong>Date:</strong> <%= @invoice.invoice_date.strftime("%d-%b-%Y") %> <br> <%# Format the date %>
+      <%# Add Time if needed: @invoice.invoice_date.strftime("%I:%M %p") %>
+    </div>
+  </section>
+
+  <section class="invoice-items" style="margin-bottom: 20px;">
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="background-color: #f2f2f2; border-bottom: 2px solid #ddd;">
+          <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ccc;">#</th>
+          <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ccc;">Item Description</th>
+          <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ccc;">Qty</th>
+          <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ccc;">Unit Price</th>
+          <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ccc;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @invoice.invoice_lines.each_with_index do |line, index| %>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;"><%= index + 1 %></td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;"><%= line.product.product_name %></td>
+            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;"><%= line.quantity %></td>
+            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;"><%= number_to_currency(line.unit_price, unit: "₹", precision: 2) %></td>
+            <td style="padding: 8px; text-align: right; border-bottom: 1px solid #eee;"><%= number_to_currency(line.total_price, unit: "₹", precision: 2) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="invoice-summary" style="margin-bottom: 20px; overflow: hidden;">
+    <div style="float: right; width: 40%;"> <%# Adjust width as needed %>
+      <table style="width: 100%;">
+        <tr>
+          <td style="padding: 5px;"><strong>Subtotal:</strong></td>
+          <td style="padding: 5px; text-align: right;"><%= number_to_currency(@invoice.subtotal, unit: "₹", precision: 2) %></td>
+        </tr>
+        <%# Add rows for Discount and Tax if applicable %>
+        <%# if @invoice.discount.present? && @invoice.discount > 0 %>
+        <%# end %>
+        <%# if @invoice.tax.present? && @invoice.tax > 0 %>
+        <%# end %>
+        <tr style="font-weight: bold; border-top: 1px solid #ccc;">
+          <td style="padding: 8px 5px;"><strong>Grand Total:</strong></td>
+          <td style="padding: 8px 5px; text-align: right; font-size: 12pt;"><%= number_to_currency(@invoice.total_amount, unit: "₹", precision: 2) %></td>
+        </tr>
+      </table>
+    </div>
+    <div style="float: left; width: 55%;">
+       <%# Display payment method if available %>
+       <% if @invoice.payments.any? %> <%# Assuming has_many :payments association %>
+         <p><strong>Payment Method:</strong> <%= @invoice.payments.first.payment_method %></p>
+       <% end %>
+       <%# Add Amount in Words if needed %>
+       <%# <p><strong>Amount in words:</strong> ... </p> %>
+    </div>
+  </section>
+
+  <footer class="invoice-footer" style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 9pt;">
+    <p>Thank you for your business!</p>
+    <%# Add other footer info like website, return policy etc. %>
+  </footer>
+
+</div>

@@ -1,90 +1,119 @@
 <%# app/views/billing/new.html.erb %>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RetailBuddy - Billing</title>
+
+    <%# Application Stylesheets %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "billing", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+
+    <%# Rails Helpers %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= javascript_importmap_tags %>
+    <%= javascript_importmap_tags %> <%# Loads Stimulus controllers via importmap %>
+
+    <%# External Libraries & Fonts %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <%# Tom Select CSS & JS (Loaded Globally via CDN - For Customer Select) %>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.default.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <%# Sifter.js is a dependency for TomSelect, often included in complete.min.js, but can be added if needed %>
+    <%# <script src="https://cdn.jsdelivr.net/npm/@orchidjs/sifter@0.6.0/dist/sifter.min.js"></script> %>
+
 </head>
+
 <body>
     <div class="billing-page-container">
 
         <header class="billing-header">
-            <%= link_to main_app.success_path_path, class: "billing-title-link" do %>
-                <h1 class="billing-main-title">Point of Sale</h1>
+            <%# Link to the success/dashboard page (verified route) %>
+            <%= link_to success_path_path, class: "billing-title-link", style: "text-decoration: none;" do %>
+               <h1 class="billing-main-title">Point of Sale</h1>
             <% end %>
         </header>
 
-        <div class="billing-grid-container">
+        <%# --- Attach Billing Controller to the main grid container --- %>
+        <div class="billing-grid-container" data-controller="billing">
 
             <%# === Column 1: Product Selection === %>
-            <section class="billing-column product-selection-column">
+            <%# Attach Product Search Controller here %>
+            <section class="billing-column product-selection-column" data-controller="product-search" data-product-search-search-url-value="<%= search_products_path %>"> <%# Verified route %>
+
                 <h2 class="billing-column-title">Select Products</h2>
-                <div class="product-search-container">
+
+                <%# --- Product Search Input Area --- %>
+                <div class="product-search-container mb-3">
                     <div class="input-group">
                         <i class="fas fa-search input-icon"></i>
-                        <input type="text" id="product-search" placeholder="Search products..." class="input-field w-full">
+                        <input type="search" <%# Use type="search" for better semantics %>
+                               id="product-search-input"
+                               placeholder="Search products..."
+                               class="input-field w-full"
+                               data-product-search-target="searchInput" <%# Target for controller %>
+                               data-action="input->product-search#search" <%# Action triggers search %>
+                               autocomplete="off">
                     </div>
                 </div>
+                <%# --- End Product Search Input Area --- %>
 
                 <div class="available-products-list">
                     <h3 class="billing-list-header">Available Products</h3>
-                    <% if defined?(@products) && @products.present? %>
-                        <ul class="product-items">
-                            <% @products.each do |product| %>
-                                <li class="product-item">
-                                    <div class="product-info">
-                                        <span class="product-name"><%= product.product_name %></span>
-                                        <span class="product-price"><%= number_to_currency(product.price || 0, unit: "₹") %></span>
-                                        <span class="product-stock">Stock: <%= product.inventory&.reorder_level || 'N/A' %></span>
-                                    </div>
-                                    <%# This button uses .action-btn class for styling (including colors from your CSS) %>
-                                    <button class="add-item-btn action-btn" aria-label="Add <%= product.product_name %> to bill">+</button>
-                                </li>
-                            <% end %>
-                        </ul>
-                    <% else %>
-                        <p class="empty-list-message">No products found.</p>
-                    <% end %>
+                    <%# --- Product List Container Target --- %>
+                    <ul class="product-items list-group" data-product-search-target="productListContainer">
+                        <%# Initial products rendered server-side using the partial (verified structure) %>
+                        <% if defined?(@products) && @products.present? %>
+                           <%= render partial: "products/product_list_item", collection: @products, as: :product %>
+                        <% else %>
+                           <li class="list-group-item text-muted empty-list-message">No products found.</li>
+                        <% end %>
+                    </ul>
+                    <%# --- End Product List Container --- %>
                 </div>
-            </section>
+            </section> <%# End Product Selection Column & product-search scope %>
 
             <%# === Column 2: Current Bill === %>
             <section class="billing-column current-bill-column">
                 <h2 class="billing-column-title">Current Bill</h2>
 
-                <div class="customer-selection-area">
-                    <label for="customer-select" class="form-label">Customer:</label>
-                    <div class="customer-controls">
-                         <div class="input-group">
-                            <%# --- Inline style added below --- %>
-                            <select id="customer-select" name="invoice[customer_id]" class="select-field w-full" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; background-color: white; min-width: 200px;">
-                            <%# --- End inline style --- %>
-                                <option value="">Select Customer (Optional)</option>
+                <%# --- Customer Selection --- %>
+                <div class="customer-selection-area mb-3">
+                    <label for="customer-select" class="form-label d-block mb-1">Customer:</label>
+                    <div class="customer-controls" style="display: flex; align-items: center; gap: 10px;">
+                        <div class="input-group" style="flex-grow: 1;">
+                            <%# Customer select initialized by searchable-select controller (TomSelect) %>
+                            <select id="customer-select" <%# ID used by billing_controller.js %>
+                                    name="invoice[customer_id]"
+                                    class="select-field w-full"
+                                    data-controller="searchable-select" <%# Attaches TomSelect via JS %>
+                                    placeholder="Select Customer (Optional)">
+                                <option value="">Select Customer (Optional)</option> <%# Required default %>
+                                <%# Populate options - verified this works %>
                                 <% if defined?(@customers) && @customers.present? %>
-                                    <% @customers.each do |customer| %>
-                                        <option value="<%= customer.id %>"><%= customer.name %> (<%= customer.email || customer.phone || 'No Contact' %>)</option>
-                                    <% end %>
+                                   <% @customers.each do |customer| %>
+                                      <option value="<%= customer.id %>"><%= customer.name %> (<%= customer.phone || 'No Phone' %>)</option>
+                                   <% end %>
                                 <% end %>
                             </select>
-                         </div>
-                         <%= link_to new_customer_path, class: "action-btn add-customer-btn" do %>
-                             <i class="fas fa-plus"></i> New
-                         <% end %>
+                        </div>
+                        <%# Link to add a new customer (verified route) %>
+                        <%= link_to new_customer_path, class: "action-btn add-customer-btn", style: "text-decoration: none; white-space: nowrap;" do %>
+                           <i class="fas fa-plus"></i> New
+                        <% end %>
                     </div>
                 </div>
+                <%# --- End Customer Selection --- %>
 
+                <%# --- Bill Items Table --- %>
                 <div class="bill-items-table-wrapper">
-                    <table class="bill-items-table">
+                    <table class="bill-items-table table table-striped">
                         <thead>
                             <tr>
                                 <th>Item</th>
@@ -94,52 +123,89 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="bill-items-body">
-                            <%# Dynamic content via JavaScript %>
-                            <tr id="no-items-row" class="<%= @bill_items.empty? ? '' : 'hidden' %>">
-                              <td colspan="5" class="no-items-message">No items added yet.</td>
+                        <tbody data-billing-target="billItemsBody"> <%# Target for adding/removing items %>
+                            <%# "No items" row, initially hidden/shown by billing controller %>
+                            <tr id="no-items-row" class="<%= defined?(@bill_items) && @bill_items.empty? ? '' : 'hidden' %>" data-billing-target="noItemsRow">
+                                <td colspan="5" class="no-items-message text-center text-muted p-3">No items added yet.</td>
                             </tr>
+                            <%# Rows are added dynamically by billing_controller.js %>
                         </tbody>
                     </table>
                 </div>
-            </section>
+                <%# --- End Bill Items Table --- %>
+
+            </section> <%# End Current Bill Column %>
 
             <%# === Column 3: Summary & Payment === %>
             <section class="billing-column summary-payment-column">
                 <h2 class="billing-column-title">Summary</h2>
-                <div class="summary-details">
-                    <div class="summary-item"><span>Subtotal</span><span id="summary-subtotal">₹0.00</span></div>
-                    <div class="summary-item"><span>Discount</span><span id="summary-discount">₹0.00</span></div>
-                    <div class="summary-item"><span>Tax (Est.)</span><span id="summary-tax">₹0.00</span></div>
+
+                <%# --- Bill Summary Details --- %>
+                <div class="summary-details card card-body mb-3">
+                    <div class="summary-item">
+                        <span>Subtotal</span>
+                        <span data-billing-target="summarySubtotal">₹0.00</span> <%# Target for subtotal %>
+                    </div>
+                    <div class="summary-item">
+                        <span>Discount</span>
+                        <span>₹0.00</span> <%# Placeholder - Add target if dynamic %>
+                    </div>
+                     <div class="summary-item">
+                        <span>Tax (Est.)</span>
+                        <span>₹0.00</span> <%# Placeholder - Add target if dynamic %>
+                    </div>
                     <hr class="summary-divider">
-                    <div class="summary-item grand-total"><span>Grand Total</span><span id="summary-grandtotal">₹0.00</span></div>
+                    <div class="summary-item grand-total">
+                        <span>Grand Total</span>
+                        <span data-billing-target="summaryGrandTotal">₹0.00</span> <%# Target for grand total %>
+                    </div>
                 </div>
+                <%# --- End Bill Summary Details --- %>
 
                 <h3 class="billing-section-header">Payment Method</h3>
-                <div class="payment-methods">
-                    <button class="payment-btn action-btn" data-method="Cash"><i class="fas fa-money-bill-wave"></i> Cash</button>
-                    <button class="payment-btn action-btn" data-method="UPI"><i class="fas fa-mobile-alt"></i> UPI</button>
-                </div>
+                <%# --- Payment Method Buttons --- %>
+                <div class="payment-methods mb-3">
+                     <button class="payment-btn action-btn"
+                             data-method="Cash"
+                             data-billing-target="paymentBtn" <%# Target for styling %>
+                             data-action="click->billing#selectPaymentMethod click->billing#handlePaymentDisplay"> <%# Actions for JS %>
+                         <i class="fas fa-money-bill-wave"></i> Cash
+                     </button>
+                     <button class="payment-btn action-btn"
+                             data-method="UPI"
+                             data-billing-target="paymentBtn" <%# Target for styling %>
+                             data-action="click->billing#selectPaymentMethod click->billing#handlePaymentDisplay"> <%# Actions for JS %>
+                         <i class="fas fa-mobile-alt"></i> UPI
+                     </button>
+                     <%# Add other payment methods here if needed %>
+                 </div>
+                 <%# --- End Payment Method Buttons --- %>
 
+                <%# --- Action Buttons --- %>
                 <div class="finalize-actions">
-                    <button class="action-btn primary finalize-btn" id="finalize-bill-btn"><i class="fas fa-check-circle"></i> Finalize Bill</button>
-                    <button class="action-btn secondary cancel-btn" id="cancel-bill-btn"><i class="fas fa-times-circle"></i> Cancel</button>
+                    <button class="action-btn primary finalize-btn"
+                            id="finalize-bill-btn"
+                            data-action="click->billing#finalizeBill"> <%# Action to submit the bill %>
+                        <i class="fas fa-check-circle"></i> Finalize Bill
+                    </button>
+                    <%# Cancel button (verified route) %>
+                    <%= link_to success_path_path, class: "action-btn secondary cancel-btn", id: "cancel-bill-btn", style: "text-decoration: none;" do %>
+                       <i class="fas fa-times-circle"></i> Cancel
+                    <% end %>
                 </div>
-            </section>
+                <%# --- End Action Buttons --- %>
+
+                <%# --- Error Display Area --- %>
+                <%# Target for displaying errors from the billing controller %>
+                <div data-billing-target="finalizeError" class="text-red-600 mt-2 text-sm"></div>
+                <%# --- End Error Display Area --- %>
+
+            </section> <%# End Summary & Payment Column %>
 
         </div> <%# End billing-grid-container %>
 
     </div> <%# End billing-page-container %>
 
-    <%# You need to implement JavaScript (e.g., in app/javascript/billing.js) to handle: %>
-    <%# - Product search filtering %>
-    <%# - Adding items from the list to the 'Current Bill' table %>
-    <%# - Updating quantities in the bill %>
-    <%# - Removing items from the bill %>
-    <%# - Calculating subtotal, tax, discount, grand total %>
-    <%# - Selecting payment method %>
-    <%# - Submitting the finalized bill (likely via AJAX to BillingController) %>
-    <%# - Handling the cancel action %>
-    <%#= javascript_include_tag "billing", "data-turbo-track": "reload", type: "module" %>
+    <%# No need for extra JS includes if using importmap correctly %>
 </body>
-</html>
+</html> 
