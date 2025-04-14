@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_14_094807) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_14_122306) do
   create_table "categories", force: :cascade do |t|
     t.string "category_name"
     t.text "description"
@@ -61,14 +61,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_14_094807) do
 
   create_table "invoices", force: :cascade do |t|
     t.datetime "invoice_date", null: false
-    t.decimal "total_amount", precision: 10, scale: 2, null: false
     t.decimal "discount", precision: 10, scale: 2, default: "0.0"
     t.integer "customer_id", precision: 38
     t.integer "user_id", precision: 38, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "subtotal", precision: 10, scale: 2
+    t.integer "status", precision: 38, default: 0, null: false
     t.index ["customer_id"], name: "index_invoices_on_customer_id"
+    t.index ["status"], name: "index_invoices_on_status"
     t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 
@@ -79,6 +80,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_14_094807) do
     t.integer "invoice_id", precision: 38, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "amount", precision: 10, scale: 2
     t.index ["invoice_id"], name: "index_payments_on_invoice_id"
   end
 

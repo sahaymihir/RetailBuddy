@@ -63,3 +63,5 @@ gem "dotenv-rails", groups: [ :development, :test ]
 
 #Tailwind CSS
 gem "tailwindcss-rails", "~> 3.3.1"
+
+gem 'will_paginate'

@@ -5,218 +5,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RetailBuddy - Add New Product</title>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%# Include other necessary base stylesheets if admin/dashboard provide variables %>
-    <%# <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %> %>
-    <%# <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %> %>
-    <%# <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %> %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= javascript_importmap_tags %>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <%# --- Embedded CSS for Product Form --- %>
-    <%# Note: Recommend moving these styles to an external CSS file (e.g., admin.css or forms.css) %>
-    <style>
-      .form-container {
-        max-width: 700px;
-        margin: 2rem auto;
-        padding: 2rem;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-      .form-title {
-        font-size: 1.75rem; /* eq to text-2xl */
-        margin-bottom: 1.5rem;
-        font-weight: 600;
-        color: #333;
-      }
-      .input-group {
-        margin-bottom: 1.25rem; /* Consistent spacing */
-      }
-      .form-label {
-        display: block;
-        margin-bottom: 0.5rem; /* Space between label and input */
-        font-weight: 500;
-        font-size: 0.875rem; /* text-sm */
-        color: #4a5568; /* Gray-700 */
-      }
-      .form-input,
-      .form-select,
-      .form-textarea {
-        display: block;
-        width: 100%;
-        padding: 0.75rem 1rem; /* py-3 px-4 */
-        border: 1px solid #d2d6dc; /* Gray-300 */
-        border-radius: 0.375rem; /* rounded-md */
-        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-        background-color: #fff;
-        color: #1a202c; /* Gray-900 */
-        font-size: 0.875rem; /* text-sm */
-        line-height: 1.5;
-        box-sizing: border-box;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-      }
-      .form-input:focus,
-      .form-select:focus,
-      .form-textarea:focus {
-        outline: none;
-        border-color: #6366f1; /* Indigo-500 */
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); /* Indigo-500 focus ring */
-      }
-      /* Adjust select height if needed */
-      .form-select {
-         height: calc(1.5em + 1.5rem + 2px); /* Match padding + line-height + border */
-         appearance: none; /* Optional: for custom dropdown arrow */
-         background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>');
-         background-repeat: no-repeat;
-         background-position: right 0.75rem center;
-         background-size: 1.25em 1.25em;
-         padding-right: 2.5rem; /* Space for arrow */
-      }
-      .form-textarea {
-        line-height: 1.6;
-      }
-      .form-divider {
-        border-color: #e2e8f0; /* Gray-200 */
-        margin-top: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .form-section-title {
-        font-size: 1.125rem; /* text-lg */
-        margin-bottom: 1rem;
-        font-weight: 600;
-        color: #1a202c; /* Gray-900 */
-      }
-      .form-actions {
-        margin-top: 2rem;
-        display: flex;
-        gap: 0.75rem; /* space-x-3 */
-        justify-content: flex-end;
-      }
-      .action-btn { /* Base button styling */
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.5rem 1rem; /* py-2 px-4 */
-        border: 1px solid transparent;
-        font-size: 0.875rem; /* text-sm */
-        font-weight: 500; /* font-medium */
-        border-radius: 0.375rem; /* rounded-md */
-        cursor: pointer;
-        text-decoration: none !important; /* Ensure no underline on links */
-        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
-      }
-      .action-btn.primary {
-        color: #fff;
-        background-color: #6366f1; /* Indigo-600 */
-        border-color: #6366f1;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      }
-      .action-btn.primary:hover {
-         background-color: #4f46e5; /* Indigo-700 */
-         border-color: #4f46e5;
-      }
-      .action-btn.secondary {
-         color: #374151; /* Gray-700 */
-         background-color: #fff;
-         border-color: #d2d6dc; /* Gray-300 */
-         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      }
-       .action-btn.secondary:hover {
-          background-color: #f9fafb; /* Gray-50 */
-          border-color: #adb5bd; /* Gray-400 */
-       }
-       .error-container {
-          color: #721c24; /* Red-800 */
-          background-color: #f8d7da; /* Red-100 */
-          border: 1px solid #f5c6cb; /* Red-300 */
-          padding: 0.75rem 1.25rem; /* p-3 */
-          margin-bottom: 1rem; /* mb-4 */
-          border-radius: 0.375rem; /* rounded-md */
-       }
-       .error-container h2 {
-          margin-top: 0; margin-bottom: 0.25rem; font-weight: bold; font-size: 1rem;
-       }
-       .error-container ul {
-          margin-left: 1.25rem; /* ml-5 */ margin-bottom: 0; font-size: 0.875rem; /* text-sm */ list-style: disc;
-       }
-    </style>
-    <%# --- End Embedded CSS --- %>
-
 </head>
-<body class="bg-gray-100"> <%# Example background %>
-    <div class="form-container">
-      <h1 class="form-title">Add New Product</h1>
+<body style="margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; background-color: #1e1e2e; color: #f8f9fa;">
+    <div style="max-width: 700px; margin: 2rem auto; padding: 2rem; background-color: #282a36; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); border: 1px solid #44475a;">
+        <h1 style="font-size: 1.75rem; margin-bottom: 1.5rem; font-weight: 600; color: #f8f9fa; border-bottom: 1px solid #44475a; padding-bottom: 1rem;">Add New Product</h1>
 
-      <%= form_with(model: @product, local: true) do |form| %>
-        <%# Error Display %>
-        <% if @product.errors.any? %>
-          <div class="error-container">
-            <h2><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h2>
-            <ul>
-              <% @product.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-              <% end %>
-            </ul>
-          </div>
+        <%= form_with(model: @product, local: true) do |form| %>
+            <% if @product.errors.any? %>
+                <div style="color: #f8f9fa; background-color: #5e3a3a; border: 1px solid #f44336; padding: 1rem 1.25rem; margin-bottom: 1.5rem; border-radius: 8px;">
+                    <h2 style="margin-top: 0; margin-bottom: 0.25rem; font-weight: bold; font-size: 1rem; color: #f44336;"><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h2>
+                    <ul style="margin-left: 1.25rem; margin-bottom: 0; font-size: 0.875rem; list-style: disc; padding-left: 1rem;">
+                        <% @product.errors.full_messages.each do |message| %>
+                            <li><%= message %></li>
+                        <% end %>
+                    </ul>
+                </div>
+            <% end %>
+
+            <%# --- Product Fields --- %>
+            <div style="margin-bottom: 1.25rem;">
+                <%= form.label :name, "Product Name", style: "display: block; margin-bottom: 4px; font-size: 14px; color: #bdc1c6; font-weight: 500;" %>
+                <%= form.text_field :name, style: "display: block; width: 100%; padding: 12px 15px; background-color: #44475a; color: #f8f9fa; border: 1px solid #44475a; border-radius: 8px; line-height: normal; box-sizing: border-box; margin-top: 0.25rem; height: calc(1.5em + 24px + 2px);" %>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+                <%= form.label :category_id, style: "display: block; margin-bottom: 4px; font-size: 14px; color: #bdc1c6; font-weight: 500;" %>
+                <%= form.collection_select :category_id, @categories, :id, :name, { prompt: 'Select a Category' }, { style: "display: block; width: 100%; padding: 12px 15px; background-color: #44475a; color: #bdc1c6; border: 1px solid #44475a; border-radius: 8px; line-height: normal; box-sizing: border-box; margin-top: 0.25rem; height: calc(1.5em + 24px + 2px); appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"%23bdc1c6\"><path fill-rule=\"evenodd\" d=\"M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z\" clip-rule=\"evenodd\" /></svg>'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25em 1.25em; padding-right: 2.5rem;" } %>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+                <%= form.label :price, style: "display: block; margin-bottom: 4px; font-size: 14px; color: #bdc1c6; font-weight: 500;" %>
+                <%= form.number_field :price, step: '0.01', style: "display: block; width: 100%; padding: 12px 15px; background-color: #44475a; color: #f8f9fa; border: 1px solid #44475a; border-radius: 8px; line-height: normal; box-sizing: border-box; margin-top: 0.25rem; height: calc(1.5em + 24px + 2px);" %>
+            </div>
+
+            <%# === Stock Quantity field (belongs to Product) === %>
+            <div style="margin-bottom: 1.25rem;">
+                <%= form.label :stock_quantity, "Stock Quantity (Product)", style: "display: block; margin-bottom: 4px; font-size: 14px; color: #bdc1c6; font-weight: 500;" %>
+                <%= form.number_field :stock_quantity, min: 0, style: "display: block; width: 100%; padding: 12px 15px; background-color: #44475a; color: #f8f9fa; border: 1px solid #44475a; border-radius: 8px; line-height: normal; box-sizing: border-box; margin-top: 0.25rem; height: calc(1.5em + 24px + 2px);" %>
+            </div>
+            <%# === End Stock Quantity === %>
+
+            <hr style="border: none; border-top: 1px solid #44475a; margin-top: 1.5rem; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.125rem; margin-bottom: 1rem; font-weight: 600; color: #f8f9fa;">Inventory Metadata</h2>
+
+            <%# --- Nested INVENTORY Metadata fields --- %>
+            <%= form.fields_for :inventory, (@product.inventory || @product.build_inventory) do |inventory_form| %>
+                <div style="margin-bottom: 1.25rem;">
+                    <%= inventory_form.label :warehouse_location, style: "display: block; margin-bottom: 4px; font-size: 14px; color: #bdc1c6; font-weight: 500;" %>
+                    <%= inventory_form.text_field :warehouse_location, style: "display: block; width: 100%; padding: 12px 15px; background-color: #44475a; color: #f8f9fa; border: 1px solid #44475a; border-radius: 8px; line-height: normal; box-sizing: border-box; margin-top: 0.25rem; height: calc(1.5em + 24px + 2px);" %>
+                </div>
+                <div style="margin-bottom: 1.25rem;">
+                    <%= inventory_form.label :reorder_level, style: "display: block; margin-bottom: 4px; font-size: 14px; color: #bdc1c6; font-weight: 500;" %>
+                    <%= inventory_form.number_field :reorder_level, min: 0, style: "display: block; width: 100%; padding: 12px 15px; background-color: #44475a; color: #f8f9fa; border: 1px solid #44475a; border-radius: 8px; line-height: normal; box-sizing: border-box; margin-top: 0.25rem; height: calc(1.5em + 24px + 2px);" %>
+                </div>
+            <% end %>
+            <%# --- End Inventory Metadata Fields --- %>
+
+            <div style="margin-top: 2rem; display: flex; gap: 0.75rem; justify-content: flex-end;">
+                <%= form.submit "Create Product", style: "display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; border: 1px solid transparent; font-size: 0.875rem; font-weight: 500; border-radius: 8px; cursor: pointer; text-decoration: none !important; color: white; background-color: #6c63ff; border-color: #6c63ff; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);" %>
+                <%= link_to "Cancel", inventory_path, style: "display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; border: 1px solid #44475a; font-size: 0.875rem; font-weight: 500; border-radius: 8px; cursor: pointer; text-decoration: none !important; color: #f8f9fa; background-color: #44475a; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);" %>
+            </div>
         <% end %>
-
-        <%# --- Product Fields --- %>
-        <div class="input-group">
-          <%= form.label :name, "Product Name", class: "form-label" %>
-          <%= form.text_field :name, class: "form-input", placeholder: "e.g., Wireless Mouse" %>
-        </div>
-
-        <div class="input-group">
-          <%= form.label :category_id, class: "form-label" %>
-          <%= form.collection_select :category_id, @categories, :id, :name, { prompt: 'Select a Category' }, { class: "form-select" } %>
-        </div>
-
-        <div class="input-group">
-          <%= form.label :price, class: "form-label" %>
-          <%= form.number_field :price, step: '0.01', min: 0, class: "form-input", placeholder: "0.00" %>
-        </div>
-
-        <div class="input-group">
-          <%= form.label :stock_quantity, "Stock Quantity", class: "form-label" %>
-          <%= form.number_field :stock_quantity, min: 0, class: "form-input", placeholder: "0" %>
-        </div>
-
-        <%# Add other product fields like SKU, Description here if needed %>
-        <%# <div class="input-group"> %>
-        <%#   <%= form.label :sku, class: "form-label" %>
-        <%#   <%= form.text_field :sku, class: "form-input" %>
-        <%# </div> %>
-        <%# <div class="input-group"> %>
-        <%#   <%= form.label :description, class: "form-label" %>
-        <%#   <%= form.text_area :description, rows: 3, class: "form-textarea" %>
-        <%# </div> %>
-
-        <hr class="form-divider">
-        <h2 class="form-section-title">Inventory Metadata (Optional)</h2>
-
-        <%# --- Nested INVENTORY Metadata fields --- %>
-        <%= form.fields_for :inventory, (@product.inventory || @product.build_inventory) do |inventory_form| %>
-           <div class="input-group">
-             <%= inventory_form.label :warehouse_location, class: "form-label" %>
-             <%= inventory_form.text_field :warehouse_location, class: "form-input", placeholder: "e.g., Shelf A-3" %>
-           </div>
-           <div class="input-group">
-             <%= inventory_form.label :reorder_level, class: "form-label" %>
-             <%= inventory_form.number_field :reorder_level, min: 0, class: "form-input", placeholder: "e.g., 10" %>
-           </div>
-        <% end %>
-        <%# --- End Inventory Metadata Fields --- %>
-
-        <%# --- Form Actions --- %>
-        <div class="form-actions">
-           <%= form.submit "Create Product", class: "action-btn primary" %>
-           <%= link_to "Cancel", inventory_path, class: "action-btn secondary" %>
-        </div>
-      <% end %> <%# End Form %>
-    </div> <%# End Container %>
+    </div>
 </body>
 </html>

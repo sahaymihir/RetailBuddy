@@ -1,0 +1,99 @@
+<%# app/views/invoices/index.html.erb %>
+<%# Standalone HTML version - Inline CSS Dark Mode Only - Added Font Suggestion for Rupee %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoices</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #111827;
+      color: #d1d5db;
+      font-family: sans-serif; /* Base font */
+    }
+    a {
+      color: #60a5fa;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    /* Define Noto Sans font if needed via @font-face or ensure it's web available/installed */
+    /* Example using Google Fonts (requires internet connection): */
+    /* @import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap'); */
+    /* body { font-family: 'Noto Sans', sans-serif; } */
+  </style>
+</head>
+<body>
+
+  <div style="max-width: 80rem; margin-left: auto; margin-right: auto; padding: 2rem 1rem;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.875rem; font-weight: 600; color: #f9fafb;">Invoices</h1>
+    </div>
+
+    <div style="background-color: #1f2937; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); border-radius: 0.5rem; overflow-x: auto; border: 1px solid #374151;">
+      <table style="min-width: 100%; line-height: 1.5; border-collapse: collapse;">
+        <thead>
+          <tr style="background-color: #374151; border-bottom: 1px solid #4b5563;">
+            <th style="padding: 0.75rem 1.25rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #9ca3af; text-align: left;">Invoice #</th>
+            <th style="padding: 0.75rem 1.25rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #9ca3af; text-align: left;">Date</th>
+            <th style="padding: 0.75rem 1.25rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #9ca3af; text-align: left;">Customer</th>
+            <th style="padding: 0.75rem 1.25rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #9ca3af; text-align: right;">Total Amount</th>
+            <th style="padding: 0.75rem 1.25rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #9ca3af; text-align: center;">Status</th>
+            <th style="padding: 0.75rem 1.25rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #9ca3af; text-align: left;">Actions</th>
+          </tr>
+        </thead>
+        <tbody style="color: #d1d5db; font-size: 0.875rem;">
+          <% @invoices.each do |invoice| %>
+            <tr style="border-bottom: 1px solid #374151;">
+              <td style="padding: 1rem 1.25rem; white-space: nowrap; vertical-align: middle;"><%= invoice.id %></td>
+              <td style="padding: 1rem 1.25rem; white-space: nowrap; vertical-align: middle;"><%= invoice.invoice_date.strftime("%d-%b-%Y") %></td>
+              <td style="padding: 1rem 1.25rem; white-space: nowrap; vertical-align: middle;"><%= invoice.customer&.name || 'N/A' %></td>
+              <%# --- MODIFIED LINE: Applying font suggestion and using literal symbol --- %>
+              <td style="padding: 1rem 1.25rem; white-space: nowrap; vertical-align: middle; text-align: right; font-family: 'Noto Sans', Arial, sans-serif;">
+                <%= number_to_currency(invoice.calculated_total_amount, unit: "₹", format: "%u %n") %>
+              </td>
+              <td style="padding: 1rem 1.25rem; white-space: nowrap; vertical-align: middle; text-align: center;">
+                <% status_bg_color = invoice.status == 'paid' ? '#059669' : '#d97706' %>
+                <% status_text_color = '#ffffff' %>
+                <span style="display: inline-block; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600; border-radius: 9999px; background-color: <%= status_bg_color %>; color: <%= status_text_color %>;">
+                  <%= invoice.status.humanize %>
+                </span>
+              </td>
+              <td style="padding: 1rem 1.25rem; white-space: nowrap; vertical-align: middle;">
+                 <%= link_to 'View', invoice_path(invoice) %>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @invoices.empty? %>
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 2.5rem; color: #6b7280;">
+                No invoices found.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%# Pagination links %>
+    <%# <div style="margin-top: 1.5rem;"> %>
+    <%#   <%= will_paginate @invoices %>
+    <%# </div> %>
+
+    <div style="margin-top: 2rem; text-align: center;">
+      <a href="<%= success_path_path %>" style="display: inline-block; padding: 0.6rem 1.5rem; background-color: #374151; color: #e5e7eb; text-decoration: none; border-radius: 0.375rem; border: 1px solid #4b5563; font-size: 0.875rem; font-weight: 500;">
+        Go to Dashboard
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>

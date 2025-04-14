@@ -19,18 +19,6 @@ class BillingController < ApplicationController
     # Placeholder for items added to the current bill in the view
     @bill_items = []
   end
-  # POST /billing (or another appropriate route) - To create the actual invoice/payment
-  def create
-    # Logic to process the submitted bill (customer, items, payment)
-    # - Find or create customer
-    # - Create Invoice record
-    # - Create InvoiceLine records for each item
-    # - Calculate total, apply discount
-    # - Create Payment record
-    # This logic will be more complex and depends on how your form submits data.
-    # Placeholder redirect for now:
-    redirect_to success_path, notice: "Billing processing logic needed here."
-  end
 
   # Add other actions like :show, :edit, :update, :destroy if needed for past bills
 end

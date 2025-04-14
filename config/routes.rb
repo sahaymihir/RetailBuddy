@@ -8,7 +8,10 @@ Rails.application.routes.draw do
 
   get '/products/search', to: 'products#search', as: 'search_products'
 
-  resources :invoices, only: [:create, :show]
+  resources :invoices, only: [:index, :create, :show] do # Now includes index
+    get 'printable', on: :member
+  end
+  
   resources :products
   resources :categories
   get '/inventory', to: 'inventory#index', as: 'inventory'

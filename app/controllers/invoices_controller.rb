@@ -1,146 +1,202 @@
 # app/controllers/invoices_controller.rb
-
 class InvoicesController < ApplicationController
-  # Skip CSRF token verification if necessary (ensure security elsewhere)
-  # protect_from_forgery except: :create
-
-  # Uncomment if login is required
-  # before_action :require_login
+  # Assuming require_login and other before_actions are correctly defined elsewhere
+  # For example: before_action :require_login
+  # Ensure current_user is available if needed for user_id assignment
 
   # POST /invoices
-  def create
-    permitted_params = invoice_params
-    invoice_data = permitted_params
-
-    invoice = nil
-    error_message = nil
-
-    ActiveRecord::Base.transaction do
-      # 1. Find Customer (handle optional customer)
-      customer = Customer.find_by(id: invoice_data[:customer_id]) if invoice_data[:customer_id].present?
-
-      # 2. Initialize Invoice header
-      invoice = Invoice.new(
-        customer: customer,
-        subtotal: invoice_data[:subtotal],      # Assign subtotal
-        discount: invoice_data[:discount] || 0,
-        tax: invoice_data[:tax] || 0,          # Assign tax
-        total_amount: invoice_data[:grand_total],
-        invoice_date: Time.current
-      )
-
-      # 3. Validate stock and prepare Invoice Lines
-      items_data = invoice_data[:items] || []
-      if items_data.empty?
-        error_message = "Cannot finalize an empty bill."
-        raise ActiveRecord::Rollback
-      end
-
-      items_data.each do |item_data|
-        # Find Product
-        unless item_data.key?(:product_id) && item_data[:product_id].present?
-          error_message = "Missing product information for an item."
-          raise ActiveRecord::Rollback
-        end
-        product = Product.find(item_data[:product_id])
-
-        # Get and Validate Quantity
-        unless item_data.key?(:quantity) && item_data[:quantity].present?
-          error_message = "Missing quantity for product #{product.product_name}."
-          raise ActiveRecord::Rollback
-        end
-        quantity = item_data[:quantity].to_i
-
-        if quantity <= 0
-          error_message = "Invalid quantity (#{quantity}) for #{product.product_name}."
-          raise ActiveRecord::Rollback
-        end
-
-        # Perform Stock Check
-        if quantity > product.stock_quantity
-          error_message = "Insufficient stock for #{product.product_name}. Only #{product.stock_quantity} available."
-          raise ActiveRecord::Rollback
-        end
-
-        # Build the line item - **REMOVED total_price**
-        invoice.invoice_lines.build(
-          product: product,
-          quantity: quantity,
-          unit_price: item_data[:price] # Store the unit price sent from frontend
-          # Removed: total_price: item_data[:total]
-        )
-      end # End items loop
-
-      # 4. Save Invoice and associated InvoiceLines
-      invoice.user = current_user
-      unless invoice.save
-         error_message = "Failed to save invoice: #{invoice.errors.full_messages.join(', ')}"
-         raise ActiveRecord::Rollback
-      end
-
-      # 5. Decrement Stock
-      invoice.invoice_lines.each do |line|
-         line.product.decrement!(:stock_quantity, line.quantity)
-      end
-
-      # 6. Create Payment Record
-      payment = Payment.new(
-         invoice: invoice,
-         payment_method: invoice_data[:payment_method],
-         payment_status: 'Completed',
-         payment_date: Time.current
-      )
-      unless payment.save
-          error_message = "Invoice saved, but failed to record payment: #{payment.errors.full_messages.join(', ')}"
-          raise ActiveRecord::Rollback
-      end
-
-    rescue ActiveRecord::Rollback => e
-      error_message ||= "An error occurred during finalization."
-      invoice = nil
-    rescue ActiveRecord::RecordNotFound => e
-      error_message = "Could not find a product specified in the order."
-      invoice = nil
-    rescue StandardError => e
-      Rails.logger.error("Invoice creation failed unexpectedly: #{e.message}\n#{e.backtrace.join("\n")}")
-      error_message = "An unexpected server error occurred. Please contact support."
-      invoice = nil
-      raise ActiveRecord::Rollback unless error_message
-    end # End Transaction
-
-    # --- Respond to the frontend JavaScript ---
-    if invoice
-      render json: { success: true, invoice_id: invoice.id, message: "Invoice ##{invoice.id} created successfully." }, status: :created
-    else
-      render json: { success: false, message: error_message }, status: :unprocessable_entity
-    end
+  
+  def index
+    # Paginate for performance if you have many invoices
+    @invoices = Invoice.order(invoice_date: :desc).paginate(page: params[:page], per_page: 20) # Example pagination
+    # Or simply: @invoices = Invoice.order(invoice_date: :desc).all
   end
+  
+  def create
+    # 1. Separate invoice header params from line items and payment details
+    invoice_data = invoice_params # Use strong params
+
+    # Extract nested attributes and payment info *before* initializing Invoice
+    invoice_lines_data = invoice_data.delete(:invoice_lines_attributes) || []
+    payment_method_value = invoice_data.delete(:payment_method)
+    # Default payment status to 'Completed' if not provided
+    payment_status_value = invoice_data.delete(:payment_status) || 'Completed'
+
+    # Ensure we have line items
+    if invoice_lines_data.empty?
+      render json: { success: false, message: "Cannot create an invoice with no items." }, status: :unprocessable_entity
+      return
+    end
+
+    # 2. Initialize Invoice ONLY with attributes belonging to the Invoice model
+    @invoice = Invoice.new(invoice_data) # invoice_data now only contains Invoice fields
+    @invoice.invoice_date ||= Time.current
+    @invoice.status ||= 'draft' # Default status to draft if not provided
+
+    # Assign current user
+    if current_user
+      @invoice.user_id = current_user.userid # Assign the foreign key directly
+    else
+      Rails.logger.error("Cannot create invoice: current_user is nil.")
+      render json: { success: false, message: "User session not found. Please log in again." }, status: :unauthorized
+      return
+    end
+
+    # 3. Manually build invoice lines, prioritizing frontend price
+    invoice_lines_data.each do |line_attrs|
+      product = Product.find_by(id: line_attrs[:product_id])
+      quantity = line_attrs[:quantity].to_i
+      unit_price_from_frontend = line_attrs[:unit_price] # Already permitted
+
+      if product && quantity > 0
+        current_product_price = product.price rescue nil
+        final_unit_price = unit_price_from_frontend || current_product_price
+
+        if final_unit_price.nil? || final_unit_price.to_f < 0 # Ensure it's treated as number
+           @invoice.errors.add(:base, "Invalid or missing price for product ID #{product.id}.")
+           Rails.logger.warn("Skipping invoice line due to invalid price: #{line_attrs.inspect}")
+           next
+        end
+
+        @invoice.invoice_lines.build(
+          product_id: product.id,
+          quantity: quantity,
+          unit_price: final_unit_price
+        )
+      else
+        error_message = if !product
+                          "Invalid product ID #{line_attrs[:product_id] || 'N/A'}."
+                        else
+                          "Invalid quantity for product ID #{product.id}."
+                        end
+        @invoice.errors.add(:base, error_message)
+        Rails.logger.warn("Skipping invalid invoice line item: #{line_attrs.inspect}")
+      end
+    end
+
+    # If errors were added during line building, stop before transaction
+    unless @invoice.errors.empty?
+        render json: { success: false, message: "Failed to build invoice lines.", errors: @invoice.errors.full_messages }, status: :unprocessable_entity
+        return
+    end
+
+
+    # 4. Save Invoice & Create Payment in Transaction
+    ActiveRecord::Base.transaction do
+      # Calculate totals using model callbacks before saving
+      if @invoice.save
+
+        # Update stock levels atomically
+        @invoice.invoice_lines.reload.each do |line|
+          Product.update_counters(line.product_id, stock_quantity: -line.quantity)
+          # Optional: Check for negative stock here and raise ActiveRecord::Rollback if needed
+        end
+
+        # Create associated Payment record only if payment details provided
+        if payment_method_value.present?
+           payment = Payment.new(
+             invoice: @invoice,
+             payment_method: payment_method_value,
+             payment_status: payment_status_value,
+             payment_date: Time.current,
+             amount: @invoice.calculated_total_amount # Assumes amount column exists now
+           )
+           unless payment.save
+               # Use invoice errors to report payment failure within the transaction response
+               @invoice.errors.add(:base, "Invoice saved, but failed to record payment: #{payment.errors.full_messages.join(', ')}")
+               raise ActiveRecord::Rollback # Rollback invoice save and stock update
+           end
+        end
+
+        # Success response after all transaction steps succeed
+        render json: { success: true, invoice_id: @invoice.id, message: "Invoice created successfully." }, status: :created
+      else
+        # Invoice save failure response (will trigger rollback automatically)
+        render json: { success: false, message: "Failed to save invoice.", errors: @invoice.errors.full_messages }, status: :unprocessable_entity
+      end
+    end # End transaction
+
+  # Rescue blocks moved outside the transaction block if they handle errors before the transaction starts
+  rescue ActiveRecord::RecordNotFound => e
+    render json: { success: false, message: "Invalid product referenced: #{e.message}" }, status: :not_found
+  # RecordInvalid might be raised from within the transaction, keep it outside or handle rollback explicitly
+  rescue ActiveRecord::RecordInvalid => e
+     render json: { success: false, message: "Failed to save related record: #{e.message}", errors: e.record.errors.full_messages }, status: :unprocessable_entity
+  # General error rescue
+  rescue => e
+    Rails.logger.error("Invoice creation failed unexpectedly: #{e.message}\n#{e.backtrace.join("\n")}")
+    render json: { success: false, message: "An unexpected error occurred: #{e.message}" }, status: :internal_server_error
+  end
+
 
   # GET /invoices/:id
   def show
-     @invoice = Invoice.includes(:customer, invoice_lines: :product).find(params[:id])
-     render layout: "printable"
+    @invoice = Invoice.includes(invoice_lines: :product, payments: {}).find(params[:id])
+    # Render your show view (assuming standard Rails convention, e.g., app/views/invoices/show.html.erb)
+    render :show
   rescue ActiveRecord::RecordNotFound
-     redirect_to root_path, alert: "Invoice not found."
+    redirect_to root_path, alert: "Invoice not found."
   end
 
+  # GET /invoices/:id/printable
+  def printable
+    @invoice = Invoice.includes(invoice_lines: :product, payments: {}, customer: {}).find(params[:id]) # Eager load associations
+
+    # Check current status and update if it's 'draft'
+    if @invoice.status&.downcase == 'draft'
+      @invoice.status = 'paid' # Set the new status
+      unless @invoice.save
+        # Log error if save fails, but still render
+        Rails.logger.error("Failed to update invoice #{@invoice.id} status to 'paid': #{@invoice.errors.full_messages.join(', ')}")
+        # Optionally add a flash message for the UI if rendering HTML and layout supports flash
+        # flash.now[:alert] = "Could not update invoice status."
+      end
+    end
+
+    # --- RENDER CALL RE-ADDED ---
+    # Render the printable view using the 'printable' layout
+    render layout: 'printable', template: 'invoices/printable_show'
+
+  # --- ADDED RESCUE BLOCK ---
+  rescue ActiveRecord::RecordNotFound
+    # Handle case where invoice ID is invalid
+    redirect_to root_path, alert: "Invoice not found."
+  end
+
+  # --- PRIVATE METHODS START HERE ---
   private
 
-  # Strong parameters - REMOVED :total from items array
+  # Define parameters permitted for the main Invoice model AND nested lines
   def invoice_params
-    params.require(:invoice).permit(
+     params.require(:invoice).permit(
+      # Invoice fields
       :customer_id,
-      :subtotal,
-      :discount,
-      :tax,
-      :grand_total,
+      :invoice_date,
+      :status, # Allow status like 'draft' to be set initially
+
+      # Payment fields (extracted in action)
       :payment_method,
-      items: [
+      :payment_status,
+
+      # Nested attributes for lines
+      invoice_lines_attributes: [
         :product_id,
         :quantity,
-        :price # Permit unit price
-        # Removed :total
+        :unit_price, # Permit unit_price from frontend
+        :id,
+        :_destroy
       ]
     )
   end
+
+  # Example require_login method (adapt to your auth system)
+  # def require_login
+  #   # ... your authentication logic ...
+  # end
+
+  # Make sure current_user helper is defined, perhaps in ApplicationController
+  # def current_user
+  #   # ... logic to find logged-in user ...
+  # end
+
 end
