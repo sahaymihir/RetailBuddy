@@ -1,28 +1,70 @@
 <%# app/views/categories/new.html.erb %>
+<%# Render within a layout, e.g., layouts/admin.html.erb %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RetailBuddy - New Category</title>
-    <%# Include necessary stylesheets - REQUIRED HERE since no layout is used %>
+    <%# Include necessary stylesheets using asset pipeline/importmap %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %> <%# For form/container styling %>
-    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+    <%# Assuming admin styles are included in application.css or loaded via layout %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= javascript_importmap_tags %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-     <%# You might want a consistent header/navigation partial here %>
-    <div class="admin-page-container"> <%# Use consistent container class %>
-      <h1 class="admin-title">New Category</h1>
-      <%# Render the form partial - the partial itself should NOT have HTML/HEAD/BODY %>
-      <%= render 'form', category: @category %>
+<body class="bg-gray-100"> <%# Example background %>
+    <%# Render header/navigation partial if needed %>
+    <%# render 'layouts/admin_navigation' %>
+
+    <div class="admin-page-container max-w-2xl mx-auto my-8 p-6 bg-white shadow-md rounded-lg">
+      <h1 class="admin-title text-2xl font-semibold text-gray-800 mb-6">New Category</h1>
+
+      <%# Form directly embedded here %>
+      <%= form_with(model: @category, local: true, class: "space-y-4") do |form| %>
+        <%# Error Messages %>
+        <% if @category.errors.any? %>
+          <div id="error_explanation" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold"><%= pluralize(@category.errors.count, "error") %> prohibited this category from being saved:</strong>
+            <ul class="mt-2 list-disc list-inside text-sm">
+              <% @category.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%# Name Field %>
+        <div>
+          <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :name, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "e.g., Electronics, Groceries" %>
+        </div>
+
+        <%# Tax Percentage Field %>
+        <div>
+          <%= form.label :tax_percentage, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <div class="mt-1 relative rounded-md shadow-sm">
+             <%= form.number_field :tax_percentage, step: '0.01', min: '0', max: '100', class: "block w-full rounded-md border-gray-300 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "0.00" %>
+             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <span class="text-gray-500 sm:text-sm" id="tax-currency">%</span>
+             </div>
+          </div>
+          <p class="mt-1 text-xs text-gray-500">Enter tax rate as a percentage (e.g., 5 for 5%). Default is 0%.</p>
+        </div>
+
+        <%# Actions %>
+        <div class="flex justify-end space-x-3 pt-4">
+           <%= link_to "Cancel", categories_path, class: "inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+          <%= form.submit "Create Category", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer" %>
+        </div>
+      <% end %>
+      <%# End Form %>
+
     </div>
-     <%# You might want a consistent footer partial here %>
+
+    <%# Render footer partial if needed %>
+    <%# render 'layouts/admin_footer' %>
 </body>
 </html>

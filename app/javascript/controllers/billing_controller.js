@@ -3,22 +3,21 @@ import { Controller } from "@hotwired/stimulus"
 import { v4 as uuidv4 } from "uuid"
 
 export default class extends Controller {
-  // Define ALL elements the controller needs to interact with
   static targets = [
     "billItemsBody",      // The <tbody> of the current bill table
-    "summarySubtotal",    // The <span> for the subtotal
-    "summaryGrandTotal",  // The <span> for the grand total
+    "summarySubtotal",    // The <span> for the subtotal (before tax)
+    "summaryTotalTax",    // The <span> for the total calculated tax << NEW TARGET
+    "summaryGrandTotal",  // The <span> for the grand total (subtotal + tax)
     "noItemsRow",         // The "No items added yet" row
-    "finalizeError",      // Element to display errors (e.g., <div data-billing-target="finalizeError"></div>)
-    "paymentBtn",         // Payment buttons (add data-billing-target="paymentBtn")
-    "qrModal",            // QR code modal container (add data-billing-target="qrModal")
-    "qrCodeImage",        // img tag inside the modal (add data-billing-target="qrCodeImage")
-    "qrInstructions"      // p tag for instructions below QR code (add data-billing-target="qrInstructions")
+    "finalizeError",      // Element to display errors
+    "paymentBtn",         // Payment buttons
+    "qrModal",            // QR code modal container
+    "qrCodeImage",        // img tag inside the modal
+    "qrInstructions"      // p tag for instructions below QR code
+    // Add other targets if needed (e.g., customer select)
   ]
 
-  // Store selected payment method
   selectedPaymentMethod = null;
-  // Store placeholder QR code URL (replace with your actual data)
   placeholderQrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=YOUR_STATIC_UPI_ID_OR_PAYMENT_LINK"; // Base URL
 
   connect() {
@@ -27,27 +26,19 @@ export default class extends Controller {
   }
 
   // --- Action to handle payment method selection ---
-  // Connect in HTML: data-action="click->billing#selectPaymentMethod" on payment buttons
   selectPaymentMethod(event) {
     event.preventDefault();
     const clickedButton = event.currentTarget;
-    this.selectedPaymentMethod = clickedButton.dataset.method; // Get method from data-method attribute
+    this.selectedPaymentMethod = clickedButton.dataset.method;
 
-    // Update button styles
-    this.paymentBtnTargets.forEach(btn => {
-      btn.classList.remove('active'); // Remove active class from all
-    });
-    clickedButton.classList.add('active'); // Add active class to clicked button
+    this.paymentBtnTargets.forEach(btn => btn.classList.remove('active'));
+    clickedButton.classList.add('active');
 
     console.log("Payment method selected:", this.selectedPaymentMethod);
-    // Clear any previous finalization errors when selecting payment
-    if (this.hasFinalizeErrorTarget) {
-        this.finalizeErrorTarget.textContent = '';
-    }
+    if (this.hasFinalizeErrorTarget) this.finalizeErrorTarget.textContent = '';
   }
 
   // --- Action to handle display logic (alert/QR) after payment method selection ---
-  // Connect in HTML: Add this as a second action: data-action="click->billing#selectPaymentMethod click->billing#handlePaymentDisplay"
   handlePaymentDisplay(event) {
      const method = event.currentTarget.dataset.method;
      console.log("Handling display for:", method);
@@ -55,10 +46,10 @@ export default class extends Controller {
      switch(method) {
          case 'Cash':
              alert("Please collect cash payment at the counter.");
-             this.closeQrModal(); // Ensure QR modal is closed
+             this.closeQrModal();
              break;
          case 'UPI':
-             this.showUpiQrCode(); // Show the QR code modal
+             this.showUpiQrCode();
              break;
          default:
              console.warn("Unknown payment method display:", method);
@@ -70,28 +61,27 @@ export default class extends Controller {
   showUpiQrCode() {
       if (!this.hasQrModalTarget || !this.hasQrCodeImageTarget || !this.hasSummaryGrandTotalTarget) {
           console.error("QR Modal targets not found!");
-          this.displayError("Could not display QR Code - configuration error."); // Show user error
+          this.displayError("Could not display QR Code - configuration error.");
           return;
       }
 
+      // Ensure totals are up-to-date before getting grand total
+      this.updateTotals();
       const grandTotal = parseFloat(this.summaryGrandTotalTarget.textContent.replace(/[^0-9.-]+/g,"")) || 0;
 
-      // Update QR code image source (using static URL from placeholderQrUrl)
-      // In a real app, you might generate this dynamically or fetch it
+      // You might want to generate amount-specific QR if your UPI provider supports it
+      // For now, using static QR and showing amount in text
       this.qrCodeImageTarget.src = this.placeholderQrUrl;
       this.qrCodeImageTarget.alt = `Scan UPI QR Code to Pay ${this.formatCurrency(grandTotal)}`;
 
-      // Update instructions if target exists
-       if (this.hasQrInstructionsTarget) {
+      if (this.hasQrInstructionsTarget) {
            this.qrInstructionsTarget.textContent = `Amount to Pay: ${this.formatCurrency(grandTotal)}`;
        }
 
-      // Show the modal
       this.qrModalTarget.classList.remove('hidden');
   }
 
   // --- Action to close the UPI QR Code Modal ---
-  // Connect in HTML: data-action="click->billing#closeQrModal" on the modal's close button
   closeQrModal() {
       if (this.hasQrModalTarget) {
           this.qrModalTarget.classList.add('hidden');
@@ -99,7 +89,6 @@ export default class extends Controller {
   }
 
   // --- Action to Finalize the Bill ---
-  // Connect in HTML: data-action="click->billing#finalizeBill" on the finalize button
   async finalizeBill(event) {
     event.preventDefault();
     console.log("Finalize Bill clicked");
@@ -112,55 +101,59 @@ export default class extends Controller {
 
     let invalidItemFound = false;
     productRows.forEach(row => {
-      if (invalidItemFound) return; // Stop if error already found
+      if (invalidItemFound) return;
 
       const quantityInput = row.querySelector(".quantity-input");
       const quantity = parseInt(quantityInput ? quantityInput.value : 0, 10);
-      const price = parseFloat(row.dataset.price);
       const productId = row.dataset.productId;
-      const lineTotalCell = row.querySelector(".line-total");
-      const lineTotal = parseFloat(lineTotalCell ? lineTotalCell.textContent.replace(/[^0-9.-]+/g,"") : 0);
+      // Price is used for client-side calculation display, but backend should use its own price source
+      // const price = parseFloat(row.dataset.price);
 
-      if (!productId || isNaN(price) || isNaN(quantity) || quantity <= 0) {
-         this.displayError(`Invalid quantity or data for an item. Please check the bill.`);
-         invalidItemFound = true; // Set flag to stop processing
+      if (!productId || isNaN(quantity) || quantity <= 0) {
+         this.displayError(`Invalid quantity for an item. Please check the bill.`);
+         invalidItemFound = true;
          return;
       }
-      items.push({ product_id: productId, quantity: quantity, price: price, total: lineTotal });
+      // Send only product_id and quantity. Backend calculates subtotal/tax based on these.
+      items.push({ product_id: productId, quantity: quantity });
     });
 
-    if (invalidItemFound || items.length === 0) { return; } // Exit if errors or no valid items
+    if (invalidItemFound || items.length === 0) { return; }
 
     // 2. Get Customer
-    const customerSelect = document.getElementById('customer-select');
+    const customerSelect = document.getElementById('customer-select'); // Make sure this ID exists
     const customerId = customerSelect ? customerSelect.value : null;
+    // Add validation if customer is required:
+    // if (!customerId) { this.displayError("Please select a customer."); return; }
+
 
     // 3. Get Payment Method
     if (!this.selectedPaymentMethod) { this.displayError("Please select a payment method."); return; }
 
-    // 4. Get Totals
-    const subtotal = parseFloat(this.summarySubtotalTarget.textContent.replace(/[^0-9.-]+/g,""));
-    const grandTotal = parseFloat(this.summaryGrandTotalTarget.textContent.replace(/[^0-9.-]+/g,""));
-
-    // 5. Construct Payload for Rails backend
+    // 4. Construct Payload for Rails backend
+    // Send only essential info. Backend calculates totals.
     const payload = {
       invoice: {
         customer_id: customerId,
-        subtotal: subtotal,
-        grand_total: grandTotal,
         payment_method: this.selectedPaymentMethod,
-        items: items
-        // Add discount, tax here if implemented
+        // Nested attributes format for invoice_lines
+        invoice_lines_attributes: items.map((item, index) => ({
+          product_id: item.product_id,
+          quantity: item.quantity
+          // Backend will fetch unit_price and calculate tax based on product_id
+        }))
       }
     };
+    console.log("Payload being sent:", JSON.stringify(payload)); // Debugging
 
-    // 6. Get CSRF Token
+
+    // 5. Get CSRF Token
     const csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribute("content");
     if (!csrfToken) { this.displayError("Security token missing. Please refresh the page."); return; }
 
-    // 7. Perform Fetch POST Request to /invoices
+    // 6. Perform Fetch POST Request to /invoices
     try {
-      const response = await fetch('/invoices', {
+      const response = await fetch('/invoices', { // Ensure this matches your Rails route
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -170,19 +163,17 @@ export default class extends Controller {
         body: JSON.stringify(payload)
       });
 
-      const responseData = await response.json(); // Expect JSON response
+      const responseData = await response.json();
 
-      if (response.ok && responseData.success) {
-        // SUCCESS: Redirect to the printable invoice page
+      if (response.ok && responseData.success && responseData.invoice_id) {
         console.log("Invoice creation successful:", responseData);
+        // Redirect to the invoice show page (printable or view)
         window.location.href = `/invoices/${responseData.invoice_id}`;
       } else {
-        // FAILURE: Display error message from backend
         console.error("Invoice creation failed:", responseData);
         this.displayError(responseData.message || "An unknown error occurred processing the bill.");
       }
     } catch (error) {
-      // Network or other fetch-related error
       console.error("Fetch error:", error);
       this.displayError("Could not connect to the server. Please check your network and try again.");
     }
@@ -193,65 +184,73 @@ export default class extends Controller {
      if (this.hasFinalizeErrorTarget) {
        this.finalizeErrorTarget.textContent = message;
      } else {
-       alert(message); // Fallback if target doesn't exist
+       alert(message);
      }
   }
 
   // --- Add Item to Bill ---
-  // Connect in HTML: data-action="click->billing#addItem" on the add button/item
+  // Triggered by an action, expects the triggering element to have product data attributes
   addItem(event) {
     event.preventDefault();
+    // Assuming the product info is on the element that was clicked or a parent
     const productElement = event.currentTarget.closest('[data-product-id]');
-    if (!productElement) { console.error("Could not find product element from event:", event.currentTarget); return; }
+    if (!productElement) { console.error("Could not find product data element from event:", event.currentTarget); return; }
 
     const productId = productElement.dataset.productId;
-    const productName = productElement.dataset.productName;
-    const productPrice = parseFloat(productElement.dataset.productPrice);
+    const productName = productElement.dataset.productName; // Ensure this attribute exists
+    const productPrice = parseFloat(productElement.dataset.productPrice); // Ensure this attribute exists
+    // --- Get the tax rate from the product data ---
+    const productTaxRate = parseFloat(productElement.dataset.productTaxPercentage || 0.0); // Ensure this attribute exists
 
-    if (!productId || !productName || isNaN(productPrice)) { console.error("Invalid product data attributes:", productElement.dataset); return; }
+    if (!productId || !productName || isNaN(productPrice) || isNaN(productTaxRate)) {
+      console.error("Invalid product data attributes found:", productElement.dataset);
+      this.displayError("Could not add item: missing required product data.");
+      return;
+    }
 
-    // Check if item already exists and increment quantity (optional)
     const existingRow = this.billItemsBodyTarget.querySelector(`tr[data-product-id="${productId}"]`);
     if (existingRow) {
        const quantityInput = existingRow.querySelector(".quantity-input");
        if (quantityInput) {
           quantityInput.value = parseInt(quantityInput.value, 10) + 1;
-          // Trigger updateTotals explicitly after changing value programmatically
-          this.updateTotals();
+          this.updateTotals(); // Trigger recalculation
        }
-       return; // Don't add a new row if incrementing
+    } else {
+       this.addBillRow(productId, productName, productPrice, productTaxRate); // Pass tax rate
+       this.updateTotals(); // Calculate after adding new row
     }
-
-    // Add new row if item doesn't exist
-    this.addBillRow(productId, productName, productPrice);
-    this.updateTotals();
   }
 
   // --- Create and Add Row HTML ---
-  addBillRow(id, name, price) {
+  addBillRow(id, name, price, taxRate) { // Accept taxRate
     const billBody = this.billItemsBodyTarget;
     if (this.hasNoItemsRowTarget && !this.noItemsRowTarget.classList.contains('hidden')) {
         this.noItemsRowTarget.classList.add('hidden');
     }
     const row = document.createElement("tr");
-    row.id = `bill-item-${uuidv4()}`; // Unique ID for the row
+    row.id = `bill-item-${uuidv4()}`;
     row.dataset.productId = id;
     row.dataset.price = price;
+    row.dataset.taxRate = taxRate; // Store tax rate on the row
+
+    const lineSubtotal = price * 1; // Initial quantity is 1
+
     row.innerHTML = `
-      <td>${name}</td>
-      <td>
+      <td class="py-2 px-3 border-b">${name}</td>
+      <td class="py-2 px-3 border-b">
         <input
           type="number"
           value="1"
           min="1"
-          class="quantity-input"
-          data-action="change->billing#updateTotals keyup->billing#updateTotals"> <%# Update on change or keyup %>
+          class="quantity-input form-input w-16 text-right border rounded" <%# Basic styling %>
+          data-action="change->billing#updateTotals keyup->billing#updateTotals">
       </td>
-      <td>${this.formatCurrency(price)}</td>
-      <td class="line-total">${this.formatCurrency(price)}</td>
-      <td>
-        <button class="remove-item-btn text-red-500 hover:text-red-700 px-1" data-action="click->billing#removeItem" aria-label="Remove ${name}"> <%# Simple styling %>
-           <i class="fas fa-times-circle"></i>
+      <td class="py-2 px-3 border-b text-right">${this.formatCurrency(price)}</td>
+      <%# Display Line Subtotal (Before Tax) %>
+      <td class="line-total py-2 px-3 border-b text-right">${this.formatCurrency(lineSubtotal)}</td>
+      <td class="py-2 px-3 border-b text-center">
+        <button class="remove-item-btn text-red-500 hover:text-red-700 px-1" data-action="click->billing#removeItem" aria-label="Remove ${name}">
+           <i class="fas fa-times-circle"></i> <%# Font Awesome example %>
         </button>
       </td>
     `;
@@ -259,52 +258,63 @@ export default class extends Controller {
   }
 
   // --- Remove Item from Bill ---
-  // Connect in HTML: data-action="click->billing#removeItem" on remove button
   removeItem(event) {
     event.preventDefault();
     const rowToRemove = event.currentTarget.closest('tr');
     if (rowToRemove) {
         rowToRemove.remove();
-        this.updateTotals(); // Recalculate
+        this.updateTotals();
     }
-    // Show "No items" row if bill becomes empty
     if (this.billItemsBodyTarget.querySelectorAll("tr[data-product-id]").length === 0 && this.hasNoItemsRowTarget) {
        this.noItemsRowTarget.classList.remove('hidden');
     }
   }
 
-  // --- Update Subtotal and Grand Total ---
+  // --- Update Subtotal, Tax, and Grand Total ---
   updateTotals() {
-    let subtotal = 0;
+    let overallSubtotal = 0;
+    let totalTax = 0;
+
     const productRows = this.billItemsBodyTarget.querySelectorAll("tr[data-product-id]");
     productRows.forEach(row => {
-        const price = parseFloat(row.dataset.price);
+        const price = parseFloat(row.dataset.price) || 0;
+        const taxRate = parseFloat(row.dataset.taxRate) || 0; // Get tax rate from row
         const quantityInput = row.querySelector(".quantity-input");
         const quantity = parseInt(quantityInput ? quantityInput.value : 0, 10) || 0;
         const lineTotalCell = row.querySelector(".line-total");
 
-        if (!isNaN(price) && !isNaN(quantity) && quantity >= 0) {
-            const lineTotal = price * quantity;
-            subtotal += lineTotal;
-            if(lineTotalCell) { lineTotalCell.textContent = this.formatCurrency(lineTotal); }
+        if (quantity >= 0) { // Allow 0 quantity during input maybe? Or validate >= 1? Let's allow 0 for calc.
+            const lineSubtotal = price * quantity;
+            const lineTax = lineSubtotal * (taxRate / 100.0);
+
+            overallSubtotal += lineSubtotal;
+            totalTax += lineTax;
+
+            // Update the line total cell to show the line's subtotal (before tax)
+            if(lineTotalCell) { lineTotalCell.textContent = this.formatCurrency(lineSubtotal); }
+
         } else {
-             // Handle invalid intermediate input state
+             // Handle invalid negative input if necessary (though min="1" should prevent usually)
              if(lineTotalCell) { lineTotalCell.textContent = this.formatCurrency(0); }
         }
     });
 
-    // Update summary display
-    if (this.hasSummarySubtotalTarget) { this.summarySubtotalTarget.textContent = this.formatCurrency(subtotal); }
-    // Assuming grand total is same as subtotal for now
-    if (this.hasSummaryGrandTotalTarget) { this.summaryGrandTotalTarget.textContent = this.formatCurrency(subtotal); }
+    const grandTotal = overallSubtotal + totalTax;
 
-    // Clear finalize error if total changes (optional)
-    // if (this.hasFinalizeErrorTarget) { this.finalizeErrorTarget.textContent = ''; }
+    // Update summary display using targets
+    if (this.hasSummarySubtotalTarget) {
+      this.summarySubtotalTarget.textContent = this.formatCurrency(overallSubtotal);
+    }
+    if (this.hasSummaryTotalTaxTarget) { // Update the new tax target
+      this.summaryTotalTaxTarget.textContent = this.formatCurrency(totalTax);
+    }
+    if (this.hasSummaryGrandTotalTarget) {
+      this.summaryGrandTotalTarget.textContent = this.formatCurrency(grandTotal);
+    }
   }
 
   // --- Currency Formatting ---
   formatCurrency(value) {
-      // Using Intl for better formatting (adjust locale 'en-IN' and currency 'INR' as needed)
       try {
           return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(value);
       } catch (e) {
@@ -316,6 +326,5 @@ export default class extends Controller {
   // --- Disconnect ---
   disconnect() {
     console.log("Billing controller disconnected");
-    // Add any cleanup logic if needed
   }
 }

@@ -5,115 +5,218 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RetailBuddy - Edit Product</title>
-    <%# External Stylesheets %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+    <%# Include other necessary base stylesheets if admin/dashboard provide variables %>
+    <%# <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %> %>
+    <%# <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %> %>
+    <%# <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %> %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= javascript_importmap_tags %>
-    <%# External Fonts/Icons %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <%# --- EMBEDDED CSS (Includes rules for select AND action buttons) --- %>
+    <%# --- Embedded CSS for Product Form --- %>
+    <%# Note: Recommend moving these styles to an external CSS file (e.g., admin.css or forms.css) %>
     <style>
-      /* Style for Category Select Dropdown */
-      .admin-page-container .input-group select {
-          width: 100%;
-          padding: 12px 15px;
-          background-color: var(--input-bg);
-          color: var(--text-color);
-          border: 1px solid var(--border-color);
-          border-radius: var(--border-radius-sm);
-          line-height: normal;
-          box-sizing: border-box;
-          height: calc(1.5em + 24px + 2px);
-          display: block;
+      .form-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
-       .admin-page-container .input-group select:focus {
-          outline: none;
-          border-color: var(--primary-color);
-          box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+      .form-title {
+        font-size: 1.75rem; /* eq to text-2xl */
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        color: #333;
       }
-
-      /* --- ADDED: Style to remove underline from action buttons/links --- */
-      .admin-page-container .form-actions a.action-btn,
-      .admin-page-container .form-actions a.action-btn:visited,
-      .admin-page-container .form-actions a.action-btn:hover,
-      .admin-page-container .form-actions a.action-btn:active {
-          text-decoration: none !important; /* Remove underline */
+      .input-group {
+        margin-bottom: 1.25rem; /* Consistent spacing */
       }
-      .admin-page-container .form-actions button.action-btn {
-         /* Add styles if needed */
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem; /* Space between label and input */
+        font-weight: 500;
+        font-size: 0.875rem; /* text-sm */
+        color: #4a5568; /* Gray-700 */
       }
-      /* --- END ADDED CSS --- */
+      .form-input,
+      .form-select,
+      .form-textarea {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem; /* py-3 px-4 */
+        border: 1px solid #d2d6dc; /* Gray-300 */
+        border-radius: 0.375rem; /* rounded-md */
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        background-color: #fff;
+        color: #1a202c; /* Gray-900 */
+        font-size: 0.875rem; /* text-sm */
+        line-height: 1.5;
+        box-sizing: border-box;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: #6366f1; /* Indigo-500 */
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); /* Indigo-500 focus ring */
+      }
+      /* Adjust select height if needed */
+      .form-select {
+         height: calc(1.5em + 1.5rem + 2px); /* Match padding + line-height + border */
+         appearance: none; /* Optional: for custom dropdown arrow */
+         background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>');
+         background-repeat: no-repeat;
+         background-position: right 0.75rem center;
+         background-size: 1.25em 1.25em;
+         padding-right: 2.5rem; /* Space for arrow */
+      }
+      .form-textarea {
+        line-height: 1.6;
+      }
+      .form-divider {
+        border-color: #e2e8f0; /* Gray-200 */
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .form-section-title {
+        font-size: 1.125rem; /* text-lg */
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: #1a202c; /* Gray-900 */
+      }
+      .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 0.75rem; /* space-x-3 */
+        justify-content: flex-end;
+      }
+      .action-btn { /* Base button styling */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem; /* py-2 px-4 */
+        border: 1px solid transparent;
+        font-size: 0.875rem; /* text-sm */
+        font-weight: 500; /* font-medium */
+        border-radius: 0.375rem; /* rounded-md */
+        cursor: pointer;
+        text-decoration: none !important; /* Ensure no underline on links */
+        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+      }
+      .action-btn.primary {
+        color: #fff;
+        background-color: #6366f1; /* Indigo-600 */
+        border-color: #6366f1;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      }
+      .action-btn.primary:hover {
+         background-color: #4f46e5; /* Indigo-700 */
+         border-color: #4f46e5;
+      }
+      .action-btn.secondary {
+         color: #374151; /* Gray-700 */
+         background-color: #fff;
+         border-color: #d2d6dc; /* Gray-300 */
+         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      }
+       .action-btn.secondary:hover {
+          background-color: #f9fafb; /* Gray-50 */
+          border-color: #adb5bd; /* Gray-400 */
+       }
+       .error-container {
+          color: #721c24; /* Red-800 */
+          background-color: #f8d7da; /* Red-100 */
+          border: 1px solid #f5c6cb; /* Red-300 */
+          padding: 0.75rem 1.25rem; /* p-3 */
+          margin-bottom: 1rem; /* mb-4 */
+          border-radius: 0.375rem; /* rounded-md */
+       }
+       .error-container h2 {
+          margin-top: 0; margin-bottom: 0.25rem; font-weight: bold; font-size: 1rem;
+       }
+       .error-container ul {
+          margin-left: 1.25rem; /* ml-5 */ margin-bottom: 0; font-size: 0.875rem; /* text-sm */ list-style: disc;
+       }
     </style>
-    <%# --- END EMBEDDED CSS --- %>
-
+    <%# --- End Embedded CSS --- %>
 </head>
-<body>
-    <div class="admin-page-container">
-      <h1 class="admin-title">Edit Product</h1>
+<body class="bg-gray-100">
+    <div class="form-container">
+      <h1 class="form-title">Edit Product</h1>
 
-      <%# --- EMBEDDED FORM --- %>
       <%= form_with(model: @product, local: true) do |form| %>
-         <%# ... Error display ... %>
-         <% if @product.errors.any? %>
-          <div style="color: red;">
+        <%# Error Display %>
+        <% if @product.errors.any? %>
+          <div class="error-container">
             <h2><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h2>
             <ul>
-              <% @product.errors.each do |error| %>
-                <li><%= error.full_message %></li>
+              <% @product.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
               <% end %>
             </ul>
           </div>
-         <% end %>
-
-         <%# ... Product fields ... %>
-         <div class="input-group">
-           <%= form.label :product_name %>
-           <%= form.text_field :product_name %>
-         </div>
-         <div class="input-group">
-           <%= form.label :category_id %>
-           <%= form.collection_select :category_id, @categories, :id, :category_name, { prompt: 'Select a Category' } %>
-         </div>
-         <div class="input-group">
-           <%= form.label :price %>
-           <%= form.number_field :price, step: '0.01' %>
-         </div>
-         <div class="input-group">
-           <%= form.label :stock_quantity %>
-           <%= form.number_field :stock_quantity %>
-         </div>
-
-        <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
-        <h2>Inventory Details</h2>
-
-        <%# ... Nested inventory fields ... %>
-        <%= form.fields_for :inventory do |inventory_form| %>
-          <div class="input-group">
-            <%= inventory_form.label :warehouse_location %>
-            <%= inventory_form.text_field :warehouse_location %>
-          </div>
-          <div class="input-group">
-            <%= inventory_form.label :reorder_level %>
-            <%= inventory_form.number_field :reorder_level %>
-          </div>
         <% end %>
 
-        <%# ... Form actions ... %>
-        <div class="form-actions">
-           <%# This submit button usually won't have an underline %>
-          <%= form.submit "Update Product", class: "action-btn primary" %>
-           <%# This link_to needs the underline removed via CSS %>
-          <%= link_to "Cancel", inventory_path, class: "action-btn secondary" %>
+        <%# --- Product Fields --- %>
+        <div class="input-group">
+          <%= form.label :name, "Product Name", class: "form-label" %>
+          <%= form.text_field :name, class: "form-input" %>
         </div>
-      <% end %>
-      <%# --- END EMBEDDED FORM --- %>
 
-    </div>
+        <div class="input-group">
+          <%= form.label :category_id, class: "form-label" %>
+          <%= form.collection_select :category_id, @categories, :id, :name, { prompt: 'Select a Category' }, { class: "form-select" } %>
+        </div>
+
+        <div class="input-group">
+          <%= form.label :price, class: "form-label" %>
+          <%= form.number_field :price, step: '0.01', min: 0, class: "form-input" %>
+        </div>
+
+        <div class="input-group">
+          <%= form.label :stock_quantity, "Stock Quantity", class: "form-label" %>
+          <%= form.number_field :stock_quantity, min: 0, class: "form-input" %>
+        </div>
+
+        <%# Add other product fields like SKU, Description here if needed %>
+        <%# <div class="input-group"> %>
+        <%#   <%= form.label :sku, class: "form-label" %>
+        <%#   <%= form.text_field :sku, class: "form-input" %>
+        <%# </div> %>
+        <%# <div class="input-group"> %>
+        <%#   <%= form.label :description, class: "form-label" %>
+        <%#   <%= form.text_area :description, rows: 3, class: "form-textarea" %>
+        <%# </div> %>
+
+
+        <hr class="form-divider">
+        <h2 class="form-section-title">Inventory Metadata</h2>
+
+        <%# --- Nested INVENTORY Metadata fields --- %>
+        <%= form.fields_for :inventory, (@product.inventory || @product.build_inventory) do |inventory_form| %>
+           <div class="input-group">
+             <%= inventory_form.label :warehouse_location, class: "form-label" %>
+             <%= inventory_form.text_field :warehouse_location, class: "form-input", placeholder: "e.g., Shelf A-3" %>
+           </div>
+           <div class="input-group">
+             <%= inventory_form.label :reorder_level, class: "form-label" %>
+             <%= inventory_form.number_field :reorder_level, min: 0, class: "form-input", placeholder: "e.g., 10" %>
+           </div>
+        <% end %>
+        <%# --- End Inventory Metadata Fields --- %>
+
+        <%# --- Form Actions --- %>
+        <div class="form-actions">
+           <%= form.submit "Update Product", class: "action-btn primary" %>
+           <%= link_to "Cancel", inventory_path, class: "action-btn secondary" %>
+        </div>
+      <% end %> <%# End Form %>
+    </div> <%# End Container %>
 </body>
 </html>

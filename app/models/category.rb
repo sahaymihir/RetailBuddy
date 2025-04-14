@@ -1,11 +1,14 @@
+# app/models/category.rb
 class Category < ApplicationRecord
-  self.sequence_name = 'categories_seq'
-  # Explicitly set table name if it doesn't follow convention (categories)
-  # self.table_name = 'your_category_table_name' # Uncomment and set if needed
+  alias_attribute :name, :category_name
+  alias_attribute :description, :description # Handles the DESCRIPTION column
+  alias_attribute :tax_percentage, :tax_percentage
+  has_many :products, dependent: :restrict_with_error # Ensure categories aren't deleted if products exist
 
-  # Define associations
-  has_many :products
-  # Add any validations needed
-  # validates :category_name, presence: true
-  # ... other model logic ...
+  validates :name, presence: true, uniqueness: true
+  validates :tax_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }, presence: true
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["created_at", "id", "id_value", "name", "updated_at", "tax_percentage"]
+  end
 end

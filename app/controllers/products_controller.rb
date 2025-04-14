@@ -1,3 +1,4 @@
+# app/controllers/products_controller.rb
 class ProductsController < ApplicationController
   before_action :require_login
   before_action :set_categories, only: [:new, :create, :edit, :update]
@@ -44,27 +45,36 @@ class ProductsController < ApplicationController
     end
   end
 
-  # Search method
+  # Search method - Minimal fixes applied
   def search
     query = params[:q].presence || ""
-    limit = 25
-  
+    limit = 25 # Keep original limit
+
+    # Eager load inventory to get quantity
     products_query = Product.includes(:inventory)
-                            .order(Arel.sql("PRODUCT_NAME"))
-  
+                            .order(:name) # Order by the correct column name :name
+
     if query.present?
-      products = products_query.where("UPPER(PRODUCT_NAME) LIKE ?", "%#{query.upcase}%").limit(limit)
+      # Use LOWER instead of UPPER for consistency and potential index usage
+      products = products_query.where("LOWER(name) LIKE ?", "%#{query.downcase}%").limit(limit)
     else
-      products = products_query.limit(5)
+      products = products_query.limit(5) # Keep original limit for empty query
     end
-  
-    # Render HTML response and ensure correct content type
-    render json: { products: products.as_json(only: [:id, :product_name, :price, :stock_quantity]) }
+
+    # Prepare JSON response
+    products_json = products.map do |product|
+      {
+        id: product.id,
+        name: product.name, # Use :name
+        price: product.price,
+        inventory_quantity: product.inventory&.quantity || 0 # Get quantity from inventory
+      }
+    end
+
+    render json: { products: products_json }
   end
 
-  def show
-    # Leave empty if you don't have a show page
-  end
+  # Removed empty show action
 
   private
 
@@ -75,16 +85,22 @@ class ProductsController < ApplicationController
   end
 
   def set_categories
-    @categories = Category.order(:category_name)
+    @categories = Category.order(:name) # Use :name instead of :category_name
   end
 
   def product_params
     params.require(:product).permit(
-      :product_name,
+      :name, # Use :name instead of :product_name
       :price,
       :stock_quantity,
       :category_id,
-      inventory_attributes: [:id, :warehouse_location, :reorder_level, :_destroy]
+      # Permit :quantity for inventory nested attributes
+      inventory_attributes: [:id, :quantity, :warehouse_location, :reorder_level, :_destroy]
     )
   end
+
+  # Placeholder for login check
+  # def require_login
+  #   # ... your logic
+  # end
 end
