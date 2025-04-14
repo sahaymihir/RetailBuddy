@@ -14,4 +14,6 @@ class User < ApplicationRecord
   def to_param
     userid.to_i.to_s # Convert the decimal userid to integer, then back to string
   end
+
+  has_many :invoices
 end

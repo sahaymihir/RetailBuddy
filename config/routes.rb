@@ -11,7 +11,9 @@ Rails.application.routes.draw do
 
   # Logout route (add explicit route name)
   delete "/logout", to: "sessions#destroy", as: :logout
-
+  
+  resources :products 
+  resources :categories
   get '/inventory', to: 'inventory#index', as: 'inventory'
   
   resources :billing

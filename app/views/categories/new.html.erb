@@ -1,0 +1,28 @@
+<%# app/views/categories/new.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - New Category</title>
+    <%# Include necessary stylesheets - REQUIRED HERE since no layout is used %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %> <%# For form/container styling %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_importmap_tags %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+     <%# You might want a consistent header/navigation partial here %>
+    <div class="admin-page-container"> <%# Use consistent container class %>
+      <h1 class="admin-title">New Category</h1>
+      <%# Render the form partial - the partial itself should NOT have HTML/HEAD/BODY %>
+      <%= render 'form', category: @category %>
+    </div>
+     <%# You might want a consistent footer partial here %>
+</body>
+</html>

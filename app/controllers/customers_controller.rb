@@ -1,69 +1,82 @@
 # app/controllers/customers_controller.rb
 class CustomersController < ApplicationController
   before_action :require_login
-  layout false # Render views without a layout
+  before_action :set_customer, only: [:show, :edit, :update, :destroy] # Add actions that need @customer
+  # If rendering full HTML pages:
+  # layout false
 
-  # GET /customers
   def index
-    # Fetch customers - add search/pagination later
-    # @customers = Customer.all
-    @customers = [] # Placeholder for now
-  end
-
-  # GET /customers/1
-  def show
-    # @customer = Customer.find(params[:id])
-    # Placeholder
+    @customers = Customer.all
+    # --- Add Search Logic ---
+    if params[:search_query].present?
+      query_term = "%#{params[:search_query]}%"
+      # Search across multiple fields (adjust for Oracle case-insensitivity)
+      @customers = @customers.where(
+        "UPPER(name) LIKE UPPER(:search) OR UPPER(email) LIKE UPPER(:search) OR phone LIKE :search",
+        search: query_term
+      )
+    end
+    # --- End Search Logic ---
+    @customers = @customers.order(:name) # Order results
   end
 
   # GET /customers/new
   def new
-    # @customer = Customer.new
-    # Placeholder
-  end
-
-  # GET /customers/1/edit
-  def edit
-    # @customer = Customer.find(params[:id])
-    # Placeholder
+    @customer = Customer.new
   end
 
   # POST /customers
   def create
-    # @customer = Customer.new(customer_params)
-    # if @customer.save
-    #   redirect_to customers_path, notice: 'Customer was successfully created.'
-    # else
-    #   render :new, status: :unprocessable_entity
-    # end
-    # Placeholder redirect
-    redirect_to customers_path, notice: "Customer creation logic needed."
+    @customer = Customer.new(customer_params)
+    if @customer.save
+      redirect_to customers_path, notice: 'Customer was successfully created.'
+    else
+      flash.now[:alert] = "Failed to create customer."
+      render :new, status: :unprocessable_entity
+    end
   end
 
-  # PATCH/PUT /customers/1
+  # GET /customers/:id/edit - Action for the Edit button link
+  def edit
+    # @customer is set by before_action
+  end
+
+  # PATCH/PUT /customers/:id - Action for submitting the Edit form
   def update
-     # @customer = Customer.find(params[:id])
-     # if @customer.update(customer_params)
-     #   redirect_to customers_path, notice: 'Customer was successfully updated.'
-     # else
-     #   render :edit, status: :unprocessable_entity
-     # end
-     # Placeholder redirect
-     redirect_to customers_path, notice: "Customer update logic needed."
+    if @customer.update(customer_params)
+      redirect_to customers_path, notice: 'Customer was successfully updated.'
+    else
+      flash.now[:alert] = "Failed to update customer."
+      render :edit, status: :unprocessable_entity # Re-render edit form with errors
+    end
   end
 
-  # DELETE /customers/1
+  # DELETE /customers/:id - Action for the Delete button
   def destroy
-    # @customer = Customer.find(params[:id])
-    # @customer.destroy
-    # redirect_to customers_url, notice: 'Customer was successfully destroyed.'
-    # Placeholder redirect
-    redirect_to customers_path, notice: "Customer deletion logic needed."
+    begin
+      @customer.destroy!
+      redirect_to customers_path, notice: 'Customer was successfully deleted.', status: :see_other
+    rescue => e
+      redirect_to customers_path, alert: "Failed to delete customer: #{e.message}"
+    end
+  end
+
+  # GET /customers/:id (Optional Show action)
+  def show
+    # @customer is set by before_action
   end
 
   private
-  # Only allow a list of trusted parameters through.
-  # def customer_params
-  #   params.require(:customer).permit(:Name, :Email, :Phone, :Address) # Use exact column names from ERD
-  # end
+
+  def set_customer
+    @customer = Customer.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+     redirect_to customers_path, alert: "Customer not found."
+  end
+
+  # Define permitted parameters using lowercase symbols matching model attributes
+  def customer_params
+    params.require(:customer).permit(:name, :email, :phone, :address)
+  end
+
 end

@@ -1,0 +1,28 @@
+<%# app/views/categories/_form.html.erb %>
+<%= form_with(model: category, local: true) do |form| %>
+  <% if category.errors.any? %>
+    <div style="color: red;">
+      <h2><%= pluralize(category.errors.count, "error") %> prohibited this category from being saved:</h2>
+      <ul>
+        <% category.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="input-group">
+    <%= form.label :category_name %>
+    <%= form.text_field :category_name %>
+  </div>
+
+  <div class="input-group">
+    <%= form.label :description %>
+    <%= form.text_area :description, rows: 4 %>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit class: "action-btn primary" %>
+    <%= link_to "Cancel", categories_path, class: "action-btn secondary" %>
+  </div>
+<% end %>

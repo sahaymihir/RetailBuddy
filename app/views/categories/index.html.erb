@@ -1,0 +1,62 @@
+<%# app/views/categories/index.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Manage Categories</title>
+    <%# Include necessary stylesheets - REQUIRED HERE since no layout is used %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %> <%# Assumes styles like admin-table-container are here %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_importmap_tags %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <%# You might want a consistent header/navigation partial here %>
+    <div class="admin-page-container"> <%# Use a consistent container class %>
+      <div class="inventory-header"> <%# Reuse styling if appropriate %>
+        <h1 class="inventory-title">Manage Categories</h1>
+        <div class="inventory-actions">
+           <%= link_to "Add New Category", new_category_path, class: "action-btn primary" %>
+           <%= link_to "Back to Inventory", inventory_path, class: "action-btn secondary" %>
+         </div>
+      </div>
+
+      <div class="admin-table-container"> <%# Reuse admin table styling if available %>
+        <table class="admin-users-table"> <%# Reuse admin table styles %>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if defined?(@categories) && @categories.present? %>
+              <% @categories.each do |category| %>
+                <tr>
+                  <td><%= category.category_name %></td>
+                  <td><%= category.description %></td>
+                  <td class="table-actions">
+                    <%= link_to '<i class="fas fa-edit"></i>'.html_safe, edit_category_path(category) %>
+                    <%= button_to '<i class="fas fa-trash"></i>'.html_safe, category_path(category), method: :delete, class: 'delete-btn', form: { data: { turbo_confirm: 'Are you sure? Deleting a category cannot be undone.' } } %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="3" class="no-products-message">No categories found.</td> <%# Adjust colspan %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+     <%# You might want a consistent footer partial here %>
+</body>
+</html>

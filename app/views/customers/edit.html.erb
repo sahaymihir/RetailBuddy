@@ -1,0 +1,104 @@
+<%# app/views/customers/edit.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Edit Customer</title>
+    <%# Include necessary stylesheets %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %> <%# For form styling consistency %>
+    <%= stylesheet_link_tag "customers", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_importmap_tags %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <%# --- EMBEDDED CSS --- %>
+     <%# --- EMBEDDED CSS --- %>
+    <style>
+      /* ... styles for select, textarea, inputs ... */
+      .admin-page-container .input-group select,
+      .admin-page-container .input-group textarea,
+      .admin-page-container .input-group input[type="text"],
+      .admin-page-container .input-group input[type="email"],
+      .admin-page-container .input-group input[type="number"],
+      .admin-page-container .input-group input[type="password"] {
+          width: 100%; padding: 12px 15px; background-color: var(--input-bg);
+          color: var(--text-color); border: 1px solid var(--border-color);
+          border-radius: var(--border-radius-sm); line-height: normal;
+          box-sizing: border-box; height: calc(1.5em + 24px + 2px); display: block;
+          text-align: left !important; font-family: inherit; font-size: inherit;
+      }
+      .admin-page-container .input-group textarea {
+          min-height: 80px; height: auto; line-height: 1.5; resize: vertical;
+      }
+      .admin-page-container .input-group select:focus,
+      .admin-page-container .input-group textarea:focus,
+      .admin-page-container .input-group input:focus {
+          outline: none; border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+      }
+
+      /* Style to remove underline from action buttons/links */
+      .admin-page-container .form-actions a.action-btn,
+      .admin-page-container .form-actions a.action-btn:visited,
+      .admin-page-container .form-actions a.action-btn:hover,
+      .admin-page-container .form-actions a.action-btn:active {
+          text-decoration: none !important; /* Remove underline */
+      }
+    </style>
+</head>
+<body>
+    <div class="admin-page-container"> <%# Use consistent container class %>
+      <h1 class="admin-title">Edit Customer</h1>
+
+      <%# --- EMBEDDED FORM for Customer --- %>
+      <%# Ensure @customer is loaded by the controller's 'edit' action %>
+      <%= form_with(model: @customer, url: customer_path(@customer), method: :patch, local: true) do |form| %>
+        <%# Display errors if any %>
+        <% if @customer.errors.any? %>
+          <div style="color: red;">
+            <h2><%= pluralize(@customer.errors.count, "error") %> prohibited this customer from being saved:</h2>
+            <ul>
+              <% @customer.errors.each do |error| %>
+                <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%# Use lowercase attribute names for form fields %>
+        <div class="input-group">
+          <%= form.label :name %>
+          <%= form.text_field :name, required: true %>
+        </div>
+
+        <div class="input-group">
+          <%= form.label :email %>
+          <%= form.email_field :email %>
+        </div>
+
+        <div class="input-group">
+          <%= form.label :phone %>
+          <%= form.text_field :phone %>
+        </div>
+
+        <div class="input-group">
+          <%= form.label :address %>
+          <%= form.text_area :address, rows: 4 %>
+        </div>
+
+        <div class="form-actions">
+          <%= form.submit "Update Customer", class: "action-btn primary" %>
+          <%= link_to "Cancel", customers_path, class: "action-btn secondary" %>
+        </div>
+      <% end %>
+      <%# --- END EMBEDDED FORM --- %>
+
+    </div>
+</body>
+</html>

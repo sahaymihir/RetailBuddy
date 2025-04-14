@@ -1,0 +1,122 @@
+<%# app/views/products/new.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Add New Product</title>
+    <%# External Stylesheets %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_importmap_tags %>
+    <%# External Fonts/Icons %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <%# --- EMBEDDED CSS --- %>
+    <style>
+      /* Style for Category Select Dropdown */
+      .admin-page-container .input-group select {
+          width: 100%;
+          padding: 12px 15px;
+          background-color: var(--input-bg);
+          color: var(--text-color);
+          border: 1px solid var(--border-color);
+          border-radius: var(--border-radius-sm);
+          line-height: normal;
+          box-sizing: border-box;
+          height: calc(1.5em + 24px + 2px);
+          display: block;
+      }
+       .admin-page-container .input-group select:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+      }
+
+      /* --- ADDED: Style to remove underline from action buttons/links --- */
+      .admin-page-container .form-actions a.action-btn,
+      .admin-page-container .form-actions a.action-btn:visited,
+      .admin-page-container .form-actions a.action-btn:hover,
+      .admin-page-container .form-actions a.action-btn:active {
+          text-decoration: none !important; /* Remove underline */
+          /* Add other button styles if needed, e.g., ensure correct color */
+          /* color: var(--text-secondary); */
+      }
+      /* Also target buttons if needed, although they usually don't underline */
+      .admin-page-container .form-actions button.action-btn {
+         /* Add styles if needed */
+      }
+      /* --- END ADDED CSS --- */
+
+    </style>
+    <%# --- END EMBEDDED CSS --- %>
+
+</head>
+<body>
+    <div class="admin-page-container">
+      <h1 class="admin-title">Add New Product</h1>
+
+      <%# --- EMBEDDED FORM --- %>
+      <%= form_with(model: @product, local: true) do |form| %>
+        <%# ... Error display ... %>
+         <% if @product.errors.any? %>
+          <div style="color: red;">
+            <h2><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h2>
+            <ul>
+              <% @product.errors.each do |error| %>
+                <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+         <% end %>
+
+        <%# ... Product fields ... %>
+         <div class="input-group">
+           <%= form.label :product_name %>
+           <%= form.text_field :product_name %>
+         </div>
+         <div class="input-group">
+           <%= form.label :category_id %>
+           <%= form.collection_select :category_id, @categories, :id, :category_name, { prompt: 'Select a Category' } %>
+         </div>
+         <div class="input-group">
+           <%= form.label :price %>
+           <%= form.number_field :price, step: '0.01' %>
+         </div>
+         <div class="input-group">
+           <%= form.label :stock_quantity %>
+           <%= form.number_field :stock_quantity %>
+         </div>
+
+        <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+        <h2>Inventory Details</h2>
+
+        <%# ... Nested inventory fields ... %>
+        <%= form.fields_for :inventory do |inventory_form| %>
+          <div class="input-group">
+            <%= inventory_form.label :warehouse_location %>
+            <%= inventory_form.text_field :warehouse_location %>
+          </div>
+          <div class="input-group">
+            <%= inventory_form.label :reorder_level %>
+            <%= inventory_form.number_field :reorder_level %>
+          </div>
+        <% end %>
+
+        <div class="form-actions">
+          <%# This submit button usually won't have an underline %>
+          <%= form.submit "Create Product", class: "action-btn primary" %>
+          <%# This link_to needs the underline removed via CSS %>
+          <%= link_to "Cancel", inventory_path, class: "action-btn secondary" %>
+        </div>
+      <% end %>
+      <%# --- END EMBEDDED FORM --- %>
+
+    </div>
+</body>
+</html>

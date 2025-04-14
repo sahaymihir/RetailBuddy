@@ -153,9 +153,6 @@
     justify-content: flex-end; /* Align buttons right */
     gap: 1rem;
 }
-.admin-form .form-actions .action-btn {
-    /* Base action button styles */
-}
 .admin-form .form-actions .action-btn.secondary {
    background-color: var(--button-bg);
    border-color: var(--border-color);
