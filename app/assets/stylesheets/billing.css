@@ -558,99 +558,100 @@
 }
 */
 
+/* === Tom Select Styling (Billing Page - Customer Select - Dark Mode Only) === */
+
+/* Base wrapper style */
+.customer-controls .ts-wrapper {
+  /* No specific styles needed unless for layout */
+}
+
+/* Main control input appearance */
 .customer-controls .ts-wrapper .ts-control,
 .customer-controls .ts-wrapper.single.input-active .ts-control {
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm, 4px); /* Use theme variable or default */
-  padding: 8px 12px; /* Adjust to match other inputs */
+  border-radius: var(--border-radius-sm, 4px);
+  padding: 8px 12px; /* Adjust padding as needed */
   box-shadow: none;
-  min-height: 38px; /* Adjust to match other inputs */
-  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out, background-color .15s ease-in-out; /* Add transitions */
+  min-height: 38px; /* Match other inputs */
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out, background-color .15s ease-in-out, color .15s ease-in-out;
+  display: flex; /* Helps align items inside */
+  align-items: center;
+  /* Dark Mode specific background/color */
+  background-color: var(--input-bg);
+  color: var(--text-color);
 }
 
-/* --- Light Mode Styles --- */
-body.light-mode .customer-controls .ts-wrapper .ts-control {
-  background-color: var(--card-bg);    /* Light background */
-  color: var(--text-color);           /* Dark text */
-  border-color: var(--border-color);    /* Light border */
+/* Input field *inside* the control (where user types) */
+.customer-controls .ts-wrapper.single .ts-control input {
+    color: var(--text-color) !important; /* Force text color */
+    background-color: transparent !important; /* Ensure transparent background */
+    padding: 0; /* Reset padding if needed */
+    margin: 0;
+    font-size: inherit; /* Match control font size */
+    line-height: inherit;
+    flex-grow: 1; /* Allow input to take space */
+    box-shadow: none !important; /* Prevent inner shadows */
+    border: none !important; /* Prevent inner borders */
 }
-body.light-mode .customer-controls .ts-wrapper.focus .ts-control { /* Focus */
-   border-color: var(--primary-color);
-   box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2); /* Use primary color - Define --primary-rgb if needed */
-}
-body.light-mode .customer-controls .ts-control > input::placeholder {
+.customer-controls .ts-wrapper.single .ts-control input::placeholder {
    color: var(--text-secondary);
    opacity: 1;
 }
-body.light-mode .ts-dropdown { /* Dropdown container */
+
+/* Selected item appearance */
+.customer-controls .ts-control .ts-item {
+    background-color: var(--primary-color); /* Color for selected item */
+    color: white; /* Text color for selected item */
+    border-radius: 3px;
+    padding: 2px 6px;
+    margin-right: 5px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.9em;
+}
+/* Ensure text inside selected item has contrast */
+.customer-controls .ts-control .ts-item span {
+     color: white !important;
+}
+
+/* Focus state */
+.customer-controls .ts-wrapper.focus .ts-control {
+   background-color: var(--input-bg); /* Keep dark background on focus */
+   border-color: var(--primary-color);
+   box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.25); /* Use primary color RGB with alpha */
+}
+
+/* --- Dropdown Styling --- */
+.ts-dropdown {
+  border-radius: var(--border-radius-sm);
+  box-shadow: 0 4px 10px var(--shadow-color);
+  overflow: hidden;
+  margin-top: 4px;
+  z-index: 10; /* Ensure dropdown appears above other elements */
+  /* Dark Mode specific */
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
   color: var(--text-color);
 }
-body.light-mode .ts-dropdown .ts-option { /* Options */
-  color: var(--text-color);
+.ts-dropdown .ts-dropdown-content {
+    max-height: 250px; /* Limit dropdown height */
+    overflow-y: auto;
+}
+.ts-dropdown .ts-option { /* Options */
   padding: 8px 12px;
+  cursor: pointer;
+  color: var(--text-color); /* Dark mode text color */
 }
-body.light-mode .ts-dropdown .ts-option:hover,
-body.light-mode .ts-dropdown .active:not(.create) { /* Hover/active option */
-  background-color: var(--input-bg); /* Light hover background */
-  color: var(--text-color);
+.ts-dropdown .ts-option:hover,
+.ts-dropdown .active:not(.create) { /* Hover/active option */
+  background-color: var(--secondary-color); /* Dark hover color */
+  color: white; /* Ensure contrast */
 }
- body.light-mode .ts-dropdown .active.selected { /* Selected option */
+ .ts-dropdown .active.selected { /* Selected option in dropdown */
     background-color: var(--primary-color);
     color: white;
  }
-
-/* --- Dark Mode Styles --- */
-body:not(.light-mode) .customer-controls .ts-wrapper .ts-control {
-  background-color: var(--input-bg); /* Dark input background */
-  color: var(--text-color);          /* Light text */
-  border-color: var(--input-bg);    /* Match background or use --border-color */
-}
- body:not(.light-mode) .customer-controls .ts-wrapper.focus .ts-control { /* Focus */
-   background-color: var(--input-bg); /* Keep dark background */
-   border-color: var(--primary-color);
-   box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.25); /* Define --primary-rgb if needed */
-}
-body:not(.light-mode) .customer-controls .ts-control > input::placeholder {
-   color: var(--text-secondary);
-   opacity: 1;
-}
-body:not(.light-mode) .ts-dropdown { /* Dropdown container */
-  background-color: var(--card-bg); /* Use dark card background */
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-}
-body:not(.light-mode) .ts-dropdown .ts-option { /* Options */
-  color: var(--text-color);
-  padding: 8px 12px;
-}
-body:not(.light-mode) .ts-dropdown .ts-option:hover,
-body:not(.light-mode) .ts-dropdown .active:not(.create) { /* Hover/active option */
-  background-color: var(--secondary-color); /* Use a dark hover color */
-  color: white;                            /* Ensure contrast */
-}
- body:not(.light-mode) .ts-dropdown .active.selected { /* Selected option */
-    background-color: var(--primary-color);
-    color: white;
- }
-
- /* Selected item appearance (both modes) */
- .customer-controls .ts-control .ts-item {
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 3px;
-    padding: 2px 6px;
-    margin-right: 5px; /* Add some spacing */
-    display: inline-flex; /* Ensure proper display */
-    align-items: center;
- }
- /* Input text color inside Tom Select (both modes) */
-.customer-controls .ts-wrapper.single .ts-control input {
-    color: var(--text-color) !important; /* Force correct text color */
-    background-color: transparent !important; /* Ensure input BG is transparent */
-    padding-left: 0; /* Reset padding if needed */
-}
+/* === End Tom Select Styling === */
 
 .bill-items-table td .quantity-input {
   /* Size */

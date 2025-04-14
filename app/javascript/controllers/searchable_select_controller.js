@@ -1,84 +1,76 @@
 // app/javascript/controllers/searchable_select_controller.js
 import { Controller } from "@hotwired/stimulus";
 
+// Import TomSelect library if it's not globally available via the asset pipeline or CDN
+// Ensure TomSelect is properly pinned in your config/importmap.rb
+// Example: pin "tom-select", to: "https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.js"
+// import TomSelect from "tom-select"; // Uncomment if you need to import it directly
+
 // Connects to data-controller="searchable-select"
 export default class extends Controller {
+  static values = {
+    // Define any configuration options you might want to pass from HTML
+    // Example: create: Boolean // default would be false
+  }
+
   connect() {
+    // Check if TomSelect is available (either globally via window or imported)
+    const TomSelectConstructor = window.TomSelect; // || TomSelect; // Use imported if needed
+    if (typeof TomSelectConstructor === 'undefined') {
+        console.error("TomSelect library not found. Make sure it's pinned in importmap.rb and loaded, or imported here.");
+        return;
+    }
+
+    // Prevent re-initialization
     if (this.element.tomselect) {
-      // console.warn("TomSelect already initialized on this element."); // Optional logging
+      console.warn("TomSelect already initialized on this element.");
       return;
     }
 
+    // Ensure the controller is attached to a SELECT element
     if (this.element.tagName !== "SELECT") {
       console.error("SearchableSelect controller must be attached to a SELECT element.");
       return;
     }
 
-    try {
-      this.select = new window.TomSelect(this.element, {
-        create: false,
+    // Default Tom Select options
+    const defaultOptions = {
+        create: this.hasCreateValue ? this.createValue : false, // Allow overriding create via data-searchable-select-create-value="true"
         sortField: {
-          field: "text",
-          direction: "asc"
-        }
-        // Add other Tom Select options here if needed
-      });
+            field: "text",
+            direction: "asc"
+        },
+        // Add a placeholder if the select element has one
+        placeholder: this.element.getAttribute('placeholder'),
+        // Add more default Tom Select options here if needed
+        // render: { // Example: Custom rendering if needed later
+        //   option: function(data, escape) {
+        //     return `<div>${escape(data.text)}</div>`;
+        //   },
+        //   item: function(item, escape) {
+        //      return `<div>${escape(item.text)}</div>`;
+        //    }
+        // }
+    };
 
-      // --- Force Styles After Initialization ---
-      this.applyStyles();
-      // Optional: Observe theme changes if you have a theme toggle
-      // document.addEventListener('theme:change', this.applyStyles.bind(this));
+    try {
+        // Initialize Tom Select
+        this.select = new TomSelectConstructor(this.element, defaultOptions);
+        console.log("TomSelect initialized successfully.");
+
+        // NO JS styling applied here - rely on billing.css
 
     } catch (error) {
-      console.error("Error initializing TomSelect:", error);
+        console.error("Error initializing TomSelect:", error, this.element);
     }
   }
-
-  // --- NEW Method to Apply Styles ---
-  applyStyles() {
-    if (!this.select || !this.select.control) return; // Ensure TomSelect is initialized
-
-    const controlElement = this.select.control; // The main input div
-    const isLightMode = document.body.classList.contains('light-mode');
-
-    // Get colors from CSS variables (safer than hardcoding)
-    const rootStyle = getComputedStyle(document.documentElement);
-    const darkBg = rootStyle.getPropertyValue('--input-bg').trim() || '#2d2d2d';
-    const lightBg = rootStyle.getPropertyValue('--card-bg').trim() || '#ffffff';
-    const darkText = rootStyle.getPropertyValue('--text-color').trim() || '#f8f9fa'; // Assuming --text-color is light in dark mode
-    const lightText = '#333333'; // Assuming default dark text for light mode
-    const darkBorder = darkBg; // Match background
-    const lightBorder = '#ccc';
-
-    if (isLightMode) {
-      controlElement.style.backgroundColor = lightBg;
-      controlElement.style.borderColor = lightBorder;
-      controlElement.style.color = lightText;
-       // Style inner input if accessible (may vary by TomSelect version)
-       if (this.select.control_input) {
-            this.select.control_input.style.color = lightText;
-       }
-    } else {
-      // Dark Mode
-      controlElement.style.backgroundColor = darkBg;
-      controlElement.style.borderColor = darkBorder;
-      controlElement.style.color = darkText;
-       // Style inner input if accessible
-       if (this.select.control_input) {
-           this.select.control_input.style.color = darkText;
-       }
-    }
-     // Ensure placeholder color is also set correctly (might need ::placeholder CSS still)
-  }
-
 
   disconnect() {
-    // Optional: Remove theme change listener if added
-    // document.removeEventListener('theme:change', this.applyStyles.bind(this));
-
+    // Destroy Tom Select instance when the controller disconnects
     if (this.select) {
       this.select.destroy();
-      this.select = null; // Clear reference
+      this.select = null; // Clear the reference
+      console.log("TomSelect instance destroyed.");
     }
   }
 }

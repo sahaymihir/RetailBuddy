@@ -325,33 +325,52 @@ export default class extends Controller {
     let overallSubtotal = 0;
     let overallTotalTax = 0;
 
+    console.log("--- Calculating Totals ---"); // Log start
+
     const productRows = this.billItemsBodyTarget.querySelectorAll(
       "tr[data-product-id]"
     );
 
     productRows.forEach((row) => {
+      const productId = row.dataset.productId;
       const price = parseFloat(row.dataset.price) || 0;
+      // Ensure taxRate is read correctly, default to 0 if missing/invalid
       const taxRate = parseFloat(row.dataset.taxRate) || 0;
       const quantityInput = row.querySelector(".quantity-input");
       const quantity = parseInt(quantityInput ? quantityInput.value : 0, 10) || 0;
       const lineTotalCell = row.querySelector(".line-total");
 
+      // Log data being used for each row
+      console.log(`Row - ID: ${productId}, Price: ${price}, Qty: ${quantity}, Tax Rate: ${taxRate}%`);
+
       if (quantity >= 0) {
         const lineSubtotal = price * quantity;
-        const lineTax = lineSubtotal * (taxRate / 100);
+        // Calculate line tax using the rate from dataset
+        const lineTax = lineSubtotal * (taxRate / 100.0); // Use float division
         overallSubtotal += lineSubtotal;
         overallTotalTax += lineTax;
+
+        // Log calculated amounts for the line
+        console.log(`  -> Line Subtotal: ${this.formatCurrency(lineSubtotal)}, Line Tax: ${this.formatCurrency(lineTax)}`);
+
 
         if (lineTotalCell) {
           lineTotalCell.textContent = this.formatCurrency(lineSubtotal);
         }
       } else if (lineTotalCell) {
+        // Handle invalid quantity case if needed, though min="1" should prevent this
         lineTotalCell.textContent = this.formatCurrency(0);
+         console.log(`  -> Invalid Quantity (${quantity})`);
       }
     });
 
     const grandTotal = overallSubtotal + overallTotalTax;
 
+    // Log the final calculated totals
+    console.log(`Final - Subtotal: ${this.formatCurrency(overallSubtotal)}, Tax: ${this.formatCurrency(overallTotalTax)}, Grand Total: ${this.formatCurrency(grandTotal)}`);
+    console.log("--- Finished Calculating Totals ---");
+
+    // Update the summary display elements
     if (this.hasSummarySubtotalTarget) {
       this.summarySubtotalTarget.textContent =
         this.formatCurrency(overallSubtotal);
@@ -363,6 +382,15 @@ export default class extends Controller {
     if (this.hasSummaryGrandTotalTarget) {
       this.summaryGrandTotalTarget.textContent =
         this.formatCurrency(grandTotal);
+    }
+
+    // Also check if the "No Items" message should be shown/hidden
+    if (this.hasNoItemsRowTarget) {
+        if (productRows.length === 0) {
+            this.noItemsRowTarget.classList.remove("hidden");
+        } else {
+            this.noItemsRowTarget.classList.add("hidden");
+        }
     }
   }
 
