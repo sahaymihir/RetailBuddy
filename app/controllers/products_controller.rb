@@ -80,17 +80,6 @@ class ProductsController < ApplicationController
       product_category = product.category
       tax_rate = product_category&.tax_percentage || 0.0
 
-      # --- Logging (Keep this for debugging) ---
-      Rails.logger.info "====== Product Search Debug ======"
-      Rails.logger.info "Product ID: #{product.id}, Name: #{product.product_name}"
-      Rails.logger.info "Category ID: #{product.category_id}"
-      Rails.logger.info "Loaded Category Object: #{product_category.inspect}"
-      Rails.logger.info "Category Name: #{product_category&.name}"
-      Rails.logger.info "Tax Percentage from Category: #{product_category&.tax_percentage}"
-      Rails.logger.info "Determined tax_rate for JSON: #{tax_rate}"
-      Rails.logger.info "=================================="
-      # --- END LOGGING ---
-
       {
         id: product.id,
         product_name: product.product_name,

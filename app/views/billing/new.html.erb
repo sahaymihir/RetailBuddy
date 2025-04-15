@@ -17,7 +17,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= javascript_importmap_tags %> <%# Loads Stimulus controllers via importmap %>
-
+    <%= favicon_link_tag "retail_icon.png?v=#{Rails.application.config.assets.version}", type: 'image/png' %>
     <%# External Libraries & Fonts %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -36,7 +36,7 @@
         <header class="billing-header">
             <%# Link to the success/dashboard page (verified route) %>
             <%= link_to success_path_path, class: "billing-title-link", style: "text-decoration: none;" do %>
-               <h1 class="billing-main-title">Point of Sale</h1>
+            <h1 class="billing-main-title">Point of Sale</h1>
             <% end %>
         </header>
 
@@ -53,13 +53,7 @@
                 <div class="product-search-container mb-3">
                     <div class="input-group">
                         <i class="fas fa-search input-icon"></i>
-                        <input type="search" <%# Use type="search" for better semantics %>
-                               id="product-search-input"
-                               placeholder="Search products..."
-                               class="input-field w-full"
-                               data-product-search-target="searchInput" <%# Target for controller %>
-                               data-action="input->product-search#search" <%# Action triggers search %>
-                               autocomplete="off">
+                        <input type="search" <%# Use type="search" for better semantics %> id="product-search-input" placeholder="Search products..." class="input-field w-full" data-product-search-target="searchInput" <%# Target for controller %> data-action="input->product-search#search" <%# Action triggers search %> autocomplete="off">
                     </div>
                 </div>
                 <%# --- End Product Search Input Area --- %>
@@ -70,9 +64,9 @@
                     <ul class="product-items list-group" data-product-search-target="productListContainer">
                         <%# Initial products rendered server-side using the partial (verified structure) %>
                         <% if defined?(@products) && @products.present? %>
-                           <%= render partial: "products/product_list_item", collection: @products, as: :product %>
+                        <%= render partial: "products/product_list_item", collection: @products, as: :product %>
                         <% else %>
-                           <li class="list-group-item text-muted empty-list-message">No products found.</li>
+                        <li class="list-group-item text-muted empty-list-message">No products found.</li>
                         <% end %>
                     </ul>
                     <%# --- End Product List Container --- %>
@@ -89,23 +83,19 @@
                     <div class="customer-controls" style="display: flex; align-items: center; gap: 10px;">
                         <div class="input-group" style="flex-grow: 1;">
                             <%# Customer select initialized by searchable-select controller (TomSelect) %>
-                            <select id="customer-select" <%# ID used by billing_controller.js %>
-                                    name="invoice[customer_id]"
-                                    class="select-field w-full"
-                                    data-controller="searchable-select" <%# Attaches TomSelect via JS %>
-                                    placeholder="Select Customer (Optional)">
+                            <select id="customer-select" <%# ID used by billing_controller.js %> name="invoice[customer_id]" class="select-field w-full" data-controller="searchable-select" <%# Attaches TomSelect via JS %>>
                                 <option value="">Select Customer (Optional)</option> <%# Required default %>
                                 <%# Populate options - verified this works %>
                                 <% if defined?(@customers) && @customers.present? %>
-                                   <% @customers.each do |customer| %>
-                                      <option value="<%= customer.id %>"><%= customer.name %> (<%= customer.phone || 'No Phone' %>)</option>
-                                   <% end %>
+                                <% @customers.each do |customer| %>
+                                <option value="<%= customer.id %>"><%= customer.name %> (<%= customer.phone || 'No Phone' %>)</option>
+                                <% end %>
                                 <% end %>
                             </select>
                         </div>
                         <%# Link to add a new customer (verified route) %>
                         <%= link_to new_customer_path, class: "action-btn add-customer-btn", style: "text-decoration: none; white-space: nowrap;" do %>
-                           <i class="fas fa-plus"></i> New
+                        <i class="fas fa-plus"></i> New
                         <% end %>
                     </div>
                 </div>
@@ -147,10 +137,6 @@
                         <span data-billing-target="summarySubtotal">₹0.00</span> <%# Target for subtotal %>
                     </div>
                     <div class="summary-item">
-                        <span>Discount</span>
-                        <span>₹0.00</span> <%# Placeholder - Add target if dynamic %>
-                    </div>
-                     <div class="summary-item">
                         <span>Tax (Est.)</span>
                         <span data-billing-target="summaryTotalTax">₹0.00</span>
                     </div>
@@ -165,32 +151,24 @@
                 <h3 class="billing-section-header">Payment Method</h3>
                 <%# --- Payment Method Buttons --- %>
                 <div class="payment-methods mb-3">
-                     <button class="payment-btn action-btn"
-                             data-method="Cash"
-                             data-billing-target="paymentBtn" <%# Target for styling %>
-                             data-action="click->billing#selectPaymentMethod click->billing#handlePaymentDisplay"> <%# Actions for JS %>
-                         <i class="fas fa-money-bill-wave"></i> Cash
-                     </button>
-                     <button class="payment-btn action-btn"
-                             data-method="UPI"
-                             data-billing-target="paymentBtn" <%# Target for styling %>
-                             data-action="click->billing#selectPaymentMethod click->billing#handlePaymentDisplay"> <%# Actions for JS %>
-                         <i class="fas fa-mobile-alt"></i> UPI
-                     </button>
-                     <%# Add other payment methods here if needed %>
-                 </div>
-                 <%# --- End Payment Method Buttons --- %>
+                    <button class="payment-btn action-btn" data-method="Cash" data-billing-target="paymentBtn" data-action="click->billing#selectPaymentMethod"> <%# Correct: Only calls selectPaymentMethod %>
+                        <i class="fas fa-money-bill-wave"></i> Cash
+                    </button>
+                    <button class="payment-btn action-btn" data-method="UPI" data-billing-target="paymentBtn" data-action="click->billing#selectPaymentMethod"> <%# Correct: Only calls selectPaymentMethod %>
+                        <i class="fas fa-mobile-alt"></i> UPI
+                    </button>
+                    <%# Add other payment methods here if needed %>
+                </div>
+                <%# --- End Payment Method Buttons --- %>
 
                 <%# --- Action Buttons --- %>
                 <div class="finalize-actions">
-                    <button class="action-btn primary finalize-btn"
-                            id="finalize-bill-btn"
-                            data-action="click->billing#finalizeBill"> <%# Action to submit the bill %>
+                    <button class="action-btn primary finalize-btn" id="finalize-bill-btn" data-action="click->billing#finalizeBill"> <%# Action to submit the bill %>
                         <i class="fas fa-check-circle"></i> Finalize Bill
                     </button>
                     <%# Cancel button (verified route) %>
                     <%= link_to success_path_path, class: "action-btn secondary cancel-btn", id: "cancel-bill-btn", style: "text-decoration: none;" do %>
-                       <i class="fas fa-times-circle"></i> Cancel
+                    <i class="fas fa-times-circle"></i> Cancel
                     <% end %>
                 </div>
                 <%# --- End Action Buttons --- %>
@@ -202,10 +180,35 @@
 
             </section> <%# End Summary & Payment Column %>
 
+            <div data-billing-target="qrModal" class="qr-modal hidden"> <%# Initially hidden, add 'qr-modal' class for styling %>
+
+                <%# Close Button %>
+                <button class="qr-modal-close-btn" data-action="click->billing#closeUpiModalAndPrompt" <%# New action %> aria-label="Close QR Code Modal">
+                    &times; <%# Simple 'X' character %>
+                </button>
+
+                <%# Modal Content %>
+                <div class="qr-modal-content">
+                    <h3 class="qr-modal-title">Scan to Pay via UPI</h3>
+
+                    <%# QR Code Image Target %>
+                    <img data-billing-target="qrCodeImage" src="" <%# Src will be set by JS %> alt="Scan UPI QR Code" class="qr-code-image">
+
+                    <%# Payment Instructions Target %>
+                    <p data-billing-target="qrInstructions" class="qr-instructions">
+                        Scan to Pay: ₹0.00
+                    </p>
+
+                    <p class="qr-modal-footer-note">
+                        After payment, please wait for confirmation.
+                    </p>
+                </div>
+            </div>
         </div> <%# End billing-grid-container %>
 
     </div> <%# End billing-page-container %>
 
     <%# No need for extra JS includes if using importmap correctly %>
 </body>
-</html> 
+
+</html>

@@ -1,18 +1,31 @@
-<!-- app/views/products/_product_list_item.html.erb -->
-<li class="product-item list-group-item" data-product-id="<%= product.id %>" data-product-name="<%= product.product_name %>" data-product-price="<%= product.price.to_f %>">
-    <div class="d-flex justify-content-between align-items-center">
-      <div>
-        <span class="product-name"><%= product.product_name %></span>
-        <small class="product-meta d-block text-muted">
-          <%= number_to_currency(product.price || 0, unit: "₹") %>&nbsp;
-
-          <%# Display stock using the alias attribute from Product model %>
-          <% stock = product.stock_quantity %>
-          <span class="badge <%= stock.to_i > 0 ? 'bg-success-soft' : 'bg-danger-soft' %> text-dark">
-            Stock: <%= stock.nil? ? 'N/A' : stock.to_i %>
-          </span>
+<li class="product-item list-group-item py-2" <%# Added py-2 class like JS version %>
+    data-product-id="<%= product.id %>" 
+    data-product-name="<%= product.product_name %>" 
+    data-product-price="<%= product.price.to_f %>"
+    data-product-tax-percentage="<%= product.applicable_tax_rate.to_f %>" 
+    data-product-stock="<%= product.stock_quantity.to_i %>"> <%# Added stock data attribute like JS version %>
+    
+    <div class="d-flex justify-content-between align-items-start"> <%# Match JS structure %>
+      <div class="product-info me-2"> <%# Wrapper like JS %>
+        <div class="d-flex align-items-center product-name-button-wrapper mb-1"> <%# Wrapper like JS %>
+          <span class="product-name product-name-small me-2"><%= product.product_name %></span> <%# Added classes like JS %>
+          
+          <%# Updated Button: Use icon and classes closer to JS/Image appearance %>
+          <button class="btn btn-primary btn-sm product-add-btn" <%# Adjusted classes, kept btn-primary based on image color, added product-add-btn %>
+                  data-action="click->billing#addItem" 
+                  aria-label="Add <%= product.product_name %> to bill">
+             <i class="fas fa-plus"></i> <%# Use icon instead of text '+' %>
+          </button>
+        </div>
+        <small class="product-meta text-muted d-block"> <%# Price element like JS %>
+          <%= number_to_currency(product.price || 0, unit: "₹") %>
         </small>
       </div>
-      <button class="add-item-btn action-btn btn btn-sm btn-primary" aria-label="Add <%= product.product_name %> to bill" data-action="click->billing#addItem">+</button>
+      
+      <%# Stock Badge outside the main info block, like JS %>
+      <% stock = product.stock_quantity %>
+      <span class="badge <%= stock.to_i > 0 ? 'bg-success-soft' : 'bg-danger-soft' %> text-dark product-stock-badge"> <%# Added product-stock-badge class like JS %>
+        Stock: <%= stock.nil? ? 'N/A' : stock.to_i %>
+      </span>
     </div>
 </li>

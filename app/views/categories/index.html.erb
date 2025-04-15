@@ -6,64 +6,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RetailBuddy - Manage Categories</title>
+    <%# Ensure these stylesheets are loaded and contain the necessary theme variables/styles %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "inventory", "data-turbo-track": "reload" %>
-    <%# Assuming admin styles are included in application.css or loaded via layout %>
+    <%= favicon_link_tag "retail_icon.png?v=#{Rails.application.config.assets.version}", type: 'image/png' %>
+    <%# Add admin.css if it exists and contains relevant styles %>
+    <%# stylesheet_link_tag "admin", "data-turbo-track": "reload" %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= javascript_importmap_tags %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
+<body>
+    <%# Ensure your layout renders the navigation %>
     <%# render 'layouts/admin_navigation' %>
 
-    <div class="admin-page-container max-w-4xl mx-auto my-8 p-6 bg-white shadow-md rounded-lg">
-      <div class="inventory-header flex justify-between items-center mb-6">
-        <h1 class="inventory-title text-2xl font-semibold text-gray-800">Manage Categories</h1>
-        <div class="inventory-actions space-x-2">
-           <%= link_to '<i class="fas fa-plus mr-1"></i> Add New Category'.html_safe, new_category_path, class: "action-btn primary inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700" %>
-           <%= link_to '<i class="fas fa-boxes mr-1"></i> Back to Inventory'.html_safe, inventory_path, class: "action-btn secondary inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
-         </div>
-      </div>
-
-      <%# Flash Messages %>
-      <% flash.each do |type, msg| %>
-        <div class="p-3 rounded mb-4 <%= type == 'notice' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>" role="alert">
-          <%= msg %>
+    <%# Apply container style from inventory.css / dashboard.css %>
+    <div class="inventory-page-container"> <%# Changed class %>
+        <div class="inventory-header"> <%# Use class from inventory.css %>
+            <h1 class="inventory-title">Manage Categories</h1> <%# Use class from inventory.css %>
+            <div class="inventory-actions"> <%# Use class from inventory.css %>
+                <%# Apply action-btn and primary/secondary classes from inventory.css/dashboard.css %>
+                <%# Kept inline-flex/items-center/mr-1 for icon layout, can be moved to CSS if preferred %>
+                <%= link_to '<i class="fas fa-plus mr-1"></i> Add New Category'.html_safe, new_category_path, class: "action-btn primary inline-flex items-center" %>
+                <%= link_to '<i class="fas fa-boxes mr-1"></i> Back to Inventory'.html_safe, inventory_path, class: "action-btn secondary inline-flex items-center" %>
+            </div>
         </div>
-      <% end %>
 
-      <div class="admin-table-container overflow-x-auto">
-        <table class="admin-users-table w-full text-sm text-left text-gray-500">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3">Name</th>
-              <th scope="col" class="px-6 py-3 text-right">Tax (%)</th> <%# Added Tax Column %>
-              <th scope="col" class="px-6 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if defined?(@categories) && @categories.present? %>
-              <% @categories.each do |category| %>
-                <tr class="bg-white border-b hover:bg-gray-50">
-                  <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"><%= category.name %></td> <%# Corrected: use name %>
-                  <td class="px-6 py-4 text-right"><%= number_to_percentage(category.tax_percentage, precision: 2) %></td> <%# Added Tax Display %>
-                  <td class="px-6 py-4 text-center table-actions space-x-2">
-                    <%= link_to '<i class="fas fa-edit text-blue-500 hover:text-blue-700"></i>'.html_safe, edit_category_path(category), title: "Edit #{category.name}" %>
-                    <%= button_to '<i class="fas fa-trash text-red-500 hover:text-red-700"></i>'.html_safe, category_path(category), method: :delete, class: 'delete-btn inline-block', title: "Delete #{category.name}", form: { data: { turbo_confirm: "Are you sure you want to delete the category '#{category.name}'? This cannot be undone." } } %>
-                  </td>
-                </tr>
-              <% end %>
-            <% else %>
-              <tr class="bg-white border-b">
-                <td colspan="3" class="px-6 py-4 text-center text-gray-500">No categories found.</td> <%# Adjust colspan %>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+        <%# Flash Messages - Style these consistently, perhaps with specific classes like .flash-notice, .flash-alert %>
+        <% flash.each do |type, msg| %>
+            <div class="flash-message <%= type == 'notice' ? 'flash-notice' : 'flash-alert' %>" role="alert">
+                <%= msg %>
+                <%# Add CSS rules for .flash-message, .flash-notice, .flash-alert in your main CSS file %>
+            </div>
+        <% end %>
+
+        <%# Use inventory-table-container and inventory-table classes from inventory.css %>
+        <div class="inventory-table-container">
+            <table class="inventory-table"> <%# Changed class to match inventory.css %>
+                <thead> <%# Thead/th styles should come from inventory.css %>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col" style="text-align: right;">Tax (%)</th> <%# Use inline style or add class for alignment %>
+                        <th scope="col" style="text-align: center;">Actions</th> <%# Use inline style or add class for alignment %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if defined?(@categories) && @categories.present? %>
+                        <% @categories.each do |category| %>
+                            <tr> <%# Tr/td styles should come from inventory.css %>
+                                <td><%= category.name %></td>
+                                <td style="text-align: right;"><%= number_to_percentage(category.tax_percentage, precision: 2) %></td>
+                                <td class="table-actions" style="text-align: center;"> <%# Use table-actions class for links/buttons %>
+                                    <%= link_to '<i class="fas fa-edit"></i>'.html_safe, edit_category_path(category), title: "Edit #{category.name}" %>
+                                    <%= button_to '<i class="fas fa-trash"></i>'.html_safe, category_path(category), method: :delete, class: 'delete-btn', title: "Delete #{category.name}", form: { data: { turbo_confirm: "Are you sure you want to delete the category '#{category.name}'? This cannot be undone." } } %>
+                                </td>
+                            </tr>
+                        <% end %>
+                    <% else %>
+                        <tr>
+                            <td colspan="3" class="no-products-message">No categories found.</td> <%# Use class from inventory.css %>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <%# render 'layouts/admin_footer' %>

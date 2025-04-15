@@ -72,7 +72,7 @@ export default class extends Controller {
     }
   }
 
-  // Corrected function to update the product list HTML
+  // Corrected function to update the product list HTML (NO <%# comments)
   updateProductList(data) {
     if (data.products && data.products.length > 0) {
       const html = data.products
@@ -82,26 +82,32 @@ export default class extends Controller {
               data-product-id="${product.id}"
               data-product-name="${product.product_name || ''}"
               data-product-price="${product.price || 0}"
-              data-product-tax-percentage="${product.tax_rate || 0.0}" <%# Corrected attribute %>
+              data-product-tax-percentage="${product.tax_rate || 0.0}"
               data-product-stock="${product.stock_quantity || 0}"
               >
             <div class="d-flex justify-content-between align-items-start">
-              <div class="product-info me-2">
-                <div class="d-flex align-items-center product-name-button-wrapper mb-1">
-                  <span class="product-name product-name-small me-2">${product.product_name || 'Unnamed Product'}</span>
-                  <button class="btn btn-outline-primary btn-sm product-add-btn"
-                          data-action="click->billing#addItem" <%# Connects to billing controller %>
+
+              <div class="product-info me-2 flex-grow-1">
+                
+                <div class="d-flex align-items-center mb-1">
+                  <span class="product-name me-2">${product.product_name || 'Unnamed Product'}</span>
+                  
+                  <button class="btn btn-primary btn-sm product-add-btn flex-shrink-0" 
+                          data-action="click->billing#addItem" 
                           aria-label="Add ${product.product_name || 'Unnamed Product'} to bill">
                      <i class="fas fa-plus"></i>
                   </button>
                 </div>
-                <small class="product-meta text-muted d-block">
+
+                <small class="product-meta text-muted d-block"> 
                   ${product.price ? this.formatCurrency(product.price) : 'Price N/A'}
                 </small>
               </div>
-              <span class="badge ${product.stock_quantity > 0 ? 'bg-success-soft' : 'bg-danger-soft'} text-dark product-stock-badge">
+
+              <span class="badge ${product.stock_quantity > 0 ? 'bg-success-soft' : 'bg-danger-soft'} text-dark product-stock-badge flex-shrink-0"> 
                 Stock: ${product.stock_quantity ?? 'N/A'}
               </span>
+
             </div>
           </li>
         `
@@ -135,4 +141,4 @@ export default class extends Controller {
       console.log("ProductSearch debounced search cancelled on disconnect.");
     }
   }
-}
+} // End of class
