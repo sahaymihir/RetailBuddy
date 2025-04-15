@@ -31,3 +31,25 @@
   display: flex;
   align-items: center;
 }
+
+.ts-wrapper.input-field {
+  all: unset;
+  all: revert;
+  font-size: 16px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 8px !important;
+  padding: 12px 15px 12px 45px !important;
+  background-color: white !important;
+  box-shadow: none !important;
+}
+
+.ts-wrapper.input-field .ts-control {
+  all: unset;
+  all: revert;
+  font-size: 16px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}

@@ -1,8 +1,8 @@
 # app/controllers/products_controller.rb
 class ProductsController < ApplicationController
   before_action :require_login
-  before_action :set_categories, only: [:new, :create, :edit, :update]
-  before_action :set_product, only: [:edit, :update, :destroy] # No :show
+  before_action :set_categories, only: [ :new, :create, :edit, :update ]
+  before_action :set_product, only: [ :edit, :update, :destroy ] # No :show
 
   # GET /products/new
   def new
@@ -17,7 +17,7 @@ class ProductsController < ApplicationController
     if @product.save
       # Ensure inventory gets default values if not provided
       inventory = @product.inventory || @product.build_inventory
-      inventory.warehouse_location ||= 'Default Location' # Example default
+      inventory.warehouse_location ||= "Default Location" # Example default
       inventory.reorder_level ||= 10                   # Example default
       inventory.save # Save inventory if it was just built
 
@@ -39,7 +39,7 @@ class ProductsController < ApplicationController
     if @product.update(product_params)
       redirect_to inventory_path, notice: "Product was successfully updated."
     else
-       # Ensure categories are set again for rendering the form
+      # Ensure categories are set again for rendering the form
       set_categories
       render :edit, status: :unprocessable_entity
     end
@@ -63,34 +63,54 @@ class ProductsController < ApplicationController
     query = params[:q].presence || ""
     limit = 25
 
-    # Use the actual database column name 'product_name' for searching and ordering
-    # Eager load inventory and category for potentially faster access (though not strictly needed for the response here)
-    products_query = Product.includes(:inventory, :category)
-                            .order(Arel.sql("LOWER(product_name)")) # Order by lowercase actual column
+    # Use includes for efficiency
+    products_query = Product.includes(:category, :inventory)
+                            .order(Arel.sql("LOWER(product_name)"))
 
     if query.present?
-      # Search against the actual database column 'product_name'
-      products = products_query.where("LOWER(product_name) LIKE ?", "%#{query.downcase}%").limit(limit)
+      # Assuming Oracle DB based on previous context (NUMBER type)
+      # Use UPPER for case-insensitive search
+      products = products_query.where("UPPER(product_name) LIKE UPPER(?)", "%#{query}%").limit(limit)
     else
-      # Show recent products or top sellers if query is empty
-      products = products_query.order(created_at: :desc).limit(5) # Example: Show 5 most recent
+      products = products_query.order(created_at: :desc).limit(5)
     end
 
     # Prepare JSON response
     products_json = products.map do |product|
+      product_category = product.category
+      tax_rate = product_category&.tax_percentage || 0.0
+
+      # --- Logging (Keep this for debugging) ---
+      Rails.logger.info "====== Product Search Debug ======"
+      Rails.logger.info "Product ID: #{product.id}, Name: #{product.product_name}"
+      Rails.logger.info "Category ID: #{product.category_id}"
+      Rails.logger.info "Loaded Category Object: #{product_category.inspect}"
+      Rails.logger.info "Category Name: #{product_category&.name}"
+      Rails.logger.info "Tax Percentage from Category: #{product_category&.tax_percentage}"
+      Rails.logger.info "Determined tax_rate for JSON: #{tax_rate}"
+      Rails.logger.info "=================================="
+      # --- END LOGGING ---
+
       {
         id: product.id,
         product_name: product.product_name,
         price: product.price,
-        stock_quantity: product.stock_quantity || 0,
-        # Add the applicable tax rate here
-        tax_rate: product.applicable_tax_rate || 0.0 # Ensure you handle nil case
+        # --- CORRECTED STOCK QUANTITY ---
+        stock_quantity: product.stock_quantity || 0, # Read from product table
+        tax_rate: tax_rate
       }
     end
 
     render json: { products: products_json }
-  end
 
+  # Add a rescue block to catch potential errors during search
+  rescue => e
+    Rails.logger.error("Error in ProductsController#search: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    # Return an empty list or an error message in JSON format
+    render json: { products: [], error: "Failed to search products: #{e.message}" }, status: :internal_server_error
+  end
+  
   private
 
   def set_product
@@ -112,7 +132,7 @@ class ProductsController < ApplicationController
       :stock_quantity,
       :category_id,
       # Allow inventory attributes, ensure :id is present for updates
-      inventory_attributes: [:id, :warehouse_location, :reorder_level, :_destroy] # Removed :quantity
+      inventory_attributes: [ :id, :warehouse_location, :reorder_level, :_destroy ] # Removed :quantity
     )
   end
 

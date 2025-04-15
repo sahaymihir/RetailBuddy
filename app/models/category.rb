@@ -2,7 +2,6 @@
 class Category < ApplicationRecord
   alias_attribute :name, :category_name
   alias_attribute :description, :description # Handles the DESCRIPTION column
-  alias_attribute :tax_percentage, :tax_percentage
   has_many :products, dependent: :restrict_with_error # Ensure categories aren't deleted if products exist
 
   validates :name, presence: true, uniqueness: true

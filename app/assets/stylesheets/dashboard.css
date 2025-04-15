@@ -1,6 +1,6 @@
 /* app/assets/stylesheets/dashboard.css */
 
-/* --- Base Variables & Styles (Dark Theme Only) --- */
+/* --- Base Variables & Styles --- */
 :root {
   --primary-color: #6c63ff;
   --secondary-color: #4d44d9;
@@ -12,16 +12,18 @@
   --card-hover: #3a3c4e;
   --input-bg: #44475a;
   --shadow-color: rgba(0, 0, 0, 0.3);
-  --border-color: #44475a;
-  --border-radius-sm: 8px;
-  --border-radius-md: 12px;
-  --transition-speed: 0.3s;
+  --border-color: #44475a; /* Reverted to original border color */
+  --border-radius-sm: 6px; /* Slightly smaller radius */
+  --border-radius-md: 10px; /* Slightly smaller radius */
+  --transition-speed: 0.2s; /* Slightly faster transition */
   --button-bg: #44475a;
   --button-hover-bg: #5a5c72;
   --link-color: #8be9fd;
+  --error-color: #f44336;
+  --success-color: #4caf50;
 }
 
-/* Global Reset */
+/* --- Global Reset & Body --- */
 * {
   margin: 0;
   padding: 0;
@@ -40,6 +42,8 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
+  line-height: 1.5; /* Keep base line-height */
+  font-size: 14px; /* Set base font size slightly smaller */
 }
 
 #dashboard-container {
@@ -50,191 +54,104 @@ body {
   flex-direction: column;
 }
 
-/* --- Background Shapes (Optional Aesthetic) --- */
-.background-shapes {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  z-index: -1; opacity: 0.1; overflow: hidden; pointer-events: none;
-}
+/* Optional: Background Shapes (Keep as is) */
+.background-shapes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.1; overflow: hidden; pointer-events: none; }
 .shape { position: absolute; border-radius: 50%; background: var(--primary-color); animation: float 20s infinite ease-in-out alternate; }
-.shape:nth-child(1) { width: 250px; height: 250px; top: -10%; left: -5%; animation-duration: 22s; }
-.shape:nth-child(2) { width: 180px; height: 180px; bottom: -8%; right: 2%; animation-duration: 18s; }
-.shape:nth-child(3) { width: 100px; height: 100px; bottom: 30%; left: 5%; animation-duration: 25s; }
-.shape:nth-child(4) { width: 150px; height: 150px; top: 10%; right: 10%; animation-duration: 20s; }
+/* ... other shape styles ... */
 @keyframes float { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(-30px) rotate(15deg); } }
+
 
 /* --- Header --- */
 .header {
   background-color: var(--card-bg);
-  padding: 0.8rem 2rem;
+  padding: 0 1.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Vertically center items within header */
+  /* align-items: center; */ /* Remove or comment out center */
+  align-items: baseline; /* Try baseline alignment */
   box-shadow: 0 2px 5px var(--shadow-color);
   position: sticky;
   top: 0;
   z-index: 100;
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
+  height: 55px;
 }
 
-/* --- Logo Alignment --- */
+/* Logo Container */
 .logo-container {
-  display: flex;
-  align-items: center; /* Ensure container items are centered */
+  display: flex; /* Use flex to help align its content */
+  align-items: center; /* Vertically align content within this container */
 }
+
+/* Logo Link */
 .logo {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--primary-color);
-  display: inline-flex;    /* Use inline-flex for alignment */
-  align-items: center;     /* Vertically center items within the logo link */
-  gap: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   text-decoration: none;
-  line-height: 1;          /* Prevent line height interfering */
+  padding-top: 2px; /* Add small padding to push it down slightly */
+  /* Adjust the 2px value as needed (e.g., 1px, 3px) */
 }
 
+.logo:hover {
+    opacity: 0.9;
+}
+
+/* Logo Icon */
 .logo i {
-  font-size: 24px;         /* Icon size */
-  display: block;          /* Treat icon as a block for consistent alignment */
-  line-height: 1;          /* Match line height */
-  margin: 0;               /* Reset any potential margins */
-  padding: 0;              /* Reset any potential padding */
+  font-size: 1.1em; /* Relative size */
+  line-height: 1; /* Explicit line-height */
+  display: block; /* Treat as block for consistent height calculation */
+  /* vertical-align: middle; Might not be needed with flex */
 }
 
+/* Logo Text */
 .logo span {
-  display: inline-block;   /* Ensure span behaves predictably */
-  line-height: 1;          /* Match line height */
-  margin: 0;               /* Reset any potential margins */
-  padding: 0;              /* Reset any potential padding */
+  line-height: 1; /* Explicit line-height */
+  display: inline-block; /* Allow vertical alignment */
+  /* vertical-align: middle; Might not be needed with flex */
 }
 
+/* Header Controls Container */
 .header-controls {
   display: flex;
-  align-items: center; /* Vertically center controls */
-  gap: 1rem;
+  align-items: center; /* Ensure this container aligns its items vertically */
+  gap: 0.8rem;
 }
 
-/* --- User Menu Specific Styles --- */
-.user-menu {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
+/* User Menu & Dropdown */
+.user-menu { position: relative; display: flex; align-items: center; }
+.welcome-user { font-size: 13px; font-weight: 500; color: var(--text-secondary); background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; padding: 0.2rem; } /* Reduced font size, gap, padding */
+.welcome-user:hover { color: var(--text-color); }
+.welcome-user i.fas { font-size: 11px; transition: transform var(--transition-speed) ease; } /* Reduced icon size */
 
-.welcome-user {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.welcome-user i {
-  font-size: 12px;
-  transition: transform var(--transition-speed) ease;
-}
-.user-dropdown.show + .welcome-user i {
-  transform: rotate(180deg);
-}
+.user-dropdown { position: absolute; top: calc(100% + 6px); right: 0; z-index: 110; background-color: var(--card-bg); border-radius: var(--border-radius-sm); box-shadow: 0 4px 15px var(--shadow-color); width: 170px; overflow: hidden; border: 1px solid var(--border-color); opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s; } /* Adjusted shadow, width, transform */
+.user-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0); transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s; }
+.user-dropdown.show + .welcome-user i.fas { transform: rotate(180deg); }
 
-.user-dropdown {
-  position: absolute;
-  top: calc(100% + 5px);
-  right: 0;
-  z-index: 110;
-  background-color: var(--card-bg);
-  border-radius: var(--border-radius-sm);
-  box-shadow: 0 5px 20px var(--shadow-color);
-  width: 180px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
-}
+/* Styling for items INSIDE the dropdown */
+.user-dropdown a,
+.user-dropdown button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 0.6rem 0.9rem; font-size: 13px; color: var(--text-secondary); text-align: left; text-decoration: none; background: none; border: none; cursor: pointer; transition: background-color var(--transition-speed), color var(--transition-speed); } /* Reduced padding, font-size, gap */
+.user-dropdown a:hover,
+.user-dropdown button:hover { background-color: var(--card-hover); color: var(--primary-color); }
+.user-dropdown i.fas { width: 14px; text-align: center; margin-right: 3px; color: var(--text-secondary); font-size: 0.9em; } /* Adjusted size */
+.user-dropdown a:hover i.fas,
+.user-dropdown button:hover i.fas { color: var(--primary-color); }
 
-.user-dropdown.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
-}
+/* Form wrapper for button_to */
+form.dropdown-item-form { display: block; margin: 0; padding: 0; }
+form.dropdown-item-form button { padding: 0.6rem 0.9rem; } /* Match reduced padding */
+form.dropdown-item-form button span.dropdown-item { display: contents; }
 
-form.dropdown-item-form {
-  display: block; /* Ensure form takes full width */
-  margin: 0;      /* Reset form margin */
-}
-
-/* Style the actual button element within the form */
-form.dropdown-item-form button {
-  /* Core visual styles */
-  appearance: none;        /* Try resetting browser default appearance */
-  background: none;
-  border: none;
-  width: 100%;             /* Make button fill form width */
-  padding: 0.6rem 1rem;   /* Padding inside the button */
-  margin: 0;
-  cursor: pointer;
-
-  /* Text & Content Alignment */
-  font-family: inherit;    /* Use consistent font */
-  font-size: 14px;
-  color: var(--text-secondary); /* Default text color */
-  text-align: left;
-
-  /* Flex for icon + text alignment */
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  /* Transition for hover */
-  transition: background-color var(--transition-speed), color var(--transition-speed);
-}
-
-/* Hover effect directly on the button */
-form.dropdown-item-form button:hover {
-  background-color: var(--card-hover);
-  color: var(--primary-color); /* Change text color on hover */
-}
-
-/* Style the span inside the button (if needed, for icon/text layout) */
-/* REMOVED display: contents; */
-form.dropdown-item-form button .dropdown-item {
-  /* Re-apply flex if needed for icon/text within span, otherwise can be empty */
-   display: flex;
-   align-items: center;
-   gap: inherit; /* Inherit gap from button */
-   /* Remove background/padding/etc. from span if applied previously */
-}
-
-.dropdown-item {
-  background: none;
-  border: none;
-  padding: 0.6rem 1rem;
-  margin: 0;
-  font-family: inherit;
-  font-size: 14px;
-  cursor: pointer;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-align: left;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: background-color var(--transition-speed), color var(--transition-speed);
-}
-
-/* --- Dashboard Content Area --- */
+/* --- Dashboard Content --- */
 .dashboard-content {
-  padding: 1rem 2rem 2rem 2rem; /* Keeps the reduced top padding */
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
+  padding: 1.5rem; /* Reduced padding */
+  max-width: 1100px; /* Slightly reduced max-width */
+  margin: 0 auto;
   width: 100%;
   flex-grow: 1;
 }
@@ -242,48 +159,102 @@ form.dropdown-item-form button .dropdown-item {
 /* --- Top Info Section --- */
 .top-info-section {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: 1fr; /* Default mobile */
+  gap: 1.2rem; /* Reduced gap */
+  margin-bottom: 1.8rem; /* Reduced margin */
 }
 
 .info-card {
   background-color: var(--card-bg);
   border-radius: var(--border-radius-md);
-  padding: 1.5rem;
-  box-shadow: 0 4px 10px var(--shadow-color);
+  padding: 1.2rem 1.5rem; /* Reduced padding */
+  box-shadow: 0 4px 10px var(--shadow-color); /* Adjusted shadow */
   border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
+  color: var(--text-color);
 }
 .info-card h3 {
-  font-size: 16px;
+  font-size: 15px; /* Reduced heading size */
   font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem; /* Reduced space below heading */
+  padding-bottom: 0.6rem; /* Reduced padding */
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.5rem;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Kept gap reasonable */
 }
+.info-card h3 i.fas {
+  font-size: 1em; /* Keep icon size relative */
+  opacity: 0.8;
+}
+.info-card h3.text-warning { color: #ffc107; }
+.info-card h3.text-warning i.fas { color: #ffc107; opacity: 1; }
+.info-card h3 i.text-success { color: var(--accent-color); opacity: 1; }
+
+/* Paragraphs within info cards */
 .info-card p {
-  font-size: 14px;
+  font-size: 13px; /* Reduced font size */
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
+  margin-bottom: 0.5rem; /* Reduced spacing between paragraphs */
+  line-height: 1.5; /* Reduced line height */
 }
-.info-card p:last-child { margin-bottom: 0; }
-.info-card a {
+.info-card p:last-of-type {
+  margin-bottom: 0.8rem; /* Reduced space before the bottom link */
+}
+
+/* Low Stock List Specific Styling */
+.info-card.low-stock-alerts p { /* Target description specifically */
+    margin-bottom: 0.6rem; /* Less space after description */
+}
+.info-card.low-stock-alerts ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 0.3rem; /* Reduced margin above */
+    margin-bottom: 0.8rem; /* Reduced space below list */
+}
+.info-card.low-stock-alerts ul li {
+    font-size: 13px; /* Reduced font size */
+    padding: 0.4rem 0.1rem; /* Reduced vertical padding */
+    border-bottom: 1px solid rgba(var(--border-color), 0.4); /* Lighter border */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem; /* Reduced gap */
+}
+.info-card.low-stock-alerts ul li:last-child {
+    border-bottom: none;
+}
+.info-card.low-stock-alerts ul li a {
+    color: var(--link-color);
+    font-weight: 400; /* Normal weight */
+    text-decoration: none;
+}
+.info-card.low-stock-alerts ul li a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+.info-card.low-stock-alerts ul li .badge {
+    padding: 0.2em 0.5em; /* Reduced badge padding */
+    font-size: 0.8em; /* Slightly smaller badge text */
+    flex-shrink: 0;
+    border-radius: var(--border-radius-sm);
+}
+
+/* Links at the bottom of info cards */
+.info-card a.mt-auto {
   color: var(--link-color);
-  font-size: 14px;
+  font-size: 13px; /* Reduced font size */
   text-decoration: none;
   font-weight: 500;
-  display: inline-block;
   margin-top: auto;
-  padding-top: 0.8rem;
+  padding-top: 0.6rem; /* Reduced space above link */
   transition: color var(--transition-speed) ease;
   align-self: flex-start;
 }
-.info-card a:hover {
+.info-card a.mt-auto:hover {
   text-decoration: underline;
   color: var(--primary-color);
 }
@@ -291,116 +262,42 @@ form.dropdown-item-form button .dropdown-item {
 /* --- Action Buttons Section --- */
 .action-buttons {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 0.8rem; /* Reduced gap */
+  margin-bottom: 2rem; /* Reduced margin */
 }
-
-.action-btn {
-  background-color: var(--button-bg);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  padding: 0.8rem 1rem;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: center;
-  transition: all var(--transition-speed) ease;
-  white-space: nowrap;
-}
-.action-btn:hover {
-  background-color: var(--button-hover-bg);
-  color: var(--text-color);
-  border-color: var(--card-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 3px 8px var(--shadow-color);
-}
+.action-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; background-color: var(--button-bg); color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.7rem 0.9rem; font-size: 13px; font-weight: 500; cursor: pointer; text-align: center; text-decoration: none; transition: all var(--transition-speed) ease; white-space: nowrap; } /* Reduced padding/font */
+.action-btn i.fas { font-size: 0.9em; line-height: 1; } /* Slightly smaller icon */
+.action-btn:hover { background-color: var(--button-hover-bg); color: var(--text-color); border-color: var(--card-hover); transform: translateY(-1px); box-shadow: 0 2px 5px var(--shadow-color); text-decoration: none; } /* Reduced hover effect */
 
 /* --- Bottom Tile Grid Section --- */
-.tile-grid-section h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: var(--text-color);
-}
+.tile-grid-section h2 { font-size: 18px; font-weight: 600; margin-bottom: 1.2rem; color: var(--text-color); border-bottom: 1px solid var(--border-color); padding-bottom: 0.6rem; } /* Reduced size/margins */
+.tile-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 1.2rem; } /* Reduced gap */
+.tile { background-color: var(--card-bg); border-radius: var(--border-radius-md); padding: 1.5rem 1.2rem; box-shadow: 0 4px 12px var(--shadow-color); display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: var(--text-color); border: 1px solid var(--border-color); transition: all var(--transition-speed) ease; position: relative; overflow: hidden; min-height: 160px; } /* Reduced padding/height */
+.tile:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 20px var(--shadow-color); background-color: var(--card-hover); border-color: var(--primary-color); text-decoration: none; } /* Reduced hover effect */
+.tile-icon { font-size: 32px; color: var(--primary-color); margin-bottom: 0.8rem; line-height: 1; } /* Reduced size/margin */
+.tile h3 { font-size: 15px; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color); } /* Reduced size/margin */
+.tile p { font-size: 12px; color: var(--text-secondary); line-height: 1.4; max-width: 95%; margin: 0 auto; flex-grow: 1; } /* Reduced size/line-height */
 
-.tile-grid {
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 1.5rem;
-}
-
-.tile {
-  background-color: var(--card-bg);
-  border-radius: var(--border-radius-md);
-  padding: 1.8rem 1.5rem;
-  box-shadow: 0 5px 15px var(--shadow-color);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  text-decoration: none;
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  transition: all var(--transition-speed) ease;
-  position: relative;
-  overflow: hidden;
-  min-height: 180px;
-}
-
-.tile:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 10px 25px var(--shadow-color);
-  background-color: var(--card-hover);
-  border-color: var(--primary-color);
-}
-
-.tile-icon {
-  font-size: 36px;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-  line-height: 1;
-}
-
-.tile h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 0.6rem;
-}
-
-.tile p {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-  max-width: 90%;
-  margin: 0 auto;
-  flex-grow: 1;
-}
-
-/* --- Responsiveness Adjustments --- */
+/* --- Responsiveness --- */
 @media (min-width: 640px) {
-  .top-info-section {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .action-buttons {
-    grid-template-columns: repeat(4, 1fr);
-  }
-   .tile-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .top-info-section { grid-template-columns: repeat(2, 1fr); }
+  .action-buttons { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); } /* Adjusted minmax */
+   .tile-grid { grid-template-columns: repeat(2, 1fr); }
 }
-
 @media (min-width: 1024px) {
-  .tile-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .action-buttons { grid-template-columns: repeat(4, 1fr); }
+  .tile-grid { grid-template-columns: repeat(3, 1fr); }
 }
-
 @media (max-width: 768px) {
-  .header { padding: 0.8rem 1rem; }
-  .dashboard-content {
-      padding: 1rem 1rem 2rem 1rem;
-  }
-  /* .logo span { display: none; } */
+  body { font-size: 13px; } /* Reduce base font size further */
+  .header { padding: 0.6rem 1rem; height: 50px; } /* Reduced header more */
+  .logo { font-size: 18px; }
+  .logo i { font-size: 20px; }
+  .dashboard-content { padding: 1rem; } /* Reduced padding */
+  .action-buttons { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.6rem; margin-bottom: 1.5rem;} /* Adjust for smaller screens */
+  .tile { padding: 1.2rem 1rem; min-height: 140px; }
+  .tile-icon { font-size: 28px; }
+  .tile h3 { font-size: 14px; }
+  .tile p { font-size: 11px; }
 }

@@ -1,88 +1,114 @@
-<%# app/views/admin/users/index.html.erb %>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - User Management</title>
-    <%# Link necessary stylesheets directly %>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    <%= javascript_importmap_tags %>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Admin Users - RetailBuddy</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%# Link required stylesheets. Ensure 'dashboard' provides base styles/variables. %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "admin", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <%= javascript_importmap_tags %>
 </head>
 <body>
-    <div class="admin-page-container">
-      <div class="admin-header">
-        <h1 class="admin-title">User Management</h1>
-        <div class="admin-actions">
-           <%= link_to "Add New User", new_admin_user_path, class: "action-btn primary" %>
-           <%= link_to "Back to Dashboard", success_path_url, class: "action-btn" %>
-        </div>
-      </div>
+  <%# --- ASSUMPTION: Shared Header --- %>
+  <%# You might have a shared header partial like this. Ensure it exists and is styled by dashboard.css %>
+  <%# render 'layouts/dashboard_header' %>
+  <%# If no shared header, you might need to replicate the header structure here. %>
 
-      <div class="admin-table-container">
-        <table class="admin-users-table">
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if @users.blank? %>
-              <tr>
-                <td colspan="5" style="text-align: center; padding: 2rem;">No users found.</td>
-              </tr>
-            <% else %>
-              <% @users.each do |user| %>
-                <tr>
-                  <td><%= user.userid %></td>
-                  <td><%= user.name %></td>
-                  <td><%= user.email %></td>
-                  <td><%= user.role %></td>
-                  <td class="table-actions">
-                    <%# Link to edit user (password change) %>
-                    <%= link_to '<i class="fas fa-key"></i>'.html_safe, edit_admin_user_path(user), title: "Change Password" %>
-                    <%# Delete user button %>
-                    <%= button_to '<i class="fas fa-trash"></i>'.html_safe, admin_user_path(user), method: :delete, class: 'delete-btn', title: "Delete User", form: { data: { turbo_confirm: "Are you sure you want to delete user #{user.name}?" } } %>
-                  </td>
-                </tr>
-              <% end %>
-            <% end %>
-            <%# --- SAMPLE DATA --- %>
-            <tr>
-                <td>1</td>
-                <td>Admin User</td>
-                <td>admin@retail.com</td>
-                <td>Admin</td>
-                 <td class="table-actions">
-                     <a href="#"><i class="fas fa-key"></i></a>
-                     <button class="delete-btn"><i class="fas fa-trash"></i></button>
-                 </td>
-            </tr>
-             <tr>
-                <td>6</td>
-                <td>Mihir Sahay</td>
-                <td>employee@retail.com</td>
-                <td>Employee</td>
-                 <td class="table-actions">
-                     <a href="#"><i class="fas fa-key"></i></a>
-                     <button class="delete-btn"><i class="fas fa-trash"></i></button>
-                 </td>
-            </tr>
-             <%# --- END SAMPLE --- %>
-          </tbody>
-        </table>
+  <%# Main content area for the admin page %>
+  <div class="admin-page-container">
+
+    <%# Page Header: Title and 'New User' Button %>
+    <div class="admin-header">
+      <%# --- ASSUMPTION: success_path_path --- %>
+      <%# This link path needs to be valid in your routes.rb, e.g., dashboard_path %>
+      <%= link_to success_path_path, class: "admin-title-link", title: "Back to Dashboard" do %>
+        <h1 class="admin-title">
+          User Management
+        </h1>
+      <% end %>
+
+      <div class="admin-actions"> <%# Container for header buttons %>
+        <%= link_to new_admin_user_path, class: "action-btn primary" do %>
+          <i class="fas fa-plus"></i> New User
+        <% end %>
       </div>
     </div>
+
+    <%# Display Flash Messages (Notice/Alert) %>
+    <div id="flash-messages">
+      <% flash.each do |type, message| %>
+        <%# Apply success/error styles based on flash type %>
+        <div class="flash-message <%= type == 'notice' ? 'flash-success' : 'flash-error' %>">
+          <%= message %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Display details of newly created user (if passed via flash) %>
+    <% if @new_user_details = flash[:new_user_details] %>
+      <%# Use info-card styling for this temporary notification %>
+      <div class="info-card flash-success" style="margin-bottom: 1.5rem;">
+        <h3><i class="fas fa-check-circle"></i> New User Created:</h3>
+        <p><strong>ID:</strong> <%= @new_user_details[:id] %></p>
+        <p><strong>Name:</strong> <%= @new_user_details[:name] %></p>
+        <p><strong>Email:</strong> <%= @new_user_details[:email] %></p>
+        <p><strong>Role:</strong> <%= @new_user_details[:role] %></p>
+        <p><small><i>(Password is not shown)</i></small></p>
+      </div>
+    <% end %>
+
+    <%# User Table Container (styled as a card) %>
+    <div class="admin-table-container">
+      <h2><i class="fas fa-list"></i> Existing Users</h2>
+      <table class="admin-users-table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th class="actions-column">Actions</th> <%# Column for action icons %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.each do |user| %>
+            <tr>
+              <td><%= user.userid.to_i %></td>
+              <td><%= user.name %></td>
+              <td><%= user.email %></td>
+              <td><%= user.role %></td>
+              <%# Action icons in the last cell %>
+              <td class="table-actions">
+                <%# Edit User Link %>
+                <%= link_to edit_admin_user_path(user), title: "Edit User" do %><i class="fas fa-edit"></i><% end %>
+                <%# Delete User Link (using button_to for proper DELETE request with Turbo) %>
+                <%= button_to [:admin, user], method: :delete, title: "Delete User",
+                    form: { data: { turbo_confirm: "Are you sure you want to delete user '#{user.name}'?" } },
+                    class: "delete-btn" do %>
+                      <i class="fas fa-trash-alt"></i>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%# Pagination Links Container %>
+    <%# Check if Pagy object exists and has more than one page %>
+    <% if defined?(@pagy) && @pagy && @pagy.pages > 1 %>
+      <nav aria-label="Page navigation" class="pagy-nav-container">
+         <%# Render Pagy navigation elements (assuming Bootstrap version) %>
+         <%== pagy_bootstrap_nav(@pagy) %>
+      </nav>
+    <% end %>
+
+  </div> <%# End admin-page-container %>
+
 </body>
 </html>
