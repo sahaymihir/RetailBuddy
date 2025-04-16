@@ -1,0 +1,139 @@
+<%# app/views/reports/top_products.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Top Selling Products Report</title>
+
+    <%# Link essential stylesheets %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "reports", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= javascript_importmap_tags %>
+
+    <%# Font Awesome if used in header/layout %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <%# Inline styles for quick date links and table - move to CSS if preferred %>
+    <style>
+      .date-link-group a, .sort-link-group a {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-sm);
+        color: var(--text-secondary);
+        text-decoration: none;
+        background-color: var(--button-bg);
+      }
+      .date-link-group a:hover, .sort-link-group a:hover {
+        background-color: var(--button-hover-bg);
+        color: var(--text-color);
+      }
+      .date-link-group a.active, .sort-link-group a.active { /* Style for active sort */
+         background-color: var(--primary-color);
+         border-color: var(--primary-color);
+         color: white;
+         font-weight: 500;
+      }
+      .report-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 1rem; }
+      .report-table th, .report-table td { padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+      .report-table th { color: var(--text-secondary); font-weight: 500; background-color: rgba(0,0,0,0.1); }
+      .report-table td.numeric { text-align: right; }
+      .report-table td.rank { text-align: center; font-weight: 600; color: var(--text-secondary); width: 5%; }
+      .report-table tbody tr:hover { background-color: var(--card-hover); }
+      .text-muted { color: var(--text-secondary); }
+      .product-link { color: var(--link-color); text-decoration: none; font-weight: 500;}
+      .product-link:hover { color: var(--primary-color); text-decoration: underline;}
+      /* Add styles for alert box */
+      .alert.alert-danger { background-color: rgba(var(--error-color), 0.1); border: 1px solid rgba(var(--error-color), 0.3); color: var(--error-color); border-radius: var(--border-radius-sm); }
+      .small { font-size: 0.85rem; }
+      .p-2 { padding: 0.5rem; }
+      .mb-3 { margin-bottom: 1rem; }
+      .me-2 { margin-right: 0.5rem; }
+      .text-center { text-align: center; }
+      .py-3 { padding-top: 1rem; padding-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <%# Add header partial here if needed %>
+
+    <div class="dashboard-content reports-page-container">
+
+        <div class="reports-header mb-3 pb-2 border-bottom border-secondary d-flex justify-content-between align-items-center">
+            <h1 class="reports-title fs-5 fw-semibold">Top Selling Products</h1>
+            <span class="text-secondary small">Period: <%= @start_date.strftime('%b %d, %Y') %> to <%= @end_date.strftime('%b %d, %Y') %></span>
+        </div>
+
+        <%# Quick Date Selection Links %>
+        <div class="date-link-group mb-2">
+            <span class="small text-muted me-2">View Period:</span>
+            <%= link_to "Today", top_products_report_path(start_date: Time.zone.now.to_date, end_date: Time.zone.now.to_date, sort_by: @sort_by_param) %>
+            <%= link_to "This Week", top_products_report_path(start_date: Time.zone.now.beginning_of_week.to_date, end_date: Time.zone.now.to_date, sort_by: @sort_by_param) %>
+            <%= link_to "This Month", top_products_report_path(start_date: Time.zone.now.beginning_of_month.to_date, end_date: Time.zone.now.to_date, sort_by: @sort_by_param) %>
+            <%= link_to "Last Month", top_products_report_path(start_date: Time.zone.now.last_month.beginning_of_month.to_date, end_date: Time.zone.now.last_month.end_of_month.to_date, sort_by: @sort_by_param) %>
+        </div>
+
+        <%# Sort By Links %>
+         <div class="sort-link-group mb-4">
+             <span class="small text-muted me-2">Sort By:</span>
+             <%= link_to "Quantity Sold", top_products_report_path(start_date: @start_date, end_date: @end_date, sort_by: 'quantity'), class: ('active' if @sort_by_param != 'revenue') %>
+             <%= link_to "Total Revenue", top_products_report_path(start_date: @start_date, end_date: @end_date, sort_by: 'revenue'), class: ('active' if @sort_by_param == 'revenue') %>
+         </div>
+
+        <%# Display flash messages if any %>
+        <% if flash[:alert] %>
+          <div class="alert alert-danger small p-2 mb-3" role="alert">
+            <%= flash[:alert] %>
+          </div>
+        <% end %>
+
+        <%# Top Products Table %>
+        <div style="overflow-x: auto; background-color: var(--card-bg); border-radius: var(--border-radius-sm); border: 1px solid var(--border-color);">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th class="rank">#</th>
+                        <th>Product Name</th>
+                        <th class="numeric">Quantity Sold</th>
+                        <th class="numeric">Total Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if @top_products_data.present? %>
+                        <% @top_products_data.each_with_index do |data, index| %>
+                            <tr>
+                                <td class="rank"><%= index + 1 %></td>
+                                <td>
+                                  <%# Link to the product edit page using edit_product_path %>
+                                  <%= link_to data.product_name, edit_product_path(data.product_id), class: "product-link" rescue data.product_name %>
+                                </td>
+                                <td class="numeric"><%= data.total_quantity.to_i %></td>
+                                <td class="numeric"><%= number_to_currency(data.total_revenue, unit: '₹') %></td>
+                            </tr>
+                        <% end %> <%# Closes the loop %>
+                    <% else %>
+                         <tr>
+                             <td colspan="4" class="text-center text-muted py-3">No product sales data found for this period.</td>
+                         </tr>
+                    <% end %> <%# CORRECTED: Closes the if/else %>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 2rem;">
+             <%= link_to "← Back to Reports Index", reports_path, style: "display: inline-block; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; background-color: transparent;" %>
+        </div>
+
+    </div> <%# End dashboard-content %>
+
+</body>
+</html>

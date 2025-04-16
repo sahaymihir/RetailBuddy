@@ -1,0 +1,33 @@
+/* app/assets/stylesheets/reports.css */
+
+/* Styles specific to the reports page container or elements */
+/* Most styling should now come from application.css and dashboard.css */
+
+.reports-page-container {
+    /* Inherit padding from .dashboard-content */
+}
+
+.reports-header {
+     margin-bottom: 1.5rem;
+     padding-bottom: 0.8rem;
+     border-bottom: 1px solid var(--border-color);
+}
+
+.reports-title {
+     font-size: 1.25rem; /* Compact title size */
+     font-weight: 600;
+     color: var(--text-color);
+}
+
+/* Styles for .tile-grid and .tile should come from dashboard.css */
+/* Add overrides here only if necessary */
+
+/* Example: Adjust tile min-height slightly if needed */
+/* .reports-page-container .tile {
+    min-height: 150px;
+} */
+
+/* Example: Make tile text slightly smaller if needed */
+/* .reports-page-container .tile p {
+    font-size: 12px;
+} */

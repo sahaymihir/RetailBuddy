@@ -1,0 +1,100 @@
+<%# app/views/reports/index.html.erb %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailBuddy - Reports</title>
+
+    <%# Link essential stylesheets %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "dashboard", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "reports", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "custom", "data-turbo-track": "reload" %>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= javascript_importmap_tags %>
+
+    <%# Font Awesome needed for tile icons %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <%# Add a style to make the header link look like normal text %>
+    <style>
+        .header-link,
+        .header-link:hover {
+            color: inherit;
+            /* Use the parent's text color */
+            text-decoration: none;
+            /* Remove underline */
+        }
+    </style>
+</head>
+
+<body>
+    <%# Add header partial here if needed %>
+
+    <%# Use dashboard-content for consistent padding/max-width %>
+    <div class="dashboard-content reports-page-container">
+
+        <div class="reports-header mb-4 pb-2 border-bottom border-secondary">
+            <%# Wrap H1 in link_to success_path %>
+            <%= link_to success_path_path, class: "header-link" do %>
+            <h1 class="reports-title fs-5 fw-semibold d-inline">Reports & Analytics</h1> <%# Added d-inline to prevent block behavior %>
+            <% end %>
+        </div>
+
+        <%# Report Tiles Grid - Uses styles from dashboard.css %>
+        <div class="tile-grid-section">
+            <div class="tile-grid"> <%# Grid should automatically adjust based on dashboard.css %>
+
+                <%= link_to todays_sales_report_path, class: "tile" do %>
+                <div class="tile-icon"><i class="fas fa-sun"></i></div>
+                <h3>Today's Sales</h3>
+                <p>Summary of revenue, transactions, and payments for today.</p>
+                <% end %>
+
+                <%= link_to sales_by_period_report_path, class: "tile" do %>
+                <div class="tile-icon"><i class="fas fa-calendar-alt"></i></div>
+                <h3>Sales by Period</h3>
+                <p>Analyze sales trends over selected weeks or months.</p>
+                <% end %>
+
+                <%= link_to top_products_report_path, class: "tile" do %>
+                <div class="tile-icon"><i class="fas fa-star"></i></div>
+                <h3>Top Products</h3>
+                <p>Identify best-selling products by quantity or revenue.</p>
+                <% end %>
+
+                <%= link_to sales_by_category_report_path, class: "tile" do %>
+                <div class="tile-icon"><i class="fas fa-tags"></i></div>
+                <h3>Sales by Category</h3>
+                <p>Break down sales performance across product categories.</p>
+                <% end %>
+
+                <%= link_to inventory_path, class: "tile" do %>
+                <div class="tile-icon"><i class="fas fa-clipboard-list"></i></div>
+                <h3>Inventory Summary</h3>
+                <p>View current stock levels for all products.</p>
+                <% end %>
+
+                <%# REMOVED Low Stock Report tile %>
+
+                <%= link_to top_customers_report_path, class: "tile" do %>
+                <div class="tile-icon"><i class="fas fa-crown"></i></div>
+                <h3>Top Customers</h3>
+                <p>Identify customers contributing most to revenue.</p>
+                <% end %>
+
+                <%# REMOVED Payment Methods tile %>
+
+            </div> <%# End tile-grid %>
+        </div> <%# End tile-grid-section %>
+
+    </div> <%# End dashboard-content / reports-page-container %>
+
+</body>
+
+</html>
