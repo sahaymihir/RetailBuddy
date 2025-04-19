@@ -1,0 +1,280 @@
+/* app/assets/stylesheets/admin.css */
+
+/* --- Base Admin Page Container --- */
+.admin-page-container {
+  padding: 1.5rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  flex-grow: 1;
+  background-color: var(--bg-color); /* Use dashboard variable */
+  color: var(--text-color); /* Use dashboard variable */
+}
+
+/* --- Admin Header --- */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color); /* Use dashboard variable */
+}
+
+/* Header Title */
+.admin-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-color); /* Use dashboard variable */
+  /* Icon removed via view, no need for icon-specific styles here */
+}
+
+/* Link style for the title if it's clickable */
+.admin-title-link {
+  text-decoration: none;
+  color: inherit; /* Inherit color from admin-title */
+}
+.admin-title-link:hover .admin-title {
+  color: var(--primary-color); /* Change color on hover */
+}
+
+/* Header Actions Container */
+.admin-actions {
+  display: flex;
+  gap: 0.5rem; /* Space between buttons */
+}
+
+/* Shared Action Button Styles (Header & Forms) */
+.action-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: var(--border-radius-sm); border: 1px solid var(--border-color);
+  text-decoration: none !important; font-weight: 500; font-size: 14px; cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
+}
+.action-btn i.fas { font-size: 0.9em; line-height: 1; }
+
+/* Primary button style */
+.action-btn.primary {
+  background-color: var(--primary-color); border-color: var(--primary-color); color: white;
+}
+.action-btn.primary:hover {
+  background-color: var(--secondary-color); border-color: var(--secondary-color);
+}
+
+/* Secondary button style */
+.action-btn.secondary {
+  background-color: var(--button-bg); border-color: var(--border-color); color: var(--text-secondary);
+}
+.action-btn.secondary:hover {
+  background-color: var(--button-hover-bg); color: var(--text-color);
+}
+
+/* --- Table Container (Card Style) --- */
+.admin-table-container {
+  background-color: var(--card-bg); border-radius: var(--border-radius-md);
+  padding: 1.5rem; box-shadow: 0 4px 10px var(--shadow-color);
+  border: 1px solid var(--border-color); overflow-x: auto; margin-top: 1.5rem;
+}
+
+/* Table Title */
+.admin-table-container h2 {
+  font-size: 18px; font-weight: 600; margin-bottom: 1rem; color: var(--text-color);
+  padding-bottom: 0.6rem; border-bottom: 1px solid var(--border-color);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.admin-table-container h2 i.fas { font-size: 1em; opacity: 0.8; }
+
+
+/* --- User Table Styling --- */
+.admin-users-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+
+/* Table Header (<th>) and Data (<td>) Cells */
+.admin-users-table th,
+.admin-users-table td {
+  padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color);
+  font-size: 14px; vertical-align: middle; white-space: nowrap;
+}
+
+/* Table Header specific styles */
+.admin-users-table th {
+  color: var(--text-secondary); font-weight: 500; background-color: var(--card-bg); /* Sticky header background */
+  position: sticky; top: 0; z-index: 1; /* Make header sticky */
+}
+
+/* Table Data cell text color */
+.admin-users-table td { color: var(--text-color); }
+
+/* Actions Column Header Alignment */
+.admin-users-table th.actions-column {
+  text-align: right; /* Align header text right */
+  padding-right: 0.5rem; /* Match cell padding */
+}
+
+/* Actions Column Cell Alignment (<td>) using Flexbox */
+.admin-users-table td.table-actions {
+  /* Use Flexbox for alignment */
+  display: flex;
+  align-items: center; /* Vertically center items in the cell */
+  justify-content: flex-end; /* Keep items aligned to the right */
+  gap: 0.5rem; /* Adjust spacing between icons if needed (try 0.4rem to 0.7rem) */
+
+  /* Inherited/Existing styles */
+  text-align: right; /* Fallback */
+  white-space: nowrap;
+  width: 1%;
+  vertical-align: middle; /* Good fallback */
+  padding-right: 0.5rem; /* Ensure some padding on the right */
+}
+
+/* Style the actual Link (<a>) and Button (<button>) elements */
+.admin-users-table .table-actions a,
+.admin-users-table .table-actions button {
+  /* Treat as inline block, vertical alignment handled by parent flex */
+  display: inline-block;
+  vertical-align: middle; /* Helps align within the flex line */
+
+  /* Consistent dimensions and line-height */
+  line-height: 1.5; /* Give consistent vertical rhythm */
+  padding: 0.2rem 0.4rem; /* Adjust padding - keep vertical padding small */
+
+  /* Reset/Base styles */
+  background: none;
+  border: none;
+  margin: 0; /* Use gap on parent (td) instead */
+  cursor: pointer;
+  color: var(--text-secondary); /* Base icon color */
+  font-size: 16px; /* Icon size */
+  text-decoration: none !important;
+  border-radius: var(--border-radius-sm); /* Optional: Add slight rounding to hover */
+  transition: color var(--transition-speed), background-color var(--transition-speed);
+}
+
+/* Optional: Add a subtle background on hover for better click target indication */
+.admin-users-table .table-actions a:hover,
+.admin-users-table .table-actions button:hover {
+  color: var(--primary-color); /* Highlight color on hover */
+  background-color: var(--button-hover-bg); /* Subtle background */
+}
+
+/* Style the Icon (<i>) itself */
+.admin-users-table .table-actions a i.fas,
+.admin-users-table .table-actions button i.fas {
+   color: inherit !important; /* Inherit color from parent <a> or <button> */
+   vertical-align: middle; /* Critical for aligning the icon within the line-height */
+   line-height: inherit;   /* Ensure icon uses the parent's line-height */
+   font-size: 1em;         /* Make icon size relative to parent font-size (16px) */
+}
+
+/* Specific style for the delete button color */
+.admin-users-table .table-actions .delete-btn {
+    color: var(--error-color) !important; /* Use error color */
+}
+.admin-users-table .table-actions .delete-btn:hover {
+    color: var(--error-color) !important; /* Keep error color on hover */
+    background-color: color-mix(in srgb, var(--error-color) 15%, transparent) !important; /* Reddish background on hover */
+}
+
+/* Reset margin/padding for the form generated by button_to */
+.admin-users-table .table-actions form {
+    margin: 0;
+    padding: 0;
+    /* Let the button inside dictate display type via parent flex */
+    line-height: inherit; /* Inherit line-height from td */
+}
+
+
+/* --- Form Styling (Card Style) --- */
+.admin-form-card {
+  max-width: 700px; margin: 2rem auto; padding: 1.5rem 2rem;
+  background-color: var(--card-bg); border-radius: var(--border-radius-md);
+  box-shadow: 0 4px 10px var(--shadow-color); border: 1px solid var(--border-color);
+}
+
+/* Form Title */
+.admin-form-card h3 {
+  font-size: 18px; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--border-color); color: var(--text-color);
+}
+
+/* Form Input Groups & Labels */
+.admin-form .input-group { margin-bottom: 1.2rem; }
+.admin-form label { display: block; margin-bottom: 0.5rem; font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+
+/* Input Fields (Text, Email, Password, Select) */
+.admin-form input[type="text"],
+.admin-form input[type="email"],
+.admin-form input[type="password"],
+.admin-form select {
+   padding: 10px 14px; background-color: var(--input-bg); color: var(--text-color);
+   border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);
+   line-height: 1.5; width: 100%; display: block; box-sizing: border-box; font-size: 14px;
+   transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+/* Input Focus Style */
+.admin-form input:focus,
+.admin-form select:focus {
+    outline: none; border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 25%, transparent); /* Subtle focus ring */
+}
+
+/* Help text below inputs */
+.admin-form small { display: block; margin-top: 0.3rem; font-size: 12px; color: var(--text-secondary); }
+
+/* Read-only Info Display (e.g., User ID, Email on edit form) */
+.user-info-read-only {
+  font-size: 14px; color: var(--text-secondary); margin-bottom: 1.5rem; padding: 1rem 1.2rem;
+  background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);
+}
+.user-info-read-only p { margin-bottom: 0.3rem; }
+.user-info-read-only p:last-child { margin-bottom: 0; }
+.user-info-read-only strong { color: var(--text-color); margin-right: 0.5rem; }
+
+/* Form Actions Container (Submit/Cancel buttons) */
+.admin-form .form-actions {
+  margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;
+  padding-top: 1.5rem; border-top: 1px solid var(--border-color);
+}
+/* Use shared .action-btn styles for form buttons */
+.admin-form .form-actions .action-btn { /* Styles inherited */ }
+
+
+/* --- Flash & Form Error Message Styling --- */
+.flash-message { padding: 0.8rem 1rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: var(--border-radius-sm); font-size: 14px; }
+.flash-success { color: color-mix(in srgb, var(--success-color) 85%, black); background-color: color-mix(in srgb, var(--success-color) 15%, transparent); border-color: color-mix(in srgb, var(--success-color) 30%, transparent); }
+.flash-error { color: color-mix(in srgb, var(--error-color) 85%, black); background-color: color-mix(in srgb, var(--error-color) 15%, transparent); border-color: color-mix(in srgb, var(--error-color) 30%, transparent); }
+
+/* Form Error Box */
+.form-errors { color: var(--error-color); background-color: color-mix(in srgb, var(--error-color) 10%, transparent); border: 1px solid color-mix(in srgb, var(--error-color) 30%, transparent); border-radius: var(--border-radius-sm); padding: 1rem; margin-bottom: 1.5rem; }
+.form-errors h2 { font-size: 16px; color: var(--error-color); margin-bottom: 0.5rem; margin-top: 0; }
+.form-errors ul { padding-left: 20px; margin-bottom: 0; list-style: disc; }
+.form-errors li { font-size: 14px; }
+
+/* --- Info Card (used for 'New User Created' message) --- */
+/* Note: This might duplicate dashboard.css; include if needed specifically here */
+.info-card {
+  background-color: var(--card-bg); border-radius: var(--border-radius-md);
+  padding: 1.2rem 1.5rem; box-shadow: 0 4px 10px var(--shadow-color);
+  border: 1px solid var(--border-color); color: var(--text-color);
+}
+.info-card h3 { font-size: 15px; font-weight: 600; color: var(--text-color); margin-bottom: 0.8rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.5rem; }
+.info-card h3 i.fas { font-size: 1em; opacity: 0.8; }
+.info-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 0.5rem; line-height: 1.5; }
+.info-card p strong { color: var(--text-color); }
+.info-card p:last-of-type { margin-bottom: 0; }
+/* Success variant for info-card */
+.info-card.flash-success { border-left: 4px solid var(--success-color); }
+.info-card.flash-success h3 { color: var(--success-color); }
+.info-card.flash-success h3 i.fas { color: var(--success-color); }
+
+
+/* --- Pagy Navigation Container --- */
+.pagy-nav-container { margin-top: 1.5rem; display: flex; justify-content: center; }
+/* Assumes Pagy Bootstrap nav styling is handled elsewhere (e.g., Pagy gem defaults or Bootstrap CSS) */
+
+
+/* --- General Text Link Style (used in edit form footer) --- */
+.text-link { color: var(--link-color); text-decoration: none;}
+.text-link:hover {color: var(--primary-color); text-decoration: underline;}
