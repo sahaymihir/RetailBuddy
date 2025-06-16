@@ -55,7 +55,7 @@ group :test do
 end
 
 # Use Oracle Database as the database for Active Record
-gem "activerecord-oracle_enhanced-adapter", "~> 7.1.0"
+gem "activerecord-oracle_enhanced-adapter", "~> 7.1.1"
 gem "ruby-oci8"
 
 # Use Enviornmental Variables for credentials
