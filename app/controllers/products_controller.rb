@@ -123,13 +123,4 @@ class ProductsController < ApplicationController
       inventory_attributes: [ :id, :warehouse_location, :reorder_level, :_destroy ] # Removed :quantity
     )
   end
-
-  # Placeholder for login check
-  # def require_login
-  #   # ... your logic here, e.g., check session[:user_id]
-  #   unless session[:user_id]
-  #     flash[:alert] = "You must be logged in to access this section."
-  #     redirect_to root_path # Or your login path
-  #   end
-  # end
 end

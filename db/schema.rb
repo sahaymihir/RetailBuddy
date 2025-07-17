@@ -73,6 +73,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_15_044249) do
     t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 
+  create_table "invoicetax", primary_key: "invoicetaxid", force: :cascade do |t|
+    t.integer "invoiceid", precision: 38, null: false
+    t.integer "taxid", precision: 38, null: false
+    t.decimal "taxamount", precision: 10, scale: 2, null: false
+  end
+
   create_table "payments", force: :cascade do |t|
     t.string "payment_method", null: false
     t.string "payment_status", null: false
@@ -104,6 +110,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_15_044249) do
     t.index ["category_id"], name: "index_products_on_category_id"
   end
 
+  create_table "report", primary_key: "reportid", id: :decimal, force: :cascade do |t|
+    t.string "reporttype", limit: 100, null: false
+    t.datetime "generateddate"
+    t.decimal "userid"
+  end
+
+  create_table "tax", primary_key: "taxid", force: :cascade do |t|
+    t.string "taxname", limit: 100, null: false
+    t.decimal "taxrate", precision: 5, scale: 2, null: false
+  end
+
   create_table "users", primary_key: "userid", id: :decimal, default: "0.0", force: :cascade do |t|
     t.string "name", limit: 100, null: false
     t.string "email", limit: 150, null: false
@@ -117,6 +134,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_15_044249) do
   add_foreign_key "invoice_lines", "products"
   add_foreign_key "invoices", "customers"
   add_foreign_key "invoices", "users", primary_key: "userid"
+  add_foreign_key "invoicetax", "tax", column: "taxid", primary_key: "taxid", name: "fk_invoicetax_tax"
   add_foreign_key "payments", "invoices"
   add_foreign_key "pricings", "products"
   add_foreign_key "products", "categories"
